@@ -1,0 +1,17 @@
+{
+  "name": "pizza-cli",
+  "version": "1.0.0",
+  "description": "A Command Line Interface for testing and using the pizzaTP",
+  "main": "submit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Venetucci",
+  "license": "The Venetucci License",
+  "private": true,
+  "dependencies": {
+    "sawtooth-sdk": "^1.0.2",
+    "cbor": "^4.0.0",
+    "request": "^2.85.0"
+  }
+}
