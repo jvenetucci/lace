@@ -4,10 +4,10 @@ const {protobuf} = require('sawtooth-sdk');
 const cbor = require('cbor');
 
 //This is all account stuff, not for this file in the long run, but it's here for now because there is nowhere else.
-const {createContext, CryptoFactory} = require(sawtooth-sdk/signing);
+const {createContext, CryptoFactory} = require('sawtooth-sdk/signing');
 const context = createContext('secp256k1');
 const privateKey = context.newRandomPrivateKey();
-const signer = CryptoFactory(context).newSigner(privateKey);
+const signer = new CryptoFactory(context).newSigner(privateKey);
 //End account stuff that doesn't belong here.
 
 //Placeholder value for input and output, discussed below where used.
@@ -20,8 +20,7 @@ const placeholderInputOutput = '19d832';
 function createTransaction(action, productType, size, sku, rfid, date) {
 
     //payload is the data of the shoe, add more fields as desired, it doesn't affect anything else.
-    const payload = (action, productType, size, sku, rfid, date) => {
-        return {
+    const payload = {
             Action: action,
             ProductType: productType,
             Size: size,
@@ -29,7 +28,7 @@ function createTransaction(action, productType, size, sku, rfid, date) {
             RFID: rfid,
             Date: date
         };
-    };
+
 
     //Encode the payload as bytes
     const payloadBytes = cbor.encode(payload);
@@ -73,13 +72,12 @@ function createTransaction(action, productType, size, sku, rfid, date) {
         payload: payloadBytes
     });
 
-    return transaction;
 
     //Alternative ending where the batch is made here, not sure if this was included in my task or not
    const transactions = [transaction];
 
    const batchHeaderBytes = protobuf.BatchHeader.encode({
-       signerPublicKey: signer.getPublicKey.asHex(),
+       signerPublicKey: signer.getPublicKey().asHex(),
        transactionIds: transactions.map((txn) => txn.headerSignature),
    }).finish();
 
@@ -99,6 +97,9 @@ function createTransaction(action, productType, size, sku, rfid, date) {
    
 };
 
+module.exports = {
+    createTransaction
+}
 
 
 

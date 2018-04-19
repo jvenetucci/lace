@@ -8,31 +8,9 @@ const {createHash} = require ('crypto');
 const {protobuf} = require('sawtooth-sdk');
 const cbor = require('cbor');
 const request = require('request');
-//const transaction = require('./transaction')
+const transaction = require('./TransactionCreator')
 
-
-//Create the Batch Header
-const transactions = [transactionBatch]
-const batchHeaderByters = protobuf.BatchHeader.encode({
-    signerPublicKey: signer.getPublicKey().asHex(),
-    transactionIds: transactions.map((txn) => txn.headerSignature),
-}).finish()
-
-
-// Create The Signature
-const signature = signer.sign(batchHeaderBytes)
-
-// Create The Batch
-const batch = protobuf.Batch.create({
-    header: batchHeaderBytes,
-    headerSignature: signature,
-    transactions: transactions
-})
-
-// Encode Batch
-const batchListBytes = protobuf.BatchList.encode({
-  batches: [batch]
-}).finish();
+const batchListBytes = transaction.createTransaction("Create", "Jordans", "10.0", "122X32", "11111", "04/19/2018");
 
 // Function submit
 function submit(){
