@@ -24,12 +24,20 @@ class Form extends Component {
       This function should call the batcher to create a transaction.
     */
     handleSubmit(event) {
+      alert(
+        "Product Info\nID: " + this.state.id +
+        "\nSKU: " + this.setState.sku +
+        "\nModel: " + this.state.model +
+        "\nSize: " + this.state.size + 
+        "\nManufacture Date: " + this.state.manufactureDate
+      );
       //createTransaction("Create", 
       // this.state.model,
       // this.state.size,
       // this.state.sku,
       // this.state.id,
-      // this.state.manufactureDate);
+      // this.state.manufactureDate
+      //);
       event.preventDefault();
     }
 
