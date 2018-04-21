@@ -4,6 +4,7 @@
 2. New terminal window
 3. Navigate to /processor
 4. Run source env/bin/activate
-5. New terminal window
-6. Navigate to /client
-7. Run node submit.js [action] [args]
+5. Run python3 main.py
+6. New terminal window
+7. Navigate to /client
+8. Run node submit.js [action] [args]
