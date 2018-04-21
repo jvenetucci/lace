@@ -10,8 +10,8 @@
   "license": "The Venetucci License",
   "private": true,
   "dependencies": {
-    "sawtooth-sdk": "^1.0.2",
     "cbor": "^4.0.0",
-    "request": "^2.85.0"
+    "request": "^2.85.0",
+    "sawtooth-sdk": "^1.0.2"
   }
 }
