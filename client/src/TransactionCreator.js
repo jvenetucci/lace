@@ -100,13 +100,3 @@ function createTransaction(action, productType, size, sku, rfid, date) {
 module.exports = {
     createTransaction
 }
-
-
-
-
-
-
-
-
-
-

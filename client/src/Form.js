@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './styles/Form.css';
+//import { createTransaction } from './Batcher';  //Causes an error.
 
 class Form extends Component {
     constructor(props) {
@@ -20,20 +21,15 @@ class Form extends Component {
     }
 
     /*
-      On submitting the form, the user is alerted to the information that
-      was entered.
-      Eventually the information will be passed to a transaction creator.
+      This function should call the batcher to create a transaction.
     */
     handleSubmit(event) {
-      alert(
-        "Product Info\nID: " + this.state.id +
-        "\nSKU: " + this.setState.sku +
-        "\nModel: " + this.state.model +
-        "\nSize: " + this.state.size + 
-        "\nManufacture Date: " + this.state.manufactureDate
-      );
-
-      alert("Stringify\n" + JSON.stringify(this.state));
+      //createTransaction("Create", 
+      // this.state.model,
+      // this.state.size,
+      // this.state.sku,
+      // this.state.id,
+      // this.state.manufactureDate);
       event.preventDefault();
     }
 
