@@ -17,6 +17,12 @@ version: "2.1"
 
 services:
 
+  pizza-tp:
+    build: ./processor/
+    container_name: pizza-tp
+    depends_on:
+      - validator
+
   settings-tp:
     image: hyperledger/sawtooth-settings-tp:1.0
     container_name: sawtooth-settings-tp-default
@@ -61,17 +67,3 @@ services:
         sawtooth keygen && \
         tail -f /dev/null \
         \""
-
-# intkey-tp-python:
-#   image: hyperledger/sawtooth-intkey-tp-python:1.0
-#   container_name: sawtooth-intkey-tp-python-default
-#   depends_on:
-#     - validator
-#   entrypoint: intkey-tp-python -vv -C tcp://validator:4004
-
-# xo-tp-python:
-#   image: hyperledger/sawtooth-xo-tp-python:1.0
-#   container_name: sawtooth-xo-tp-python-default
-#   depends_on:
-#     - validator
-#   entrypoint: xo-tp-python -vv -C tcp://validator:4004

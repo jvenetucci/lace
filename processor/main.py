@@ -6,7 +6,7 @@ from handler import pizzaTransactionHandler
 
 # We need to define the address of the validator to connect to
 # Best case is we take it from the command line, but for now its hard-coded
-VALIDATOR_URL = 'tcp://0.0.0.0:4004'
+VALIDATOR_URL = 'tcp://validator:4004'
 
 # Transaction processor are a long running process
 # This main method creates and starts a processor.

@@ -1,6 +1,5 @@
 import hashlib
 import cbor
-import logging
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.context import Context
 from sawtooth_sdk.processor.exceptions import InvalidTransaction

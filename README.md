@@ -17,16 +17,13 @@ The code for the client should demonstrate how to:
 - View information about the current state
 
 ## How to run
-Set up requires 3 separate terminal windows: (1) to run the docker images, (2) to run the pizza transaction process, and (3) to use the CLI.
+Set up requires 2 separate terminal windows: (1) to run the docker images, and (2) to submit transactions using the CLI
 1. Be in the root directory where `sawtooth-default.yaml` 
-2. Run `docker-compose -f sawtooth-default.yaml up`. This window will be running the validator and other docker images.
+2. Run `docker-compose -f sawtooth-default.yaml up`. This window will be running the validator, pizzaTP, and other docker images.
 3. New terminal window
-4. Navigate to `/processor`
-5. Run `source env/bin/activate`
-6. Run `python3 main.py`. This window will be running the transaction processor.
-7. New terminal window
-8. Navigate to /client
-8. Run node submit.js [action] [args] to submit requests
+4. Navigate to /client
+5. Run `npm install`. This will install the js packages required in `/node_modules`.
+6. Run node submit.js [action] [args] to submit requests
 
 ## How to use the CLI
 The CLI can do 3 things:
@@ -61,3 +58,12 @@ You should also verify with relevant `get` requests that the status does indeed 
 
 ### Get order information
 Information about an order can be viewed using `node submit.js get orderNum`. If an order with the order number supplied exists then relevant information will be shown. Otherwise you will get an error stating that it doesn't exist.
+
+## Docker Setup
+Previous version of this had the pizza transaction processor running on a local machine that would connect to the docker container running the validator. This version runs the transaction processor in a docker container. The set up was pretty simple, requiring the creation of a Dockerfile in the `/processor` and modification of `sawtooth-default.yaml`.
+
+### Dockerfile
+The core of docker is a Dockerfile, which details instructions on how to setup a container. The Dockerfile at `/processor/Dockerfile` is very simple, with comments detailing each line. An important line in the file is the execution of the pip install command which looks in the `requirements.txt` file to figure out what packages to install. At a minimum the packages required for this transaction processor are cbor and the sawtooth-sdk (which installs several other libraries as dependencies)
+
+### Docker Compose File
+The next file is `sawtooth-default.yaml` which details instructions for the docker-compose program. Docker Compose is used to set up and run multiple containers. The modification of the file included adding a new container named pizza-tp. The other containers in the file all grab their images from docker hub. The image for pizzaTP is not on docker hub, and must instead be built using the Dockerfile detailed above. The other modification is in the `main.py` file. Since the transaction processor runs in a container and not locally, the address of the validator is no longer `tcp://0.0.0.0:4004` and instead `tcp://validator:4004`
