@@ -4,54 +4,62 @@ const {protobuf} = require('sawtooth-sdk');
 const cbor = require('cbor');
 const request = require('request');
 
-// // Generate a private key for use in signing transactions & batches
+// Some constants that define the pizzaTP transaction processor
+const FAMILY_NAME = 'pizzaTP'
+const FAMILY_VERSION = '0.1'
+const NAMESPACE_PREFIX = 'b988b1'
+
+// Generate a private key for use in signing transactions & batches
 const context = createContext('secp256k1');
 const privateKey = context.newRandomPrivateKey();
 const signer = new CryptoFactory(context).newSigner(privateKey);
 
-// console.log(privateKey);
-// console.log("It was created using " + privateKey.getAlgorithmName());
-
+// Grab the arguments passed in from the command line
 const action = process.argv[2];
-// console.log(action);
-// console.log(process.argv.length);
 const args = process.argv.slice(3);
-// console.log(args);
 
+// For input validation purposes
 const VALIDTYPES = [
     'pepperoni',
     'cheese',
     'veggie'
 ]
 
+const VALIDSTATUS = [
+    'prep',
+    'oven',
+    'ready',
+]
+
 if (action == "create") {
-    console.log("CREATE");
+    console.log("Attempting to create a new order with number: " + args[0] + "\n");
     
     // Validate args
     validateArgs(action, args);
 
     // Create a payload object that consists of:
-    //      1. Order ID
-    //      2. Customer Name
-    //      3. Type of Pizza
-    //      4. The current time (In milliseconds since Jan 1, 1970 00:00:00 UTC)
+    //      1. Action  ---> In this case its the 'create' action
+    //      2. Order ID
+    //      3. Customer Name
+    //      4. Type of Pizza
+    //      5. The current time (In milliseconds since Jan 1, 1970 00:00:00 UTC)
     const payload = { 
+        action: 'create',
         orderID: parseInt(args[0], 10),     // Change the orderID from a string to a number in base 10
         custName: args[1],
         type: args[2],
         time: Date.now()
     }
-    // console.log(payload);
 
     // Encode the payload in a binary format
     const payloadAsBytes = cbor.encode(payload);
 
     // Create a transaction header (unlike the payload, we must have specific items in this one; see sawtooth docs)
     const transactionHeader = {
-        familyName: 'pizzaTP',
-        familyVersion: '0.1',
-        inputs: ['b988b1'], //Explain in demo
-        outputs: ['b988b1'],
+        familyName: FAMILY_NAME,
+        familyVersion: FAMILY_VERSION,
+        inputs: [NAMESPACE_PREFIX],     // Where in state that this transaction is allowed to read from
+        outputs: [NAMESPACE_PREFIX],    // Where in state that this transaction is allowed to write to
         signerPublicKey: signer.getPublicKey().asHex(),
         batcherPublicKey: signer.getPublicKey().asHex(),
         dependencies: [],   // This transaction requires no others to be commited before it, thus no dependencies
@@ -112,8 +120,6 @@ if (action == "create") {
         transactions: transactionList
     })
 
-    // console.log(batch);
-
     // You thought you were finished, but nah
     // Now you need to put the batch in a batch list
     // A BatchList contains a list of batches and is **not** atomic, unlike a single batch
@@ -131,31 +137,139 @@ if (action == "create") {
         url: 'http://localhost:8008/batches',
         body: batchListAsBytes,
         headers: {'Content-Type': 'application/octet-stream'}
-    },  (err, response) => {
-            if (err) return console.log(err)
-            console.log(response.body)
+    },  (err, response, responseBody) => {
+            if (err) {
+                return console.log("Problem submitting to the validator...\n" + err)
+            }
+
+            // The sawtooth API Docs say that a status code of 202 indicates a batch was successfully sent to the validator
+            //  but does not say if the transactions in the batch were successful or not.
+            //  Need to check the /batch_status endpoint for more info
+            if (response.statusCode == 202) {
+                getBatchStatus(JSON.parse(responseBody).link)
+            } else {
+                console.log("Received status code: %d", response.statusCode)
+                return console.log(JSON.parse(responseBody).error.message)
+            }
+    })
+} else if (action == "update") {
+    // Some simple input validation
+    if (args.length != 2) {
+        console.error("Invalid args...")
+        process.exit(9)
+    }
+    if (!(VALIDSTATUS.includes(args[1]))) {
+        console.error(args[1] + " is not a valid status")
+        process.exit(9)
+    }
+    console.log("Attempting to update order number %i\n", args[0]);
+
+    // *** Create a Transaction ***
+    const payload = { 
+        action: 'update',
+        orderID: parseInt(args[0], 10),
+        newStatus: args[1]
+    }
+
+    payloadAsBytes = cbor.encode(payload)
+
+    const transactionHeader = {
+        familyName: FAMILY_NAME,
+        familyVersion: FAMILY_VERSION,
+        inputs: [NAMESPACE_PREFIX], 
+        outputs: [NAMESPACE_PREFIX],
+        signerPublicKey: signer.getPublicKey().asHex(),
+        batcherPublicKey: signer.getPublicKey().asHex(),
+        dependencies: [],
+        payloadSha512: createHash('sha512').update(payloadAsBytes).digest('hex')
+    }
+
+    const transactionHeaderAsBytes = protobuf.TransactionHeader.encode(transactionHeader).finish();
+
+    const signature = signer.sign(transactionHeaderAsBytes);
+
+    const transaction = protobuf.Transaction.create({
+        header: transactionHeaderAsBytes,
+        headerSignature: signature,
+        payload: payloadAsBytes
+    })
+    // *** Finished Transaction ***
+
+    // *** Create a Batch ***
+    const transactionList = [transaction];
+
+    const batchHeader = {
+        signerPublicKey: signer.getPublicKey().asHex(),
+        transactionIds: transactionList.map((txn) => txn.headerSignature)
+    }
+
+    const batchHeaderAsBytes = protobuf.BatchHeader.encode(batchHeader).finish();
+
+    const batchSignature = signer.sign(batchHeaderAsBytes);
+
+    const batch = protobuf.Batch.create({
+        header: batchHeaderAsBytes,
+        headerSignature: batchSignature,
+        transactions: transactionList
+    })
+    // *** Finished Batch ***
+
+    // *** Create a Batch List ***
+    const batchList = {
+        batches: [batch]
+    }
+
+    const batchListAsBytes = protobuf.BatchList.encode(batchList).finish();
+    // *** Finished Batch List ***
+
+    // *** Send Batch List to Validator ***
+    request.post({
+        url: 'http://localhost:8008/batches',
+        body: batchListAsBytes,
+        headers: {'Content-Type': 'application/octet-stream'}
+    },  (err, response, responseBody) => {
+        if (err) {
+            return console.log("Problem submitting to the validator...\n" + err)
+        }
+        if (response.statusCode == 202) {
+            getBatchStatus(JSON.parse(responseBody).link)
+        } else {
+            console.log("Received status code: %d", response.statusCode)
+            return console.log(JSON.parse(responseBody).error.message)
+        }
     })
 
-} else if (action == "update") {
-    console.log("UPDATE");
 } else if (action == "get") {
-    console.log("GET");
-    const orderID = process.argv[3]
-    console.log(orderID)
+    console.log("Getting info for order %i\n", args[0])
 
-    // request.get({
-    //     url: 'http://localhost:8008/state',
-    //     body: batchListAsBytes,
-    //     headers: {'Content-Type': 'application/octet-stream'}
-    // },  (err, response) => {
-    //         if (err) return console.log(err)
-    //         console.log(response.body)
-    // })
+    request.get({
+        url: 'http://localhost:8008/state/' + generateAddress(args[0]),
+    },  (err, response, responseBody) => {
+            if (err) {
+                return console.log("Problem submitting to the validator...\n" + err)
+            }
+
+            if(response.statusCode == 200) {
+            // Ok so now this was interesting, when you query the state using the /state endpoint of the REST API
+            //  it returns the data encoded in base64, which you will need to decode,
+            //  and then decode again using cbor (what the transaction processor used)
+            // We can use the global buffer object to decode the data
+            // Then follow up with cbor 
+            data = Buffer.from(JSON.parse(responseBody).data, 'base64')
+            data = cbor.decode(data)
+            return console.log("Order ID: %i\nCustomer: %s\nType: %s\nStatus: %s", data.orderNum, data.custName, data.type, data.status)
+            } else {
+                console.log("Received status code: %d", response.statusCode)
+                return console.log(JSON.parse(responseBody).error.message)
+            }
+            
+    })
 } else {
     console.error("Valid actions are either 'create', 'update', or 'get'");
     process.exit(9); // 9 because that is what node.js uses for Invalid Args
 }
 
+// An example of validating command line args for the CREATE method
 function validateArgs(action, argArray) {
     switch (action) {
         case 'create':
@@ -179,6 +293,38 @@ function validateArgs(action, argArray) {
     }
 }
 
-// function generateAddress(OrderID) {
-//     createHash()
-// }
+// Generates a 70 character address using the namespace prefix and a hash of the order ID
+// Note that this should generate the exact same address that the python code generates
+function generateAddress(orderID) {
+    hashed = createHash('sha512').update(orderID, 'utf8').digest('hex').slice(-64)
+    return NAMESPACE_PREFIX + hashed
+}
+
+// Gets the current status of batch from the rest APIs /batch_statuses endpoint and prints it to console
+// Will wait until the  batch has committed before reporting back
+function getBatchStatus(url) {
+    request.get({
+        url: url + '&wait=true'   // We want to wait for the batches to finished before we query the status
+    }, (err, response, responseBody) => {
+        if (err) {
+            return console.log("Problem querying the validator...\n" + err)
+        }
+
+        // Need to parse the the response from the GET request
+        // Mainly need the status of the batch, and any error messages from the validator
+        const msg = JSON.parse(responseBody)
+        const batchStatus = msg.data[0].status
+
+        if (batchStatus == 'INVALID') {
+            return console.log("ERROR: " + msg.data[0].invalid_transactions[0].message)
+        } else if (batchStatus == 'PENDING') {
+            // This should never happen since we passed the '&wait=true' in the GET request, but just in case...
+            // Possible that this could get stuck in an endless loop if validator is continiously disconnecting/reconnecting, etc
+            console.debug("Current Status is 'Pending'. Trying to query batch status again...")
+            getBatchStatus(url)
+        } else if (batchStatus == 'COMMITTED'){
+            // Otherwise the transaction processed successfully
+            return console.log("Success!")
+        }
+    })
+}
