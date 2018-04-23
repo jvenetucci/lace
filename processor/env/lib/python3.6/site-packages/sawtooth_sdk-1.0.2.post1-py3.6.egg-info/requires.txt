@@ -1,0 +1,6 @@
+colorlog
+sawtooth-signing
+protobuf
+pyzmq
+toml
+PyYAML
