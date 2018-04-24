@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+
+message History {
+    message Reporter {
+        optional string public_key = 1;             // reporter's public key
+        optional uint32 authorization_level = 2;
+    }
+    optional uint32     curr_touchpoint_index = 1;  // tells us which of 0001-ffff touchpoints is current
+    optional bool       has_wrapped = 2;            // tells us if the range 0001-ffff has been covered and the index wrapped
+    optional string     history_id = 3;             // randomly generated number for filling the unique part of an address
+    repeated Reporter   reporter_list = 4;          // list containing history of people (and curr) who have reported holding the object
+}
+
+message TouchPoint {
+    optional sint64     longitude = 1;
+    optional sint64     latitude = 2;
+    optional uint64     timestamp = 3;
+    optional uint32     reporter_index = 4;         // index into reporter_list, TouchPoint can't exist without History 
+} 
+
