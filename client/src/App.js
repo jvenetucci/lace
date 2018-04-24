@@ -4,6 +4,7 @@ import './styles/App.css';
 
 import TransferForm from './TransferForm';
 import Form from './Form';
+import DisplayInventory from './DisplayInventory';
 
 class App extends Component {
   render() {
