@@ -14,12 +14,10 @@ LOGGER = logging.getLogger(__name__)
 
 VALID_VERBS = 'create', 'get' # list of actions that can be done on shoe just use create for now
 
-FAMILY_NAME = 'lace'
-
 MAX_SHOE_SIZE = 60      # european xxl?
 MIN_SHOE_SIZE = 1       # this should be covered by protobuff unsigned 
 
-#INTKEY_ADDRESS_PREFIX = hashlib.sha512(            # uhmm addressing stuff
+#INTKEY_ADDRESS_PREFIX = hashlib.sha512(            # uhmm addressing stuff moved to addressing.py
 #    FAMILY_NAME.encode('utf-8')).hexdigest()[0:6]
 
 
