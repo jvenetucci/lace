@@ -26,7 +26,7 @@ class Form extends Component {
     handleSubmit(event) {
       alert(
         "Product Info\nID: " + this.state.id +
-        "\nSKU: " + this.setState.sku +
+        "\nSKU: " + this.state.sku +
         "\nModel: " + this.state.model +
         "\nSize: " + this.state.size + 
         "\nManufacture Date: " + this.state.manufactureDate
