@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './styles/App.css';
 
+import TransferForm from './TransferForm';
 import Form from './Form';
 
 class App extends Component {
@@ -14,6 +15,7 @@ class App extends Component {
         </header>
         <div className="container">
           <Form/>
+          {/* <TransferForm/> */}
         </div>
       </div>
     );
