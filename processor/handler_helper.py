@@ -16,8 +16,8 @@
 from sawtooth_sdk.processor.core import TransactionProcessor
 
 # Import needed handler files here
-from testing.pizzaHandler import pizzaTransactionHandler
-
+from handler import ShoeTransactionHandler
+#from addressing import <something from addressing.py?>
 
 # We'll try localhost as default
 def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
@@ -26,14 +26,14 @@ def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
     # 'processor.add_handler(<object name>)
 
     # Handler initialization
-    pizza = pizzaTransactionHandler()
-    processor.add_handler(pizza)
+    shoe = ShoeTransactionHandler()
+    processor.add_handler(shoe)
 
 
 # both state functions require more attention
 def _get_state_data(name, context):
-    address = make_intkey_address(name)
-
+    #address = make_intkey_address(name)
+    
     state_entries = context.get_state([address])
 
     try:
@@ -45,7 +45,7 @@ def _get_state_data(name, context):
 
 
 def _set_state_data(name, state, context):
-    address = make_intkey_address(name)
+    # address = make_intkey_address(name)     how to address o.0
 
     encoded = cbor.dumps(state)
 
