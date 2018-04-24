@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './styles/App.css';
 
 import Form from './Form';
-import DisplayInventory from './DisplayInventory';
+import DisplayInventory from './DisplayInventory.js';
 
 class App extends Component {
   render() {
