@@ -12,9 +12,12 @@ from sawtooth_sdk.processor.exceptions import InternalError
 LOGGER = logging.getLogger(__name__)
 
 
-VALID_VERBS = 'create' #, '...'  list of actions that can be done on shoe just use create for now
+VALID_VERBS = 'create', 'get' # list of actions that can be done on shoe just use create for now
 
 FAMILY_NAME = 'lace'
+
+MAX_SHOE_SIZE = 60      # european xxl?
+MIN_SHOE_SIZE = 1       # this should be covered by protobuff unsigned 
 
 #INTKEY_ADDRESS_PREFIX = hashlib.sha512(            # uhmm addressing stuff
 #    FAMILY_NAME.encode('utf-8')).hexdigest()[0:6]
@@ -33,23 +36,24 @@ class ShoeTransactionHandler(TransactionHandler):
     def namespaces(self):
         return [] # how to determine address prefix
 
-    def apply(self, transaction, context):
-        ... = _unpack_transaction(transaction)
+    def apply(self, transaction, context):          
+        verb, asset = _unpack_transaction(transaction)
 
-        state = _get_state_data(name, context)
+        state = _get_state_data(asset.RFID, context)   # name => RFID possible?
 
-        updated_state = _do_lace(...)
+        updated_state = _do_lace(verb, asset, state)
 
-        _set_state_data(..., updated_state, context)
+        _set_state_data(asset.RFID, updated_state, context)
 
 
 def _unpack_transaction(transaction):
-    verb, name, value = _decode_transaction(transaction)
+    verb, asset = _decode_transaction(transaction)
 
     _validate_verb(verb)
-    ... # other validation functions not skeletoned 
+    _validate_asset(asset)
+    # ...  other validation functions not skeletoned 
 
-    return verb ...
+    return verb, asset
 
 
 def _decode_transaction(transaction):
@@ -60,49 +64,29 @@ def _decode_transaction(transaction):
 
     # correctly decode transaction
     try:
+        verb = content['verb']
     except AttributeError:
-        raise InvalidTransaction('... is required')
+        raise InvalidTransaction('verb is required')
+    
+    try:
+        asset = content['asset']            # is this where magic happens? asset.size possible?
+    except AttributeError:
+        raise InvalidTransaction('asset is required')
 
-    return ... 
+    return verb, asset  
 
 
 def _validate_verb(verb):
     if verb not in VALID_VERBS:
-        raise InvalidTransaction('Verb must be ...')
+        raise InvalidTransaction("Verb must be 'create' or 'get'") 
 
+# is this possible/desired?
+def _validate_shoe_size_left(asset):
+    if asset.shoesize < MAX_SHOE_SIZE or asset.shoesize > MIN_SHOE_SIZE:
+        raise InvalidTransaction('Shoe size must be no larger than 60 or smaller than 1') 
 
-# both state functions require more attention
-def _get_state_data(name, context):
-    address = make_intkey_address(name)
+def _validate_shoe_size_right(asset):
 
-    state_entries = context.get_state([address])
+def _validate_sku(asset):
 
-    try:
-        return cbor.loads(state_entries[0].data)
-    except IndexError:
-        return {}
-    except:
-        raise InternalError('Failed to load state data')
-
-
-def _set_state_data(name, state, context):
-    address = make_intkey_address(name)
-
-    encoded = cbor.dumps(state)
-
-    addresses = context.set_state({address: encoded})
-
-    if not addresses:
-        raise InternalError('State error')
-
-
-def _do_lace(verb, name, value, state):  # rename this, its purpose is to determine the proper transaction handler
-    verbs = {
-
-    }
-
-    try:
-        return verbs[verb](name, value, state)
-    except KeyError:
-        # This would be a programming error.
-        raise InternalError('Unhandled verb: {}'.format(verb))
+#def _validate_other_stuff
