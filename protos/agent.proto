@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+
+message Agent {
+  // Public key used to sign transactions.
+  // Also the unique ID.
+  string public_key = 1;
+
+  // A human readable name identifying the Agent
+  string name = 2;
+
+  // Unix UTC timestamp of approximately when this agent was registered
+  uint64 timestamp = 3;
+}
+
+
+message AgentContainer {
+  repeated Agent entries = 1;
+}

@@ -84,7 +84,9 @@ def _validate_shoe_size_left(asset):
         raise InvalidTransaction('Shoe size must be no larger than 60 or smaller than 1') 
 
 def _validate_shoe_size_right(asset):
-
+	return False;
+	
 def _validate_sku(asset):
-
+	return False;
+	
 #def _validate_other_stuff

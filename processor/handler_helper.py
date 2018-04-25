@@ -68,6 +68,7 @@ def _do_lace(verb, asset, state):
         raise InternalError('Unhandled verb: {}'.format(verb))
 
 def _do_create(verb, asset, state):     # do we even have an asset here? would we unpack anything?
-
+	return False;
+	
 def _do_get(verb, asset, state):
-
+	return False;

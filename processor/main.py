@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 import pkg_resources
-import handlers
+import handler_helper
 
 from colorlog import ColoredFormatter
 
