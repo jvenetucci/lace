@@ -14,3 +14,7 @@ message Asset {
   // Barcode?
   optional string SKU = 4;
 }
+
+message AssetList {
+  repeated Asset List = 1;
+}

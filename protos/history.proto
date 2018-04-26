@@ -5,17 +5,17 @@ message History {
     message Reporter {
     	// Reporter's public_key, which is also
     	// the agent unique ID.
-        optional string public_key = 1;
+          string public_key = 1;
         
         // Info about what this reporter can change.
         // Turn into bitmask?
-        optional uint32 authorization_level = 2;
+          uint32 authorization_level = 2;
     }
     
     // The address suffix / index of the current
     // touchpoint. Ranges 0001-ffff. Can wrap around.
-    optional uint32     curr_touchpoint_index = 1;
-    optional bool       has_wrapped = 2;
+      uint32     curr_touchpoint_index = 1;
+      bool       has_wrapped = 2;
     
     // List containing the history of people who have
     // reported touching the asset.
@@ -24,13 +24,17 @@ message History {
 
 message TouchPoint {
 	// Some location data.
-    optional sint64     longitude = 1;
-    optional sint64     latitude = 2;
+      sint64     longitude = 1;
+      sint64     latitude = 2;
     
     // The time that this touchpoint was created.
-    optional uint64     timestamp = 3;
+      uint64     timestamp = 3;
     
     // The index in the reporter_list that contains
     // the reporter data.
-    optional uint32     reporter_index = 4;
+      uint32     reporter_index = 4;
+}
+
+message HistoryList {
+  repeated History List = 1;
 }
