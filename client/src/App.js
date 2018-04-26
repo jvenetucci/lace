@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './styles/App.css';
 
+import TransferForm from './TransferForm';
 import Form from './Form';
-import DisplayInventory from './DisplayInventory.js';
+//import DisplayInventory from './DisplayInventory';
 
 class App extends Component {
   render() {
@@ -15,6 +16,7 @@ class App extends Component {
         </header>
         <div className="container">
           <Form/>
+          {/* <TransferForm/> */}
         </div>
       </div>
     );

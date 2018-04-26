@@ -9,7 +9,7 @@ var items = [{
     SKU: "SKU123",
     RFID: "12345",
     Date: "5769849300"
-}];
+}]; 
 
 class TableRow extends React.Component {
   render() {

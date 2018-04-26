@@ -1,0 +1,30 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "ajv": "^6.4.0",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.4",
+    "redux": "^4.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "_comment": {
+    "_mission statement": "Here's the eventual metadata for the three apps. Name and version number subject to change.",
+    "name1": "Source",
+    "version1": "0.0.0",
+    "name2": "Factory",
+    "version2": "0.0.0",
+    "name3": "Transport",
+    "version3": "0.0.0"
+  }
+}
