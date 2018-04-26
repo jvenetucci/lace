@@ -36,5 +36,4 @@ def make_history_address(identifier):
         NAMESPACE
         + AGENT
         + _hash(identifier)[:62]
-        # what goes here?
     )
