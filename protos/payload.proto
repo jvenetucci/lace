@@ -34,9 +34,9 @@ message CreateAssetAction {
 
 message TouchAssetAction {
   // The asset's unqiue ID, used to find the history
-  optional string RFID = 1;
+  string RFID = 1;
  
   // Some location data
-  optional sint64 longitude = 2;
-  optional sint64 latitude = 3;
+  sint64 longitude = 2;
+  sint64 latitude = 3;
 }
