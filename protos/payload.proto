@@ -40,3 +40,7 @@ message TouchAssetAction {
   sint64 longitude = 2;
   sint64 latitude = 3;
 }
+
+message PayloadList{
+  repeated Payload List = 1;
+}
