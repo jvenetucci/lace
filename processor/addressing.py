@@ -30,3 +30,11 @@ def make_history_address(identifier):
         + _hash(identifier):[59]
         + '0000'
     )
+
+    def make_agent_address(identifier): 
+    return (
+        NAMESPACE
+        + AGENT
+        + _hash(identifier)[:62]
+        # what goes here?
+    )
