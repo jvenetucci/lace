@@ -5,16 +5,17 @@ message Asset {
 
   // A unique string used to calculate the
   // address.
-  optional string rfid = 1;
+  string rfid = 1;
 
-  // The sizes or each shoe.
-  optional float size_r = 2;
-  optional float size_l = 3;
+  // The sizes for each shoe.
+  float size_r = 2;
+  float size_l = 3;
 
   // Barcode?
-  optional string SKU = 4;
+  string sku = 4;
 }
 
-message AssetList {
-  repeated Asset List = 1;
+// Handle hash collisions.
+message AssetContainer {
+  repeated Asset entries = 1;
 }

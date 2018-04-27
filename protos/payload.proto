@@ -5,42 +5,40 @@ message Payload {
     CREATE_ASSET = 0;
     TOUCH_ASSET = 1;
   }
+
   // An action tells the handler which function
   // the payload requested to use.
   Action action = 1;
 
-  // Time the transaction was sent
+  // Time the transaction was sent.
   uint64 timestamp = 2;
   
   // All the data neccessitated by the actions
-  // defined in the enum
+  // defined in the enum.
   CreateAssetAction create_asset = 3;
   TouchAssetAction touch_asset = 4;
-
 }
 
 message CreateAssetAction {
-  // The asset's unique ID
-  string RFID = 1;
-  // Information about the shoe
-  uint32 SizeL = 2; 
-  uint32 SizeR = 3; 
-  string SKU = 4; 
 
-  // Some location data
-  sint64 longitude = 5; 
+  // The asset's unique ID.
+  string rfid = 1;
+
+  // Information about the shoe.
+  uint32 size_l = 2;
+  uint32 size_r = 3;
+  string sku = 4;
+
+  // Some location data.
+  sint64 longitude = 5;
   sint64 latitude = 6;
 }
 
 message TouchAssetAction {
-  // The asset's unqiue ID, used to find the history
-  string RFID = 1;
+  // The asset's unqiue ID, used to find the history.
+  string rfid = 1;
  
   // Some location data
   sint64 longitude = 2;
   sint64 latitude = 3;
-}
-
-message PayloadList{
-  repeated Payload List = 1;
 }

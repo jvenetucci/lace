@@ -13,7 +13,7 @@ message Agent {
   uint64 timestamp = 3;
 }
 
-
+// Handle hash collisions.
 message AgentContainer {
   repeated Agent entries = 1;
 }

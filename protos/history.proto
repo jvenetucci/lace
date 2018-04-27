@@ -2,39 +2,41 @@ syntax = "proto3";
 
 
 message History {
-    message Reporter {
-    	// Reporter's public_key, which is also
-    	// the agent unique ID.
-          string public_key = 1;
+  message Reporter {
+
+    // Reporter's public_key / agent ID.
+    string public_key = 1;
         
-        // Info about what this reporter can change.
-        // Turn into bitmask?
-          uint32 authorization_level = 2;
-    }
+    // Info about what this reporter can change.
+    // Turn into bitmask?
+    uint32 authorization_level = 2;
+  }
     
-    // The address suffix / index of the current
-    // touchpoint. Ranges 0001-ffff. Can wrap around.
-      uint32     curr_touchpoint_index = 1;
-      bool       has_wrapped = 2;
+  // The address suffix / index of the current
+  // touchpoint. Ranges 0001-ffff. Can wrap around.
+  uint32     curr_touchpoint_index = 1;
+  bool       has_wrapped = 2;
     
-    // List containing the history of people who have
-    // reported touching the asset.
-    repeated Reporter   reporter_list = 3;
+  // List containing the history of people who have
+  // reported touching the asset.
+  repeated Reporter   reporter_list = 3;
 }
 
 message TouchPoint {
+
 	// Some location data.
-      sint64     longitude = 1;
-      sint64     latitude = 2;
+  sint64     longitude = 1;
+  sint64     latitude = 2;
     
-    // The time that this touchpoint was created.
-      uint64     timestamp = 3;
+  // The time that this touchpoint was created.
+  uint64     timestamp = 3;
     
-    // The index in the reporter_list that contains
-    // the reporter data.
-      uint32     reporter_index = 4;
+  // The index in the reporter_list that contains
+  // the reporter data.
+  uint32     reporter_index = 4;
 }
 
-message HistoryList {
-  repeated History List = 1;
+// Handle hash collisions.
+message HistoryContainer {
+  repeated History entries = 1;
 }
