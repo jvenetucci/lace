@@ -31,7 +31,7 @@ def make_history_address(identifier):
         + '0000'
     )
 
-    def make_agent_address(identifier): 
+def make_agent_address(identifier): 
     return (
         NAMESPACE
         + AGENT
