@@ -16,5 +16,13 @@ LUGER.setLevel(logging.debug)
 #This transaction handler is going to be used for testing purposes
 class laceTransactionHandler_Test:
     def __init__(self, signer=None):
-        addressing.FAMILY_NAME
-        
+        self._factory = MessageFactory(
+            family_name = addressing.FAMILY_NAME
+            family_version = '0.1'
+            namespace = addressing.NAMESPACE
+            signer = signer
+        )
+
+    def create_record_type(self, name, *info):
+        #stopped here.
+               
