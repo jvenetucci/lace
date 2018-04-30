@@ -35,58 +35,56 @@ class ShoeTransactionHandler(TransactionHandler):
         return [] # how to determine address prefix
 
     def apply(self, transaction, context):          
-        verb, asset = _unpack_transaction(transaction)
+        '''     verbs -> action tags?
+        action tags: 
+            create_asset
+            get_asset
 
-        state = _get_state_data(asset.RFID, context)   # name => RFID possible?
+        handler functions 
+            _create_asset
+            _get_asset
 
-        updated_state = _do_lace(verb, asset, state)
+        how does signing work?
 
-        _set_state_data(asset.RFID, updated_state, context)
+        A ShoePayload consists of a timestamp, an action tag, and
+        attributes corresponding to various actions (create_asset,
+        get_asset, etc).  The appropriate attribute will be selected
+        depending on the action tag, and that information plus the 
+        timestamp and the public key with which the transaction was signed
+        will be passed to the appropriate handler function
+        unpack_transaction gets the signing key, the timestamp, and the 
+        appropriate payload attribute and handler function
+        '''
+        singer, timestamp, payload, handler = _unpack_transaction(transaction)
 
+        handler(payload, signer, timestamp, state)
+        
 
 def _unpack_transaction(transaction):
-    verb, asset = _decode_transaction(transaction)
+    '''Return the transaction signing key, the SCPayload timestamp, the
+    appropriate SCPayload action attribute, and the appropriate
+    handler function (with the latter two determined by the constant
+    TYPE_TO_ACTION_HANDLER table.
+    '''
+    signer = transaction.header.signer_public_key
 
-    _validate_verb(verb)
-    _validate_asset(asset)
-    # ...  other validation functions not skeletoned 
+    payload = SCPayload()
+    payload.ParseFromString(transaction.payload)
 
-    return verb, asset
+    action = payload.action
+    timestamp = payload.timestamp
 
-
-def _decode_transaction(transaction):
     try:
-        content = cbor.loads(transaction.payload)
-    except:
-        raise InvalidTransaction('Invalid payload serialization')
+        attribute, handler = TYPE_TO_ACTION_HANDLER[action]
+    except KeyError:
+        raise Exception('Specified action is invalid')
 
-    # correctly decode transaction
-    try:
-        verb = content['verb']
-    except AttributeError:
-        raise InvalidTransaction('verb is required')
-    
-    try:
-        asset = content['asset']            # is this where magic happens? asset.size possible?
-    except AttributeError:
-        raise InvalidTransaction('asset is required')
+    payload = getattr(payload, attribute)
 
-    return verb, asset  
+    return signer, timestamp, payload, handler
 
 
-def _validate_verb(verb):
-    if verb not in VALID_VERBS:
-        raise InvalidTransaction("Verb must be 'create' or 'get'") 
-
-# is this possible/desired?
-def _validate_shoe_size_left(asset):
-    if asset.shoesize < MAX_SHOE_SIZE or asset.shoesize > MIN_SHOE_SIZE:
-        raise InvalidTransaction('Shoe size must be no larger than 60 or smaller than 1') 
-
-def _validate_shoe_size_right(asset):
-	return False;
-	
-def _validate_sku(asset):
-	return False;
-	
-#def _validate_other_stuff
+TYPE_TO_ACTION_HANDLER = { 
+    SCPayload.CREATE_ASSET: ('create_asset', _create_agent),
+    SCPayload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+}
