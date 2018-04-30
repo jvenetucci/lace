@@ -37,3 +37,4 @@ def make_agent_address(identifier):
         + AGENT
         + _hash(identifier)[:63]    # TF:6 + ID:1 + hash: 62
     )
+    
