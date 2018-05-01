@@ -35,58 +35,138 @@ class ShoeTransactionHandler(TransactionHandler):
         return [] # how to determine address prefix
 
     def apply(self, transaction, context):          
-        verb, asset = _unpack_transaction(transaction)
+        '''     verbs -> action tags?
+        action tags: 
+            create_asset
+            get_asset
 
-        state = _get_state_data(asset.RFID, context)   # name => RFID possible?
+        handler functions 
+            _create_asset
+            _get_asset
 
-        updated_state = _do_lace(verb, asset, state)
+        how does signing work?
 
-        _set_state_data(asset.RFID, updated_state, context)
+        A ShoePayload consists of a timestamp, an action tag, and
+        attributes corresponding to various actions (create_asset,
+        get_asset, etc).  The appropriate attribute will be selected
+        depending on the action tag, and that information plus the 
+        timestamp and the public key with which the transaction was signed
+        will be passed to the appropriate handler function
+        unpack_transaction gets the signing key, the timestamp, and the 
+        appropriate payload attribute and handler function
+        '''
+        singer, timestamp, payload, handler = _unpack_transaction(transaction)
+
+        handler(payload, signer, timestamp, state)
+        
+
+def _create_asset(payload, signer, timestamp, state):     
+	rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'Asset must have rfid')
+
+    address = make_asset_address(signer)    # signer = transaction.header.signer_public_key
+    container = _get_container(state, address)
+
+    for asset in container.entries:     # 
+        if asset.public_key == signer:
+            raise InvalidTransaction(
+                'Asset already exists')
+    
+    asset = Asset(  #don't know if these fields are correct
+        public_key=signer,
+        name=name,
+        timestamp=timestamp,
+    )
+
+    # list.extend over iterable list asset appends asset to container.entries
+    container.entries.extend([asset])   
+    # returns new sorted list anon function I think ag is a parameter ag.public_key is an expression
+    # lambda arguments: expression yields a function object that looks like
+        # def <lambda>(arguments):
+            # return expression
+    # key specifies a function to use for comparison, it looks like we're ordering by public_key
+    container.entries.sort(key=lambda, ag: ag.public_key)
+    
+    _set_container(state, address, container)
+
+
+# starting to think this should be done with history?
+def _touch_asset(payload, signer, timestamp, state):
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'Asset must have rfid')
+
+    address = make_asset_address(signer)
+    container = _get_container(state, address)
+
+    for asset in container.entries:
+        if not asset.public_key == signer:
+            raise InvalidTransaction(
+                'Asset does not exist')     # correct?
 
 
 def _unpack_transaction(transaction):
-    verb, asset = _decode_transaction(transaction)
+    '''Return the transaction signing key, the SCPayload timestamp, the
+    appropriate SCPayload action attribute, and the appropriate
+    handler function (with the latter two determined by the constant
+    TYPE_TO_ACTION_HANDLER table.
+    '''
+    signer = transaction.header.signer_public_key
 
-    _validate_verb(verb)
-    _validate_asset(asset)
-    # ...  other validation functions not skeletoned 
+    payload = SCPayload()
+    payload.ParseFromString(transaction.payload)
 
-    return verb, asset
+    action = payload.action
+    timestamp = payload.timestamp
 
-
-def _decode_transaction(transaction):
     try:
-        content = cbor.loads(transaction.payload)
-    except:
-        raise InvalidTransaction('Invalid payload serialization')
+        attribute, handler = TYPE_TO_ACTION_HANDLER[action]
+    except KeyError:
+        raise Exception('Specified action is invalid')
 
-    # correctly decode transaction
-    try:
-        verb = content['verb']
-    except AttributeError:
-        raise InvalidTransaction('verb is required')
+    payload = getattr(payload, attribute)
+
+    return signer, timestamp, payload, handler
+
+
+def _get_container(state, address):
+    namespace = address[6:7]
+
+    containers = {
+        addressing.ASSET: AssetContainer,  
+        addressing.HISTORY: HistoryContainer,
+    }
+
+    # uses namespace to choose Asset or History
+    container = containers[namespace]() # why the (), c
     
-    try:
-        asset = content['asset']            # is this where magic happens? asset.size possible?
-    except AttributeError:
-        raise InvalidTransaction('asset is required')
+    # 
+    entries = state.get_state([address])    # API call, entries 
 
-    return verb, asset  
+    if entries:
+        data = entries[0].data          # get the first address in a list of them
+        container.ParseFromString(data) # it looks like some encoded data
+
+    return container    
 
 
-def _validate_verb(verb):
-    if verb not in VALID_VERBS:
-        raise InvalidTransaction("Verb must be 'create' or 'get'") 
+def _set_container(state, address, container):
+    addresses: state.set_state({
+        address: container.SerializeToString()
+    })
 
-# is this possible/desired?
-def _validate_shoe_size_left(asset):
-    if asset.shoesize < MAX_SHOE_SIZE or asset.shoesize > MIN_SHOE_SIZE:
-        raise InvalidTransaction('Shoe size must be no larger than 60 or smaller than 1') 
+    if not addresses:
+        raise InternalError(
+            'State error, failed to set state entities')
 
-def _validate_shoe_size_right(asset):
-	return False;
-	
-def _validate_sku(asset):
-	return False;
-	
-#def _validate_other_stuff
+#standup 1.create_asset local branch 2.get state 3.container magic
+
+TYPE_TO_ACTION_HANDLER = { 
+    SCPayload.CREATE_ASSET: ('create_asset', _create_agent),
+    SCPayload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+}

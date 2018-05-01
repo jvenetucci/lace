@@ -13,6 +13,8 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
+from lace/protobuf/asset_pb2 import Asset
+
 from sawtooth_sdk.processor.core import TransactionProcessor
 
 # Import needed handler files here
@@ -55,20 +57,84 @@ def _set_state_data(name, state, context):
         raise InternalError('State error')
 
 
-def _do_lace(verb, asset, state):  
-    verbs = {
-        'create': _do_create,
-        'get'   : _do_get,
+def _create_asset(payload, signer, timestamp, state):     
+	rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'Asset must have rfid')
+
+    address = make_asset_address(signer)    # signer = transaction.header.signer_public_key
+    container = _get_container(state, address)
+
+    for asset in container.entries:     # 
+        if asset.public_key == signer:
+            raise InvalidTransaction(
+                'Asset already exists')
+    
+    asset = Asset(  #don't know if these fields are correct
+        public_key=signer,
+        name=name,
+        timestamp=timestamp,
+    )
+
+    # list.extend over iterable list asset appends asset to container.entries
+    container.entries.extend([asset])   
+    # returns new sorted list anon function I think ag is a parameter ag.public_key is an expression
+    # lambda arguments: expression yields a function object that looks like
+        # def <lambda>(arguments):
+            # return expression
+    # key specifies a function to use for comparison, it looks like we're ordering by public_key
+    container.entries.sort(key=lambda, ag: ag.public_key)
+    
+    _set_container(state, address, container)
+
+
+# starting to think this should be done with history?
+def _touch_asset(payload, signer, timestamp, state):
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'Asset must have rfid')
+
+    address = make_asset_address(signer)
+    container = _get_container(state, address)
+
+    for asset in container.entries:
+        if not asset.public_key == signer:
+            raise InvalidTransaction(
+                'Asset does not exist')     # correct?
+
+
+
+def _get_container(state, address):
+    namespace = address[6:7]
+
+    containers = {
+        addressing.ASSET: AssetContainer,  
+        addressing.HISTORY: HistoryContainer,
     }
 
-    try:
-        return verbs[verb](name, value, state)
-    except KeyError:
-        # This would be a programming error.
-        raise InternalError('Unhandled verb: {}'.format(verb))
+    # uses namespace to choose Asset or History
+    container = containers[namespace]() # why the (), c
+    
+    # 
+    entries = state.get_state([address])    # API call, entries 
 
-def _do_create(verb, asset, state):     # do we even have an asset here? would we unpack anything?
-	return False;
-	
-def _do_get(verb, asset, state):
-	return False;
+    if entries:
+        data = entries[0].data          # get the first address in a list of them
+        container.ParseFromString(data) # it looks like some encoded data
+
+    return container    
+
+def _set_container(state, address, container):
+    addresses: state.set_state({
+        address: container.SerializeToString()
+    })
+
+    if not addresses:
+        raise InternalError(
+            'State error, failed to set state entities')
+
+#standup 1.create_asset local branch 2.get state 3.container magic
