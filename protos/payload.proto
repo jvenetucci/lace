@@ -3,7 +3,11 @@ syntax = "proto3";
 message Payload {
   enum Action {
     CREATE_ASSET = 0;
-    TOUCH_ASSET = 1;
+    CREATE_AGENT = 1;
+    TOUCH_ASSET = 2;
+    GET_ASSET = 3;
+    GET_AGENT = 4;
+    GET_HISTORY = 5;
   }
 
   // An action tells the handler which function
@@ -16,7 +20,11 @@ message Payload {
   // All the data neccessitated by the actions
   // defined in the enum.
   CreateAssetAction create_asset = 3;
-  TouchAssetAction touch_asset = 4;
+  CreateAgentAction create_agent = 4;
+  TouchAssetAction touch_asset = 5;
+  GetAssetAction get_asset = 6;
+  GetAgentAction get_agent = 7;
+  GetHistoryAction get_history = 8;
 }
 
 message CreateAssetAction {
@@ -34,6 +42,18 @@ message CreateAssetAction {
   sint64 latitude = 6;
 }
 
+message CreateAgentAction {
+  //info about user
+  string public_key = 1;
+
+  //The name of the user
+  string first_name = 2;
+  string last_name = 3;
+  
+  //Job_position
+  int32 role = 4;
+}
+
 message TouchAssetAction {
   // The asset's unqiue ID, used to find the history.
   string rfid = 1;
@@ -41,4 +61,19 @@ message TouchAssetAction {
   // Some location data
   sint64 longitude = 2;
   sint64 latitude = 3;
+}
+
+message GetAssetAction {
+  // get the rfid
+  string rfid = 1;
+}
+
+message GetAgentAction {
+  //User ID
+  string public_key = 1;
+}
+
+message GetHistoryAction {
+  // product id
+  string rfid = 1;
 }
