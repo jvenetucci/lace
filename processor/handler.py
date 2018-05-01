@@ -1,3 +1,18 @@
+# Copyright Capstone Team B
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ------------------------------------------------------------------------------
+
 import logging
 import hashlib
 
@@ -7,47 +22,40 @@ from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 from sawtooth_sdk.processor.exceptions import InternalError
 
+# Lace protos
+from protobuf.agent_pb2 import Agent, AgentContainer
+from protobuf.asset_pb2 import Asset, AssetContainer
+from protobuf.history_pb2 import History, HistoryContainer
+from protobuf.history_pb2 import TouchPoint
+from protobuf.payload_pb2 import Payload
+
+# Sawtooth addressing specs
+import addressing as addressing
+
 
 LOGGER = logging.getLogger(__name__)
-
-
-VALID_VERBS = 'create', 'get' # list of actions that can be done on shoe just use create for now
 
 MAX_SHOE_SIZE = 60      # european xxl?
 MIN_SHOE_SIZE = 1       # this should be covered by protobuff unsigned 
 
-#INTKEY_ADDRESS_PREFIX = hashlib.sha512(            # uhmm addressing stuff moved to addressing.py
-#    FAMILY_NAME.encode('utf-8')).hexdigest()[0:6]
-
-
-class ShoeTransactionHandler(TransactionHandler):
+class LaceTransactionHandler(TransactionHandler):
     @property
     def family_name(self):
         return FAMILY_NAME
 
     @property
     def family_versions(self):
-        return ['1.0']
+        return ['0.1']
 
     @property
     def namespaces(self):
         return [] # how to determine address prefix
 
     def apply(self, transaction, context):          
-        '''     verbs -> action tags?
-        action tags: 
-            create_asset
-            get_asset
-
-        handler functions 
-            _create_asset
-            _get_asset
-
-        how does signing work?
-
-        A ShoePayload consists of a timestamp, an action tag, and
+        '''
+        A Payload consists of a timestamp, an action tag, and
         attributes corresponding to various actions (create_asset,
-        get_asset, etc).  The appropriate attribute will be selected
+        touch_asset, etc).  The appropriate attribute will be selected
         depending on the action tag, and that information plus the 
         timestamp and the public key with which the transaction was signed
         will be passed to the appropriate handler function
@@ -57,7 +65,12 @@ class ShoeTransactionHandler(TransactionHandler):
         singer, timestamp, payload, handler = _unpack_transaction(transaction)
 
         handler(payload, signer, timestamp, state)
-        
+
+
+# Handler functions
+
+def _create_agent(payload, signer, timestamp, state):
+    print("Create agent body goes here.")
 
 def _create_asset(payload, signer, timestamp, state):     
 	rfid = payload.rfid
@@ -108,6 +121,20 @@ def _touch_asset(payload, signer, timestamp, state):
             raise InvalidTransaction(
                 'Asset does not exist')     # correct?
 
+
+def _get_agent(state, agent_id):
+    print("Get agent body goes here.")
+
+
+def _get_asset(state, asset_id):
+    print("Get asset body goes here.")
+
+
+def _get_history(state, asset_id):
+    print("Get history body goes here.")
+
+
+# Utility functions
 
 def _unpack_transaction(transaction):
     '''Return the transaction signing key, the SCPayload timestamp, the
@@ -165,6 +192,10 @@ def _set_container(state, address, container):
 
 
 TYPE_TO_ACTION_HANDLER = { 
-    SCPayload.CREATE_ASSET: ('create_asset', _create_agent),
-    SCPayload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+    Payload.CREATE_AGENT: ('create_agent', _create_agent),
+    Payload.CREATE_ASSET: ('create_asset', _create_asset),
+    Payload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+    Payload.GET_AGENT: ('get_agent', _get_agent),
+    Payload.GET_ASSET: ('get_asset', _get_asset),
+    Payload.GET_HISTORY: ('get_history', _get_history),
 }
