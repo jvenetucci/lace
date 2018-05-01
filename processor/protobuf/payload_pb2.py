@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='payload.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\rpayload.proto\"\xbc\x01\n\x07Payload\x12\x1f\n\x06\x61\x63tion\x18\x01 \x01(\x0e\x32\x0f.Payload.Action\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12(\n\x0c\x63reate_asset\x18\x03 \x01(\x0b\x32\x12.CreateAssetAction\x12&\n\x0btouch_asset\x18\x04 \x01(\x0b\x32\x11.TouchAssetAction\"+\n\x06\x41\x63tion\x12\x10\n\x0c\x43REATE_ASSET\x10\x00\x12\x0f\n\x0bTOUCH_ASSET\x10\x01\"s\n\x11\x43reateAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0e\n\x06size_l\x18\x02 \x01(\r\x12\x0e\n\x06size_r\x18\x03 \x01(\r\x12\x0b\n\x03sku\x18\x04 \x01(\t\x12\x11\n\tlongitude\x18\x05 \x01(\x12\x12\x10\n\x08latitude\x18\x06 \x01(\x12\"E\n\x10TouchAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x11\n\tlongitude\x18\x02 \x01(\x12\x12\x10\n\x08latitude\x18\x03 \x01(\x12\x62\x06proto3')
+  serialized_pb=_b('\n\rpayload.proto\"\x97\x03\n\x07Payload\x12\x1f\n\x06\x61\x63tion\x18\x01 \x01(\x0e\x32\x0f.Payload.Action\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12(\n\x0c\x63reate_asset\x18\x03 \x01(\x0b\x32\x12.CreateAssetAction\x12(\n\x0c\x63reate_agent\x18\x04 \x01(\x0b\x32\x12.CreateAgentAction\x12&\n\x0btouch_asset\x18\x05 \x01(\x0b\x32\x11.TouchAssetAction\x12\"\n\tget_asset\x18\x06 \x01(\x0b\x32\x0f.GetAssetAction\x12\"\n\tget_agent\x18\x07 \x01(\x0b\x32\x0f.GetAgentAction\x12&\n\x0bget_history\x18\x08 \x01(\x0b\x32\x11.GetHistoryAction\"l\n\x06\x41\x63tion\x12\x10\n\x0c\x43REATE_ASSET\x10\x00\x12\x10\n\x0c\x43REATE_AGENT\x10\x01\x12\x0f\n\x0bTOUCH_ASSET\x10\x02\x12\r\n\tGET_ASSET\x10\x03\x12\r\n\tGET_AGENT\x10\x04\x12\x0f\n\x0bGET_HISTORY\x10\x05\"s\n\x11\x43reateAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0e\n\x06size_l\x18\x02 \x01(\r\x12\x0e\n\x06size_r\x18\x03 \x01(\r\x12\x0b\n\x03sku\x18\x04 \x01(\t\x12\x11\n\tlongitude\x18\x05 \x01(\x12\x12\x10\n\x08latitude\x18\x06 \x01(\x12\"\\\n\x11\x43reateAgentAction\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x11\n\tlast_name\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\x05\"E\n\x10TouchAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x11\n\tlongitude\x18\x02 \x01(\x12\x12\x10\n\x08latitude\x18\x03 \x01(\x12\"\x1e\n\x0eGetAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\"$\n\x0eGetAgentAction\x12\x12\n\npublic_key\x18\x01 \x01(\t\" \n\x10GetHistoryAction\x12\x0c\n\x04rfid\x18\x01 \x01(\tb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -36,14 +36,30 @@ _PAYLOAD_ACTION = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TOUCH_ASSET', index=1, number=1,
+      name='CREATE_AGENT', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TOUCH_ASSET', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GET_ASSET', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GET_AGENT', index=4, number=4,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GET_HISTORY', index=5, number=5,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=163,
-  serialized_end=206,
+  serialized_start=317,
+  serialized_end=425,
 )
 _sym_db.RegisterEnumDescriptor(_PAYLOAD_ACTION)
 
@@ -77,8 +93,36 @@ _PAYLOAD = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='touch_asset', full_name='Payload.touch_asset', index=3,
+      name='create_agent', full_name='Payload.create_agent', index=3,
       number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='touch_asset', full_name='Payload.touch_asset', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='get_asset', full_name='Payload.get_asset', index=5,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='get_agent', full_name='Payload.get_agent', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='get_history', full_name='Payload.get_history', index=7,
+      number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -97,7 +141,7 @@ _PAYLOAD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=18,
-  serialized_end=206,
+  serialized_end=425,
 )
 
 
@@ -162,8 +206,60 @@ _CREATEASSETACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=208,
-  serialized_end=323,
+  serialized_start=427,
+  serialized_end=542,
+)
+
+
+_CREATEAGENTACTION = _descriptor.Descriptor(
+  name='CreateAgentAction',
+  full_name='CreateAgentAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='public_key', full_name='CreateAgentAction.public_key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='first_name', full_name='CreateAgentAction.first_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='last_name', full_name='CreateAgentAction.last_name', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='role', full_name='CreateAgentAction.role', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=544,
+  serialized_end=636,
 )
 
 
@@ -207,17 +303,118 @@ _TOUCHASSETACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=325,
-  serialized_end=394,
+  serialized_start=638,
+  serialized_end=707,
+)
+
+
+_GETASSETACTION = _descriptor.Descriptor(
+  name='GetAssetAction',
+  full_name='GetAssetAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rfid', full_name='GetAssetAction.rfid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=709,
+  serialized_end=739,
+)
+
+
+_GETAGENTACTION = _descriptor.Descriptor(
+  name='GetAgentAction',
+  full_name='GetAgentAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='public_key', full_name='GetAgentAction.public_key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=741,
+  serialized_end=777,
+)
+
+
+_GETHISTORYACTION = _descriptor.Descriptor(
+  name='GetHistoryAction',
+  full_name='GetHistoryAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rfid', full_name='GetHistoryAction.rfid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=779,
+  serialized_end=811,
 )
 
 _PAYLOAD.fields_by_name['action'].enum_type = _PAYLOAD_ACTION
 _PAYLOAD.fields_by_name['create_asset'].message_type = _CREATEASSETACTION
+_PAYLOAD.fields_by_name['create_agent'].message_type = _CREATEAGENTACTION
 _PAYLOAD.fields_by_name['touch_asset'].message_type = _TOUCHASSETACTION
+_PAYLOAD.fields_by_name['get_asset'].message_type = _GETASSETACTION
+_PAYLOAD.fields_by_name['get_agent'].message_type = _GETAGENTACTION
+_PAYLOAD.fields_by_name['get_history'].message_type = _GETHISTORYACTION
 _PAYLOAD_ACTION.containing_type = _PAYLOAD
 DESCRIPTOR.message_types_by_name['Payload'] = _PAYLOAD
 DESCRIPTOR.message_types_by_name['CreateAssetAction'] = _CREATEASSETACTION
+DESCRIPTOR.message_types_by_name['CreateAgentAction'] = _CREATEAGENTACTION
 DESCRIPTOR.message_types_by_name['TouchAssetAction'] = _TOUCHASSETACTION
+DESCRIPTOR.message_types_by_name['GetAssetAction'] = _GETASSETACTION
+DESCRIPTOR.message_types_by_name['GetAgentAction'] = _GETAGENTACTION
+DESCRIPTOR.message_types_by_name['GetHistoryAction'] = _GETHISTORYACTION
 
 Payload = _reflection.GeneratedProtocolMessageType('Payload', (_message.Message,), dict(
   DESCRIPTOR = _PAYLOAD,
@@ -233,12 +430,40 @@ CreateAssetAction = _reflection.GeneratedProtocolMessageType('CreateAssetAction'
   ))
 _sym_db.RegisterMessage(CreateAssetAction)
 
+CreateAgentAction = _reflection.GeneratedProtocolMessageType('CreateAgentAction', (_message.Message,), dict(
+  DESCRIPTOR = _CREATEAGENTACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:CreateAgentAction)
+  ))
+_sym_db.RegisterMessage(CreateAgentAction)
+
 TouchAssetAction = _reflection.GeneratedProtocolMessageType('TouchAssetAction', (_message.Message,), dict(
   DESCRIPTOR = _TOUCHASSETACTION,
   __module__ = 'payload_pb2'
   # @@protoc_insertion_point(class_scope:TouchAssetAction)
   ))
 _sym_db.RegisterMessage(TouchAssetAction)
+
+GetAssetAction = _reflection.GeneratedProtocolMessageType('GetAssetAction', (_message.Message,), dict(
+  DESCRIPTOR = _GETASSETACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:GetAssetAction)
+  ))
+_sym_db.RegisterMessage(GetAssetAction)
+
+GetAgentAction = _reflection.GeneratedProtocolMessageType('GetAgentAction', (_message.Message,), dict(
+  DESCRIPTOR = _GETAGENTACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:GetAgentAction)
+  ))
+_sym_db.RegisterMessage(GetAgentAction)
+
+GetHistoryAction = _reflection.GeneratedProtocolMessageType('GetHistoryAction', (_message.Message,), dict(
+  DESCRIPTOR = _GETHISTORYACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:GetHistoryAction)
+  ))
+_sym_db.RegisterMessage(GetHistoryAction)
 
 
 # @@protoc_insertion_point(module_scope)
