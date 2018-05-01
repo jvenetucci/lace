@@ -11,15 +11,18 @@ message History {
     // Turn into bitmask?
     uint32 authorization_level = 2;
   }
+
+  // Unique key for handling hash collisions
+  uint32 rfid = 1;
     
   // The address suffix / index of the current
   // touchpoint. Ranges 0001-ffff. Can wrap around.
-  uint32     curr_touchpoint_index = 1;
-  bool       has_wrapped = 2;
+  uint32     curr_touchpoint_index = 2;
+  bool       has_wrapped = 3;
     
   // List containing the history of people who have
   // reported touching the asset.
-  repeated Reporter   reporter_list = 3;
+  repeated Reporter   reporter_list = 4;
 }
 
 message TouchPoint {
