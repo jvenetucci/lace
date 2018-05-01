@@ -16,7 +16,8 @@
 import logging
 import hashlib
 
-# Sawtooth SDK
+import cbor
+
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 from sawtooth_sdk.processor.exceptions import InternalError
@@ -78,17 +79,19 @@ def _create_asset(payload, signer, timestamp, state):
         raise InvalidTransaction(
             'Asset must have rfid')
 
-    address = make_asset_address(signer)    # signer = transaction.header.signer_public_key
+    address = make_asset_address(rfid)    # signer = transaction.header.signer_public_key
     container = _get_container(state, address)
 
-    for asset in container.entries:     # 
-        if asset.public_key == signer:
+    for asset in container.entries:      
+        if asset.rfid == rfid:
             raise InvalidTransaction(
                 'Asset already exists')
     
     asset = Asset(  #don't know if these fields are correct
-        public_key=signer,
-        name=name,
+        rfid    = payload.rfid,
+        size_r  = payload.size_r,
+        size_l  = payload.size_l,
+        sku     = payload.sku, 
         timestamp=timestamp,
     )
 
@@ -99,7 +102,7 @@ def _create_asset(payload, signer, timestamp, state):
         # def <lambda>(arguments):
             # return expression
     # key specifies a function to use for comparison, it looks like we're ordering by public_key
-    container.entries.sort(key=lambda, ag: ag.public_key)
+    container.entries.sort(key=lambda, ag: ag.rfid)
     
     _set_container(state, address, container)
 
@@ -112,14 +115,47 @@ def _touch_asset(payload, signer, timestamp, state):
         raise InvalidTransaction(
             'Asset must have rfid')
 
-    address = make_asset_address(signer)
-    container = _get_container(state, address)
+    try:
+        history = _get_history()           #(history, history_container, history_address)
+    except:
+        raise InvalidTransaction(
+            "Unable to get history")
 
-    for asset in container.entries:
-        if not asset.public_key == signer:
-            raise InvalidTransaction(
-                'Asset does not exist')     # correct?
+    history.curr_touchpoint_index 
+    
+    reporter_index = 0
+    for reporter in history.reporter_list:
+        if reporter.public_key == signer:
+            break
+        reporter_index += 1
 
+    touchpoint = TouchPoint (
+            longitude = payload.longitude,
+            latitude  = payload.latitude,
+            reporter_index = 0,
+            timestamp = timestamp,
+    )
+
+    if reporter_index == history.reporter_list.len() - 1:
+        reporter = Reporter (
+            public_key = signer,
+            authorization_level = 0,
+        )
+        history.reporter_list.extend(reporter)
+        touchpoint.reporter_index = history.reporter_list.len() - 1
+    else:
+        touchpoint.reporter_index = reporter_index
+    
+    # update lat, long, timestamp
+    # reporter in index?
+    # 
+
+    # find current touchpoint? 
+    # wrapping
+    #if current tp == max_touch TouchPoint   
+        #make_tp_addr = (rfid, 1)
+    #else 
+        #make tp addr = (rfid, current tp + 1)
 
 def _get_agent(state, agent_id):
     print("Get agent body goes here. A change here.")
@@ -233,7 +269,7 @@ def _get_container(state, address):
 
 
 def _set_container(state, address, container):
-    addresses: state.set_state({
+    addresses = state.set_state({
         address: container.SerializeToString()
     })
 
