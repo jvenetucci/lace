@@ -43,3 +43,8 @@ message TouchPoint {
 message HistoryContainer {
   repeated History entries = 1;
 }
+
+// Handle hash collisions
+message TouchPointContainer {
+  repeated TouchPoint entries = 1;
+}

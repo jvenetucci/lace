@@ -122,16 +122,68 @@ def _touch_asset(payload, signer, timestamp, state):
 
 
 def _get_agent(state, agent_id):
-    print("Get agent body goes here.")
+    print("Get agent body goes here. A change here.")
 
 
 def _get_asset(state, asset_id):
-    print("Get asset body goes here.")
+    ''' Return asset, asser_container, asset_address '''
+    if not asset_id:
+        raise InvalidTransaction(
+            'Asset must have id')
+    
+    asset_address = addressing.make_asset_address(asset_id)
+    asset_container = _get_container(state, asset_address)
+
+    try:
+        asset = next(
+            asset
+            for asset in asset_container.entries
+            if asset.rfid == asset_id
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'Asset does not exist')
+
+    return asset, asset_container, asset_address
 
 
 def _get_history(state, asset_id):
-    print("Get history body goes here.")
+    ''' Return history, history_container, history_address '''
+    if not asset_id:
+        raise InvalidTransaction(
+            'History must have id')
+    
+    history_address = addressing.make_history_address(asset_id)
+    history_container = _get_container(state, history_address)
 
+    try:
+        history = next(
+            history
+            for history in history_container.entries
+            if history.rfid == asset_id
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'History does not exist')
+
+    return history, history_container, history_container
+
+def _get_touchpoint(state, asset_id, index):
+    ''' Return touchpoint, touchpoint_address '''
+    if (not asset_id) or (not index):
+        raise InvalidTransaction(
+            'Invalid invocation')
+
+    touchpoint_address = addressing.make_touchpoint_address(asset_id, index)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    try:
+        touchpoint = touchpoint_container[0]
+    except:
+        raise InvalidTransaction(
+            'Touchpoint does not exist')
+
+    return touchpoint, touchpoint_address
 
 # Utility functions
 
