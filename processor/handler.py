@@ -3,7 +3,6 @@ import hashlib
 
 import cbor
 
-
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 from sawtooth_sdk.processor.exceptions import InternalError
@@ -164,7 +163,6 @@ def _set_container(state, address, container):
         raise InternalError(
             'State error, failed to set state entities')
 
-#standup 1.create_asset local branch 2.get state 3.container magic
 
 TYPE_TO_ACTION_HANDLER = { 
     SCPayload.CREATE_ASSET: ('create_asset', _create_agent),
