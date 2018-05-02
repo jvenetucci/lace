@@ -70,7 +70,33 @@ class LaceTransactionHandler(TransactionHandler):
 # Handler functions
 
 def _create_agent(payload, signer, timestamp, state):
-    print("Create agent body goes here.")
+    first_name = payload.first_name
+    last_name = payload.last_name
+    if not first_name and last_name:
+        raise InvalidTransaction(
+            'No name was provided'
+        )
+
+    address = addressing.make_agent_address(signer)
+    container = _get_container(state, address)
+
+    for agent in container.entries:
+        if agent.public_key == signer:
+            raise InvalidTransaction(
+                'Agent already exists'
+            )
+
+    new_person = Agent(
+        public_key = signer,
+        first_name = first_name,
+        last_name = last_name,
+        role = 0,
+    )
+    container.entries.extend([new_person])
+    container.entries.sort(key=lambda ag: ag.public_key)
+
+    _set_container(state, address, container)
+    #print("Create agent body goes here.")
 
 def _create_asset(payload, signer, timestamp, state):     
 	rfid = payload.rfid
@@ -158,7 +184,26 @@ def _touch_asset(payload, signer, timestamp, state):
         #make tp addr = (rfid, current tp + 1)
 
 def _get_agent(state, agent_id):
-    print("Get agent body goes here. A change here.")
+    if not agent_id:
+        raise InvalidTransaction(
+            'No Id was provided'
+        )
+    address = addressing.make_agent_address(agent_id)
+    container = _get_container(state, address)
+
+    try:
+        agent = next(
+            agent
+            for agent in container.entries
+            if agent.public_key == agent_id
+        )
+    except StopIteration:
+        raise InternalError(
+            'Person does not exist'
+        )
+    
+    return agent, address, container
+    #print("Get agent body goes here.")
 
 
 def _get_asset(state, asset_id):
