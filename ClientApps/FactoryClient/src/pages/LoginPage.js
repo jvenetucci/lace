@@ -4,12 +4,12 @@ import { login } from '../utils/xhr'
 
 const LoginPage = ({ history }) => (
   <div>
-    <h1>Login Page</h1>
+    <h1>Factory Client</h1>
+    <br/>
     <p>
-      For this example application, we cannot visit <Link to="/app">/app</Link> until we are logged in.
-      Clicking the "Login" button will simulate a login by setting Redux state. This example compliments
-      the CSS-Tricks article I wrote for <a target="_blank" href="https://css-tricks.com/react-router-4/">React Router 4</a>.
+      Login to manage your Asics supply chain.
     </p>
+    <br/>
     <button onClick={() => {
       login().then(() => {
         history.push('/app')

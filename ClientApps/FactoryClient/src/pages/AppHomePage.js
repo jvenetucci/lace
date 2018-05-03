@@ -3,7 +3,7 @@ import { logout } from '../utils/xhr'
 
 const AppHomePage = ({ history }) => (
   <div>
-    App Home Page
+    Home
     <br /><br />
     <button onClick={() => {
       logout().then(() => {

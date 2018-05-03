@@ -3,8 +3,8 @@ import { Switch, Route, NavLink } from 'react-router-dom'
 import UserNav from '../ui/UserNav'
 
 // Sub Layouts
-import BrowseUsersPage from '../pages/BrowseUsersPage'
-import AddUserPage from '../pages/AddUserPage'
+import BrowseUsersPage from '../pages/DisplayInventory'
+import AddUserPage from '../pages/Form'
 import UserProfilePage from '../pages/UserProfilePage'
 
 const UserSubLayout = ({ match }) => (

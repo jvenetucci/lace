@@ -13,12 +13,14 @@ const PrimaryLayout = ({ match }) => (
     <main>
       <Switch>
         <Route path={`${match.path}`} exact component={AppHomePage} />
-        <Route path={`${match.path}/users`} component={UserSubLayout} />
-        <Route path={`${match.path}/products`} component={ProductSubLayout} />
+        <Route path={`${match.path}/inventory`} component={UserSubLayout} />
+        
         <Redirect to={`${match.url}`} />
       </Switch>
     </main>
   </div>
 )
+
+//<Route path={`${match.path}/products`} component={ProductSubLayout} />
 
 export default PrimaryLayout
