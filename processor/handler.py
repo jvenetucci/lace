@@ -35,8 +35,7 @@ import addressing as addressing
 
 LOGGER = logging.getLogger(__name__)
 
-MAX_SHOE_SIZE = 60      # european xxl?
-MIN_SHOE_SIZE = 1       # this should be covered by protobuff unsigned 
+MAX_TOUCH_POINT = 100 # TODO: some super large number
 
 class LaceTransactionHandler(TransactionHandler):
     @property
@@ -168,18 +167,20 @@ def _touch_asset(payload, signer, timestamp, state):
         touchpoint.reporter_index = history.reporter_list.len() - 1
     else:
         touchpoint.reporter_index = reporter_index
-    
-    # add the touchpoint to the list of touchpoints
-    # update lat, long, timestamp
-    # reporter in index?
-    # history.curr_touchpoint_index 
 
-    # find current touchpoint? 
-    # wrapping
-    #if current tp == max_touch TouchPoint   
-        #make_tp_addr = (rfid, 1)
-    #else 
-        #make tp addr = (rfid, current tp + 1)
+    # calculate index while considering wrapping
+    if history.curr_touchpoint_index == MAX_TOUCH_POINT:
+        address = make_touchpoint_address = (rfid, 1)
+    else:
+        address = make_touchpoint_address = (rfid, history.curr_touchpoint_index + 1)
+  
+    container = _get_container(state, address)
+
+    container.entries[0] = TouchPoint
+
+    _set_container(state, address, container)
+
+    
 
 def _get_agent(state, agent_id):
     if not agent_id:
