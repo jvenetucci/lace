@@ -1,6 +1,6 @@
 import hashlib
 
-def _hash(string)
+def _hash(string):
     return hashlib.sha512(string.encode('utf-8')).hexdigest()
 
 def _make_touchpoint_postfix(num):
@@ -22,7 +22,7 @@ def make_asset_address(identifier):
     return (
         NAMESPACE
         + ASSET
-        + _hash(identifier):[59]    # what is identifier? rename this
+        + _hash(identifier)[:59]    # what is identifier? rename this
         + '0000'
     )
 
@@ -30,7 +30,7 @@ def make_history_address(identifier):
     return (
         NAMESPACE
         + HISTORY
-        + _hash(identifier):[59]    # TF:6 + ID:1 + hash:59 + log:4
+        + _hash(identifier)[:59]    # TF:6 + ID:1 + hash:59 + log:4
         + '0000'
     )
 
@@ -38,7 +38,7 @@ def make_touchpoint_address(identifier, index):
     return (
         NAMESPACE
         + HISTORY
-        + _hash(identifier):[59]    # TF:6 + ID:1 + hash:59 + log:4
+        + _hash(identifier)[:59]    # TF:6 + ID:1 + hash:59 + log:4
         + _make_touchpoint_postfix(index) # index of the wanted touchpoint
     )
 

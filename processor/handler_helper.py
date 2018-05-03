@@ -13,12 +13,12 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-from lace/protobuf/asset_pb2 import Asset
+from protobuf.asset_pb2 import Asset, AssetContainer
 
 from sawtooth_sdk.processor.core import TransactionProcessor
 
 # Import needed handler files here
-from handler import ShoeTransactionHandler
+from handler import LaceTransactionHandler
 #from addressing import <something from addressing.py?>
 
 # We'll try localhost as default
