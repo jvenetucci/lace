@@ -114,7 +114,9 @@ def main(prog_name=os.path.basename(sys.argv[0]), args=None,
     # Start the processor
     # Provide an easy way to stop the processor with CTRL-C
     try:
+        print("henlo")
         processor.start()
+        print("welp")
     except KeyboardInterrupt:
         print("Manually topping processor....")
         processor.stop()

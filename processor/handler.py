@@ -41,7 +41,7 @@ MIN_SHOE_SIZE = 1       # this should be covered by protobuff unsigned
 class LaceTransactionHandler(TransactionHandler):
     @property
     def family_name(self):
-        return FAMILY_NAME
+        return addressing.FAMILY_NAME
 
     @property
     def family_versions(self):
