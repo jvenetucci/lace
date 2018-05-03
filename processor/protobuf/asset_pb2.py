@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='asset.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x0b\x61sset.proto\"B\n\x05\x41sset\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0e\n\x06size_r\x18\x02 \x01(\x02\x12\x0e\n\x06size_l\x18\x03 \x01(\x02\x12\x0b\n\x03sku\x18\x04 \x01(\t\")\n\x0e\x41ssetContainer\x12\x17\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x06.Assetb\x06proto3')
+  serialized_pb=_b('\n\x0b\x61sset.proto\"0\n\x05\x41sset\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\t\x12\x0b\n\x03sku\x18\x03 \x01(\t\")\n\x0e\x41ssetContainer\x12\x17\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x06.Assetb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -41,22 +41,15 @@ _ASSET = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='size_r', full_name='Asset.size_r', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
+      name='size', full_name='Asset.size', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='size_l', full_name='Asset.size_l', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='sku', full_name='Asset.sku', index=3,
-      number=4, type=9, cpp_type=9, label=1,
+      name='sku', full_name='Asset.sku', index=2,
+      number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -74,7 +67,7 @@ _ASSET = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=15,
-  serialized_end=81,
+  serialized_end=63,
 )
 
 
@@ -104,8 +97,8 @@ _ASSETCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=83,
-  serialized_end=124,
+  serialized_start=65,
+  serialized_end=106,
 )
 
 _ASSETCONTAINER.fields_by_name['entries'].message_type = _ASSET

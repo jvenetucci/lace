@@ -8,11 +8,10 @@ message Asset {
   string rfid = 1;
 
   // The sizes for each shoe.
-  float size_r = 2;
-  float size_l = 3;
+  string size = 2;
 
   // Barcode?
-  string sku = 4;
+  string sku = 3;
 }
 
 // Handle hash collisions.

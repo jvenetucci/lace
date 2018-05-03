@@ -58,9 +58,8 @@ proto.Asset.prototype.toObject = function(opt_includeInstance) {
 proto.Asset.toObject = function(includeInstance, msg) {
   var f, obj = {
     rfid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    sizeR: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
-    sizeL: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
-    sku: jspb.Message.getFieldWithDefault(msg, 4, "")
+    size: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    sku: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -102,14 +101,10 @@ proto.Asset.deserializeBinaryFromReader = function(msg, reader) {
       msg.setRfid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
-      msg.setSizeR(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSize(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
-      msg.setSizeL(value);
-      break;
-    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setSku(value);
       break;
@@ -148,24 +143,17 @@ proto.Asset.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getSizeR();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  f = message.getSize();
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f
-    );
-  }
-  f = message.getSizeL();
-  if (f !== 0.0) {
-    writer.writeFloat(
-      3,
       f
     );
   }
   f = message.getSku();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      3,
       f
     );
   }
@@ -188,47 +176,32 @@ proto.Asset.prototype.setRfid = function(value) {
 
 
 /**
- * optional float size_r = 2;
- * @return {number}
+ * optional string size = 2;
+ * @return {string}
  */
-proto.Asset.prototype.getSizeR = function() {
-  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
+proto.Asset.prototype.getSize = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {number} value */
-proto.Asset.prototype.setSizeR = function(value) {
+/** @param {string} value */
+proto.Asset.prototype.setSize = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
 /**
- * optional float size_l = 3;
- * @return {number}
- */
-proto.Asset.prototype.getSizeL = function() {
-  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 3, 0.0));
-};
-
-
-/** @param {number} value */
-proto.Asset.prototype.setSizeL = function(value) {
-  jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * optional string sku = 4;
+ * optional string sku = 3;
  * @return {string}
  */
 proto.Asset.prototype.getSku = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
 proto.Asset.prototype.setSku = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setField(this, 3, value);
 };
 
 
