@@ -73,10 +73,13 @@ def _create_asset(payload, signer, timestamp, state):
                 'Asset already exists')
     
     asset = Asset(  #don't know if these fields are correct
-        public_key=signer,
-        name=name,
-        timestamp=timestamp,
-    )
+        rfid      = payload.rfid,
+        size_l    = payload.size_l,
+        size_r    = payload.size_r,
+        sku       = payload.sku,
+        longitude = payload.longitude,
+        latitude  = payload.latitude,
+        )
 
     # list.extend over iterable list asset appends asset to container.entries
     container.entries.extend([asset])   
@@ -85,7 +88,7 @@ def _create_asset(payload, signer, timestamp, state):
         # def <lambda>(arguments):
             # return expression
     # key specifies a function to use for comparison, it looks like we're ordering by public_key
-    container.entries.sort(key=lambda, ag: ag.public_key)
+    container.entries.sort(key=lambda, ag: ag.rfid)
     
     _set_container(state, address, container)
 
@@ -104,7 +107,11 @@ def _touch_asset(payload, signer, timestamp, state):
     for asset in container.entries:
         if not asset.public_key == signer:
             raise InvalidTransaction(
-                'Asset does not exist')     # correct?
+                'Asset does not exist')
+            
+    # make new history page
+
+    # get the 
 
 
 

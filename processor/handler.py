@@ -146,8 +146,6 @@ def _touch_asset(payload, signer, timestamp, state):
     except:
         raise InvalidTransaction(
             "Unable to get history")
-
-    history.curr_touchpoint_index 
     
     reporter_index = 0
     for reporter in history.reporter_list:
@@ -162,6 +160,7 @@ def _touch_asset(payload, signer, timestamp, state):
             timestamp = timestamp,
     )
 
+    # calculate the reporter index
     if reporter_index == history.reporter_list.len() - 1:
         reporter = Reporter (
             public_key = signer,
@@ -172,9 +171,10 @@ def _touch_asset(payload, signer, timestamp, state):
     else:
         touchpoint.reporter_index = reporter_index
     
+    # add the touchpoint to the list of touchpoints
     # update lat, long, timestamp
     # reporter in index?
-    # 
+    # history.curr_touchpoint_index 
 
     # find current touchpoint? 
     # wrapping
@@ -303,7 +303,6 @@ def _get_container(state, address):
     # uses namespace to choose Asset or History
     container = containers[namespace]() # why the (), c
     
-    # 
     entries = state.get_state([address])    # API call, entries 
 
     if entries:
