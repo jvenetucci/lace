@@ -98,12 +98,11 @@ def _create_agent(payload, signer, timestamp, state):
     _set_container(state, address, container)
     #print("Create agent body goes here.")
 
-def _create_asset(payload, signer, timestamp, state):     
-	rfid = payload.rfid
-
+def _create_asset(payload, signer, timestamp, state):
+    rfid = payload.rfid
+    
     if not rfid:
-        raise InvalidTransaction(
-            'Asset must have rfid')
+        raise InvalidTransaction('Asset must have rfid')
 
     address = make_asset_address(rfid)    # signer = transaction.header.signer_public_key
     container = _get_container(state, address)
@@ -128,8 +127,7 @@ def _create_asset(payload, signer, timestamp, state):
         # def <lambda>(arguments):
             # return expression
     # key specifies a function to use for comparison, it looks like we're ordering by public_key
-    container.entries.sort(key=lambda, ag: ag.rfid)
-    
+    #     
     _set_container(state, address, container)
 
 
