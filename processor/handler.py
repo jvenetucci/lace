@@ -17,6 +17,7 @@ import logging
 import hashlib
 
 import cbor
+from sawtooth_sdk.processor.core import TransactionProcessor
 
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
@@ -64,6 +65,16 @@ class LaceTransactionHandler(TransactionHandler):
         singer, timestamp, payload, handler = _unpack_transaction(transaction)
 
         handler(payload, signer, timestamp, state)
+
+# Helper
+def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
+    # For each handler you want to add, you'll
+    # create the handler object and call 
+    # 'processor.add_handler(<object name>)
+
+    # Handler initialization
+    lace = LaceTransactionHandler()
+    processor.add_handler(lace)
 
 
 # Handler functions

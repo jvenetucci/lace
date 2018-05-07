@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 import pkg_resources
-import handler_helper
+import handler
 
 from colorlog import ColoredFormatter
 
@@ -109,7 +109,7 @@ def main(prog_name=os.path.basename(sys.argv[0]), args=None,
 
     # Create handler(s) and associate it with the processor
     # See handlers.py to add more transaction handlers
-    handler_helper.add_handlers(processor)
+    handler.add_handlers(processor)
 
     # Start the processor
     # Provide an easy way to stop the processor with CTRL-C
