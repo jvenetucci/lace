@@ -1,4 +1,6 @@
-node_module
+node_modules
 .DS_Store
 */.DS_Store
 *.log
+DS_Store
+*/DS_Store

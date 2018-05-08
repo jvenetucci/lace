@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 var routes = require('./routes/index');
 app.use('/', routes);
 
-app.set('port', process.env.PORT || 5000);
+app.set('port', process.env.PORT || 5001);
 
 // app is listening to port 5000
 var server = app.listen(app.get('port'), function(){
-    console.log("app started on environment port or 5000");
+    console.log("app started on environment port or 5001");
 })

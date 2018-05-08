@@ -1,10 +1,20 @@
 import React from 'react'
+import { Switch, Route, NavLink } from 'react-router-dom'
+import UserNav from '../ui/UserNav'
+
+import ViewHistoryPage from '../pages/ViewHistory'
 
 const ProductSubLayout = ({ match }) => (
   <div className="product-sub-layout">
-    I didn't take the time to flesh out the product sub layout because it would have been
-    just like the user sub layout. The point is that we can have sub layouts this way.
+    <div className="primary-content">
+      <Switch>
+        <Route path={match.path} exact component={ViewHistoryPage} />
+      </Switch>
+    </div>
   </div>
 )
 
 export default ProductSubLayout
+
+//<Route path={`${match.path}/add`} exact component={AddUserPage} />
+//<Route path={`${match.path}/:userId`}  component={UserProfilePage} />
