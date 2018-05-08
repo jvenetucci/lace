@@ -16,9 +16,8 @@
 import logging
 import hashlib
 
-import cbor
+# Sawtooth SDK
 from sawtooth_sdk.processor.core import TransactionProcessor
-
 from sawtooth_sdk.processor.handler import TransactionHandler
 from sawtooth_sdk.processor.exceptions import InvalidTransaction
 from sawtooth_sdk.processor.exceptions import InternalError
@@ -28,7 +27,7 @@ from protobuf.agent_pb2 import Agent, AgentContainer
 from protobuf.asset_pb2 import Asset, AssetContainer
 from protobuf.history_pb2 import History, HistoryContainer
 from protobuf.history_pb2 import TouchPoint
-from protobuf.payload_pb2 import Payload
+from protobuf.payload_pb2 import Payload, CreateAssetAction
 
 # Sawtooth addressing specs
 import addressing as addressing
@@ -36,7 +35,7 @@ import addressing as addressing
 
 LOGGER = logging.getLogger(__name__)
 
-MAX_TOUCH_POINT = 100 # TODO: some super large number
+MAX_TOUCH_POINT = 16 ** 4 - 1
 
 class LaceTransactionHandler(TransactionHandler):
     @property
@@ -49,9 +48,9 @@ class LaceTransactionHandler(TransactionHandler):
 
     @property
     def namespaces(self):
-        return [] # how to determine address prefix
+        return [addressing.NAMESPACE] # how to determine address prefix
 
-    def apply(self, transaction, context):          
+    def apply(self, transaction, state):
         '''
         A Payload consists of a timestamp, an action tag, and
         attributes corresponding to various actions (create_asset,
@@ -62,7 +61,7 @@ class LaceTransactionHandler(TransactionHandler):
         unpack_transaction gets the signing key, the timestamp, and the 
         appropriate payload attribute and handler function
         '''
-        singer, timestamp, payload, handler = _unpack_transaction(transaction)
+        signer, timestamp, payload, handler = _unpack_transaction(transaction)
 
         handler(payload, signer, timestamp, state)
 
@@ -106,7 +105,6 @@ def _create_agent(payload, signer, timestamp, state):
     container.entries.sort(key=lambda ag: ag.public_key)
 
     _set_container(state, address, container)
-    #print("Create agent body goes here.")
 
 def _create_asset(payload, signer, timestamp, state):
     rfid = payload.rfid
@@ -114,7 +112,7 @@ def _create_asset(payload, signer, timestamp, state):
     if not rfid:
         raise InvalidTransaction('Asset must have rfid')
 
-    address = make_asset_address(rfid)    # signer = transaction.header.signer_public_key
+    address = addressing.make_asset_address(rfid)    # signer = transaction.header.signer_public_key
     container = _get_container(state, address)
 
     for asset in container.entries:      
@@ -124,21 +122,20 @@ def _create_asset(payload, signer, timestamp, state):
     
     asset = Asset(  #don't know if these fields are correct
         rfid    = payload.rfid,
-        size_r  = payload.size_r,
-        size_l  = payload.size_l,
+        size    = payload.size,
         sku     = payload.sku, 
-        timestamp=timestamp,
     )
 
+
     # list.extend over iterable list asset appends asset to container.entries
-    container.entries.extend([asset])   
+    container.entries.extend([asset])
+    _set_container(state, address, container)
     # returns new sorted list anon function I think ag is a parameter ag.public_key is an expression
     # lambda arguments: expression yields a function object that looks like
         # def <lambda>(arguments):
             # return expression
     # key specifies a function to use for comparison, it looks like we're ordering by public_key
     #     
-    _set_container(state, address, container)
 
 
 # starting to think this should be done with history?
@@ -286,7 +283,7 @@ def _unpack_transaction(transaction):
     '''
     signer = transaction.header.signer_public_key
 
-    payload = SCPayload()
+    payload = Payload()
     payload.ParseFromString(transaction.payload)
 
     action = payload.action
@@ -323,13 +320,16 @@ def _get_container(state, address):
 
 
 def _set_container(state, address, container):
-    addresses = state.set_state({
+    try:
+        addresses = state.set_state({
         address: container.SerializeToString()
-    })
-
-    if not addresses:
+        })
+        if not addresses:
+            raise InternalError(
+                'State error, failed to set state entities')
+    except:
         raise InternalError(
-            'State error, failed to set state entities')
+            'State error, likely using wrong in/output fields in tx header.')
 
 
 TYPE_TO_ACTION_HANDLER = { 

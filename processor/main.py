@@ -117,9 +117,7 @@ def main(prog_name=os.path.basename(sys.argv[0]), args=None,
         print("henlo")
         processor.start()
         print("welp")
-    except KeyboardInterrupt:
-        print("Manually topping processor....")
-        processor.stop()
-    finally:
-        print("Stopping processor....")
+    except Exception as e:
+        print(e)
+        print("Error. Stopping processor....")
         processor.stop()
