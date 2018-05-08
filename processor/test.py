@@ -38,8 +38,8 @@ payload_bytes = payload.SerializeToString()
 txn_header_bytes = TransactionHeader(
     family_name='lace',
     family_version='0.1',
-    inputs=[addressing.make_asset_address("dsdgasdgaewgasdgseg")],
-    outputs=['1cf1266e282c41be5e4254d8820772c5518a2c5a8c0c7f7eda19594a7eb539453e1ed7'],
+    inputs=[addressing.NAMESPACE],
+    outputs=[addressing.NAMESPACE],
     signer_public_key=signer.get_public_key().as_hex(),
     # In this example, we're signing the batch with the same private key,
     # but the batch can be signed by another party, in which case, the

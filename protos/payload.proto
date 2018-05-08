@@ -33,13 +33,12 @@ message CreateAssetAction {
   string rfid = 1;
 
   // Information about the shoe.
-  uint32 size_l = 2;
-  uint32 size_r = 3;
-  string sku = 4;
+  string size = 2;
+  string sku = 3;
 
   // Some location data.
-  sint64 longitude = 5;
-  sint64 latitude = 6;
+  sint64 longitude = 4;
+  sint64 latitude = 5;
 }
 
 message CreateAgentAction {
