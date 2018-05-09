@@ -99,11 +99,9 @@ def _create_agent(payload, signer, timestamp, state):
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
 
-    for agent in container.entries:
-        if agent.public_key == public_key:
-            raise InvalidTransaction(
-                'Agent already exists.'
-            )
+    if any(agent.public_key == public_key for agent in container.entries):
+        raise InvalidTransaction(
+                'Agent already exists.')
 
     agent = Agent(
         public_key = public_key,
@@ -117,9 +115,10 @@ def _create_agent(payload, signer, timestamp, state):
 
 
 def _create_asset(payload, signer, timestamp, state):
-    #_verify_agent(state, signer)
+    _verify_agent(state, signer)
 
     rfid = payload.rfid
+
     
     if not rfid:
         raise InvalidTransaction('Asset must have rfid.')
@@ -127,9 +126,8 @@ def _create_asset(payload, signer, timestamp, state):
     asset_address = addressing.make_asset_address(rfid)
     asset_container = _get_container(state, asset_address)
 
-    for asset in asset_container.entries:      
-        if asset.rfid == rfid:
-            raise InvalidTransaction(
+    if any(asset.rfid == rfid for asset in asset_container.entries):
+        raise InvalidTransaction(
                 'Asset already exists')
 
     # Create the asset and extend the asset container.
@@ -147,9 +145,8 @@ def _create_asset(payload, signer, timestamp, state):
     history_address = addressing.make_history_address(rfid)
     history_container = _get_container(state, history_address)
 
-    for history in history_container.entries:      
-        if history.rfid == rfid:
-            raise InvalidTransaction(
+    if any(history.rfid == rfid for history in history_container.entries):
+        raise InvalidTransaction(
                 'History already exists for asset that didn\'t...')
 
     history = History(
