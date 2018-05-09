@@ -7,11 +7,10 @@ message Agent {
   string public_key = 1;
 
   // A human readable name identifying the Agent
-  string first_name = 2;
-  string last_name = 3;
+  string name = 2;
 
   // Unix UTC timestamp of approximately when this agent was registered
-  uint64 timestamp = 4;
+  uint64 timestamp = 3;
 }
 
 // Handle hash collisions.

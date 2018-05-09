@@ -17,6 +17,7 @@ NAMESPACE = _hash(FAMILY_NAME)[:6]
 
 ASSET = '0'
 HISTORY = '1'
+AGENT = '2'
 
 def make_asset_address(identifier):
     return (

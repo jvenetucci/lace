@@ -25,17 +25,21 @@ from sawtooth_sdk.processor.exceptions import InternalError
 # Lace protos
 from protobuf.agent_pb2 import Agent, AgentContainer
 from protobuf.asset_pb2 import Asset, AssetContainer
-from protobuf.history_pb2 import History, HistoryContainer
-from protobuf.history_pb2 import TouchPoint
-from protobuf.payload_pb2 import Payload, CreateAssetAction
+from protobuf.history_pb2 import History, HistoryContainer, Reporter
+from protobuf.history_pb2 import TouchPoint, TouchPointContainer
+from protobuf.payload_pb2 import Payload
 
-# Sawtooth addressing specs
-import addressing as addressing
+# Lace addressing specs
+import addressing
 
 
 LOGGER = logging.getLogger(__name__)
 
 MAX_TOUCH_POINT = 16 ** 4 - 1
+DEFAULT_ROLE = 0
+DEFAULT_AUTH_LEVEL = 0
+INITIAL_TOUCHPOINT_INDEX = 1
+INITIAL_REPORTER_INDEX = 0
 
 class LaceTransactionHandler(TransactionHandler):
     @property
@@ -61,6 +65,7 @@ class LaceTransactionHandler(TransactionHandler):
         unpack_transaction gets the signing key, the timestamp, and the 
         appropriate payload attribute and handler function
         '''
+        # TO DO : check that timestamp is valid before calling handler.
         signer, timestamp, payload, handler = _unpack_transaction(transaction)
 
         handler(payload, signer, timestamp, state)
@@ -79,57 +84,112 @@ def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
 # Handler functions
 
 def _create_agent(payload, signer, timestamp, state):
-    first_name = payload.first_name
-    last_name = payload.last_name
-    if not first_name and last_name:
+    name = payload.name
+    public_key = payload.public_key
+
+    if not name:
         raise InvalidTransaction(
-            'No name was provided'
+            'Must provide agent name.'
         )
 
-    address = addressing.make_agent_address(signer)
+    if not public_key:
+        raise InvalidTransaction(
+            'Public key is required.')
+
+    address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
 
     for agent in container.entries:
-        if agent.public_key == signer:
+        if agent.public_key == public_key:
             raise InvalidTransaction(
-                'Agent already exists'
+                'Agent already exists.'
             )
 
-    new_person = Agent(
-        public_key = signer,
-        first_name = first_name,
-        last_name = last_name,
-        role = 0,
+    agent = Agent(
+        public_key = public_key,
+        name = name,
     )
-    container.entries.extend([new_person])
+
+    container.entries.extend([agent])
     container.entries.sort(key=lambda ag: ag.public_key)
 
     _set_container(state, address, container)
 
+
 def _create_asset(payload, signer, timestamp, state):
+    #_verify_agent(state, signer)
+
     rfid = payload.rfid
     
     if not rfid:
-        raise InvalidTransaction('Asset must have rfid')
+        raise InvalidTransaction('Asset must have rfid.')
 
-    address = addressing.make_asset_address(rfid)    # signer = transaction.header.signer_public_key
-    container = _get_container(state, address)
+    asset_address = addressing.make_asset_address(rfid)
+    asset_container = _get_container(state, asset_address)
 
-    for asset in container.entries:      
+    for asset in asset_container.entries:      
         if asset.rfid == rfid:
             raise InvalidTransaction(
                 'Asset already exists')
+
+    # Create the asset and extend the asset container.
     
-    asset = Asset(  #don't know if these fields are correct
+    asset = Asset(
         rfid    = payload.rfid,
         size    = payload.size,
         sku     = payload.sku, 
     )
 
+    asset_container.entries.extend([asset])
+
+    # Create the history for the asset.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
+
+    for history in history_container.entries:      
+        if history.rfid == rfid:
+            raise InvalidTransaction(
+                'History already exists for asset that didn\'t...')
+
+    history = History(
+        rfid = rfid,
+        curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX,
+        has_wrapped = False,
+    )
+
+    history.reporter_list.extend([
+        Reporter(
+            public_key          = signer,
+            authorization_level = DEFAULT_AUTH_LEVEL, # Default for now.
+        )
+    ])
+
+    # Extend the history container
+    history_container.entries.extend([history])
+
+    # Create the initial touchpoint
+
+    touchpoint_address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    touchpoint = TouchPoint(
+        longitude = payload.longitude,
+        latitude = payload.latitude,
+        timestamp = timestamp,
+        reporter_index = INITIAL_REPORTER_INDEX,
+    )
+
+    # Extend touchpoint container.
+    touchpoint_container.entries.extend([touchpoint])
+
+    # Set the state for the asset and its history.
+    _set_container(state, asset_address, asset_container)
+    _set_container(state, history_address, history_container)
+    _set_container(state, touchpoint_address, touchpoint_container)
 
     # list.extend over iterable list asset appends asset to container.entries
-    container.entries.extend([asset])
-    _set_container(state, address, container)
+
     # returns new sorted list anon function I think ag is a parameter ag.public_key is an expression
     # lambda arguments: expression yields a function object that looks like
         # def <lambda>(arguments):
@@ -138,21 +198,33 @@ def _create_asset(payload, signer, timestamp, state):
     #     
 
 
-# starting to think this should be done with history?
+
 def _touch_asset(payload, signer, timestamp, state):
+    #_verify_agent(state, signer)
+
     rfid = payload.rfid
 
     if not rfid:
         raise InvalidTransaction(
-            'Asset must have rfid')
+            'Asset must have rfid.')
+
+    # Get the asset history.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
 
     try:
-        history = _get_history()           #(history, history_container, history_address)
-    except:
+        history = next(
+            entry
+            for entry in history_container.entries
+            if entry.rfid == rfid
+        )
+    except StopIteration:
         raise InvalidTransaction(
-            "Unable to get history")
+            'History could not be found. Asset likely doesn\'t exist.')
     
-    reporter_index = 0
+    # Find the correct reporter index or loop out.
+    reporter_index = INITIAL_REPORTER_INDEX
     for reporter in history.reporter_list:
         if reporter.public_key == signer:
             break
@@ -161,117 +233,36 @@ def _touch_asset(payload, signer, timestamp, state):
     touchpoint = TouchPoint (
             longitude = payload.longitude,
             latitude  = payload.latitude,
-            reporter_index = 0,
+            reporter_index = INITIAL_REPORTER_INDEX,
             timestamp = timestamp,
     )
 
-    # calculate the reporter index
-    if reporter_index == history.reporter_list.len() - 1:
-        reporter = Reporter (
+    # Check if we need to create a new reporter list entry.
+    if reporter_index == history.reporter_list.len():
+        reporter = Reporter(
             public_key = signer,
-            authorization_level = 0,
+            authorization_level = DEFAULT_AUTH_LEVEL,
         )
         history.reporter_list.extend(reporter)
         touchpoint.reporter_index = history.reporter_list.len() - 1
     else:
         touchpoint.reporter_index = reporter_index
 
-    # calculate index while considering wrapping
+    # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
-        address = make_touchpoint_address = (rfid, 1)
+        address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
     else:
-        address = make_touchpoint_address = (rfid, history.curr_touchpoint_index + 1)
+        address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index + 1)
   
     container = _get_container(state, address)
 
-    container.entries[0] = TouchPoint
+    if len(container.entries) > 0:
+        container.entries[0] = touchpoint
+    else:
+        container.entries.extend([touchpoint])
 
     _set_container(state, address, container)
 
-    
-
-def _get_agent(state, agent_id):
-    if not agent_id:
-        raise InvalidTransaction(
-            'No Id was provided'
-        )
-    address = addressing.make_agent_address(agent_id)
-    container = _get_container(state, address)
-
-    try:
-        agent = next(
-            agent
-            for agent in container.entries
-            if agent.public_key == agent_id
-        )
-    except StopIteration:
-        raise InternalError(
-            'Person does not exist'
-        )
-    
-    return agent, address, container
-    #print("Get agent body goes here.")
-
-
-def _get_asset(state, asset_id):
-    ''' Return asset, asser_container, asset_address '''
-    if not asset_id:
-        raise InvalidTransaction(
-            'Asset must have id')
-    
-    asset_address = addressing.make_asset_address(asset_id)
-    asset_container = _get_container(state, asset_address)
-
-    try:
-        asset = next(
-            asset
-            for asset in asset_container.entries
-            if asset.rfid == asset_id
-        )
-    except StopIteration:
-        raise InvalidTransaction(
-            'Asset does not exist')
-
-    return asset, asset_container, asset_address
-
-
-def _get_history(state, asset_id):
-    ''' Return history, history_container, history_address '''
-    if not asset_id:
-        raise InvalidTransaction(
-            'History must have id')
-    
-    history_address = addressing.make_history_address(asset_id)
-    history_container = _get_container(state, history_address)
-
-    try:
-        history = next(
-            history
-            for history in history_container.entries
-            if history.rfid == asset_id
-        )
-    except StopIteration:
-        raise InvalidTransaction(
-            'History does not exist')
-
-    return history, history_container, history_container
-
-def _get_touchpoint(state, asset_id, index):
-    ''' Return touchpoint, touchpoint_address '''
-    if (not asset_id) or (not index):
-        raise InvalidTransaction(
-            'Invalid invocation')
-
-    touchpoint_address = addressing.make_touchpoint_address(asset_id, index)
-    touchpoint_container = _get_container(state, touchpoint_address)
-
-    try:
-        touchpoint = touchpoint_container[0]
-    except:
-        raise InvalidTransaction(
-            'Touchpoint does not exist')
-
-    return touchpoint, touchpoint_address
 
 # Utility functions
 
@@ -304,7 +295,10 @@ def _get_container(state, address):
 
     containers = {
         addressing.ASSET: AssetContainer,  
-        addressing.HISTORY: HistoryContainer,
+        addressing.HISTORY: (HistoryContainer
+                              if address[-4:] == '0000'
+                              else TouchPointContainer),
+        addressing.AGENT: AgentContainer,
     }
 
     # uses namespace to choose Asset or History
@@ -332,11 +326,18 @@ def _set_container(state, address, container):
             'State error, likely using wrong in/output fields in tx header.')
 
 
+def _verify_agent(state, public_key):
+    ''' Verify that public_key has been registered as an agent '''
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    if all(agent.public_key != public_key for agent in container.entries):
+        raise InvalidTransaction(
+            'Agent must be registered to perform this action')
+
+
 TYPE_TO_ACTION_HANDLER = { 
     Payload.CREATE_AGENT: ('create_agent', _create_agent),
     Payload.CREATE_ASSET: ('create_asset', _create_asset),
     Payload.TOUCH_ASSET: ('touch_asset', _touch_asset),
-    Payload.GET_AGENT: ('get_agent', _get_agent),
-    Payload.GET_ASSET: ('get_asset', _get_asset),
-    Payload.GET_HISTORY: ('get_history', _get_history),
 }
