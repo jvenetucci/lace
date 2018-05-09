@@ -197,7 +197,7 @@ def _create_asset(payload, signer, timestamp, state):
 
 
 def _touch_asset(payload, signer, timestamp, state):
-    #_verify_agent(state, signer)
+    _verify_agent(state, signer)
 
     rfid = payload.rfid
 
@@ -235,7 +235,7 @@ def _touch_asset(payload, signer, timestamp, state):
     )
 
     # Check if we need to create a new reporter list entry.
-    if reporter_index == history.reporter_list.len():
+    if reporter_index == len(history.reporter_list):
         reporter = Reporter(
             public_key = signer,
             authorization_level = DEFAULT_AUTH_LEVEL,
@@ -254,7 +254,8 @@ def _touch_asset(payload, signer, timestamp, state):
     container = _get_container(state, address)
 
     if len(container.entries) > 0:
-        container.entries[0] = touchpoint
+        del container.entries[:]
+        container.entries.extend([touchpoint])
     else:
         container.entries.extend([touchpoint])
 
