@@ -1,61 +1,161 @@
-from sawtooth_signing import create_context
-from sawtooth_signing import CryptoFactory
+# Copyright Capstone Team B
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ------------------------------------------------------------------------------
 
+
+# Utilities
 from hashlib import sha512
-from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
+import sys
+import secp256k1
+import time
+import uuid
 
+# Sawtooth SDK
+from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
 from sawtooth_sdk.protobuf.transaction_pb2 import Transaction
+from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
 from sawtooth_sdk.protobuf.batch_pb2 import Batch
 from sawtooth_sdk.protobuf.batch_pb2 import BatchHeader
 from sawtooth_sdk.protobuf.batch_pb2 import BatchList
 
-import urllib.request
-from urllib.error import HTTPError
-
+# Lace structures and addressing
+from protobuf.payload_pb2 import Payload, CreateAssetAction
+from protobuf.payload_pb2 import CreateAgentAction, TouchAssetAction
 import addressing
-from protobuf.payload_pb2 import Payload, CreateAssetAction, CreateAgentAction
 
-generate_keys = False
-name = "Andrew Burnett"
-DEFAULT_ROLE = 0
 
-context = create_context('secp256k1')
-private_key = context.new_random_private_key()
-signer = CryptoFactory(context).new_signer(private_key)
+def _get_time():
+    return int(time.time())
 
-public_key = signer.get_public_key().as_hex()
-#public_key = '02c2b6b3e04e623e25cac0072bdf3f85eab48dbdbe8591e8e66e404f3f35418316'
+def _make_rfid():
+    rfid = str(uuid.uuid4()).replace("-", "")
+    print("Generated RFID: '" + rfid + "'")
+    return rfid
 
-if generate_keys:
-    print("Public key = '" + signer.get_public_key().as_hex() + "'")
-    print("Private key = '" + str(private_key) + "'")
 
-    action = CreateAgentAction(
-        public_key = signer.get_public_key().as_hex(),
-        name = name,
-    )
+###### Important signer setup information ######
+signer = secp256k1.PrivateKey()
 
-    payload = Payload(
-        action = 1,
-        timestamp = 0,
-        create_agent = action,        
-    )
+# Paste a new private key as hex here.
+CUSTOM_KEY = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+
+# Comment out this next line to get a new key.
+signer.set_raw_privkey(bytes.fromhex(CUSTOM_KEY))
+
+private_key_bytes = signer.private_key
+public_key_bytes = signer.pubkey.serialize()
+
+public_key = public_key_bytes.hex()
+
+
+# Mock lace opjects
+agent_action = CreateAgentAction(
+        public_key = public_key,
+        name = "default name",
+)
+
+asset_action = CreateAssetAction(
+    rfid = "",
+    size = "Mens 10",
+    sku = "0 123456789 1",
+    longitude = 1,
+    latitude = 1,
+)
+
+touch_action = TouchAssetAction(
+    rfid = "",
+    longitude = 2,
+    latitude = 2,
+)
+
+
+# Get arg from command line.
+args = sys.argv[1:]
+
+if len(args) <= 0:
+    print("\nAn action is require:")
+    print("test.py make_agent \"Your name\"")
+    print("test.py make_asset <optional rfid>")
+    print("test.py touch_asset <required rfid>\n")
+    exit()
 else:
-    action = CreateAssetAction(
-        rfid = "jgjhgjhgjyfj",
-        size = "SOMESIZE",
-        sku = "SKUUUUU",
-        longitude = 1,
-        latitude = 1,
+    test = args[0]
+
+
+if test == "make_agent":
+    if len(args) <= 1:
+        print("\nA name is required to create an agent.\n")
+        exit()
+    name = args[1]
+
+    print("\nAgent information:")
+    print("Name = '" + name + "'")
+    print("Public key = '" + public_key + "'")
+    print("Private key = '" + private_key_bytes.hex() + "'\n")
+
+    agent_action.name = name
+
+    agent_payload = Payload(
+        action = 1,
+        timestamp = _get_time(),
+        create_agent = agent_action,        
     )
 
-    payload = Payload(
+    payload_bytes = agent_payload.SerializeToString()
+    
+elif test == "make_asset":
+    if len(args) <= 1:
+        rfid = _make_rfid()
+    else:
+        rfid = args[1]
+
+    asset_action.rfid = rfid
+
+    asset_payload = Payload(
         action = 0,
-        timestamp = 0,
-        create_asset = action,        
+        timestamp = _get_time(),
+        create_asset = asset_action,        
     )
 
-payload_bytes = payload.SerializeToString()
+    payload_bytes = asset_payload.SerializeToString()
+   
+elif test == "touch_asset":
+    if len(args) <= 1:
+        print("\nRFID is required to touch an asset.\n")
+        exit()
+    else:
+        rfid = args[1]
+
+    touch_action.rfid = rfid
+
+    touch_payload = Payload(
+        action = 2,
+        timestamp = _get_time(),
+        touch_asset = touch_action,        
+    )
+
+    payload_bytes = touch_payload.SerializeToString()
+    
+else:
+    print("\nA valid action is require:")
+    print("test.py make_agent \"Your name\"")
+    print("test.py make_asset <optional rfid>")
+    print("test.py touch_asset <required rfid>\n")
+    exit()
+
+
+# Pack it all up and ship it out.
 
 txn_header_bytes = TransactionHeader(
     family_name='lace',
@@ -76,7 +176,10 @@ txn_header_bytes = TransactionHeader(
     payload_sha512=sha512(payload_bytes).hexdigest()
 ).SerializeToString()
 
-signature = signer.sign(txn_header_bytes)
+# Ecdsa signing standard, then remove extra ecdsa bytes using compact.
+txn_signature = signer.ecdsa_sign(txn_header_bytes)
+txn_signature_bytes = signer.ecdsa_serialize_compact(txn_signature)
+signature = txn_signature_bytes.hex()
 
 txn = Transaction(
     header=txn_header_bytes,
@@ -87,12 +190,14 @@ txn = Transaction(
 txns = [txn]
 
 batch_header_bytes = BatchHeader(
-    signer_public_key=signer.get_public_key().as_hex(),
+    signer_public_key=public_key,
     transaction_ids=[txn.header_signature for txn in txns],
 ).SerializeToString()
 
 
-signature = signer.sign(batch_header_bytes)
+batch_signature = signer.ecdsa_sign(batch_header_bytes)
+batch_signature_bytes = signer.ecdsa_serialize_compact(batch_signature)
+signature = batch_signature_bytes.hex()
 
 batch = Batch(
     header=batch_header_bytes,
@@ -100,8 +205,9 @@ batch = Batch(
     transactions=txns
 )
 
-
 batch_list_bytes = BatchList(batches=[batch]).SerializeToString()
 
 output = open('lace.batches', 'wb')
 output.write(batch_list_bytes)
+
+print("Outputed batch file to 'lace.batches'.")
