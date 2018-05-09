@@ -13,25 +13,47 @@ import urllib.request
 from urllib.error import HTTPError
 
 import addressing
-from protobuf.payload_pb2 import Payload, CreateAssetAction
+from protobuf.payload_pb2 import Payload, CreateAssetAction, CreateAgentAction
+
+generate_keys = False
+name = "Andrew Burnett"
+DEFAULT_ROLE = 0
 
 context = create_context('secp256k1')
 private_key = context.new_random_private_key()
 signer = CryptoFactory(context).new_signer(private_key)
 
-action = CreateAssetAction(
-    rfid = "dsdgasdgaewgasdgseg",
-    size = "SOMESIZE",
-    sku = "SKUUUUU",
-    longitude = 1,
-    latitude = 1,
-)
+public_key = signer.get_public_key().as_hex()
+#public_key = '02c2b6b3e04e623e25cac0072bdf3f85eab48dbdbe8591e8e66e404f3f35418316'
 
-payload = Payload(
-    action = 0,
-    timestamp = 0,
-    create_asset = action,        
-)
+if generate_keys:
+    print("Public key = '" + signer.get_public_key().as_hex() + "'")
+    print("Private key = '" + str(private_key) + "'")
+
+    action = CreateAgentAction(
+        public_key = signer.get_public_key().as_hex(),
+        name = name,
+    )
+
+    payload = Payload(
+        action = 1,
+        timestamp = 0,
+        create_agent = action,        
+    )
+else:
+    action = CreateAssetAction(
+        rfid = "jgjhgjhgjyfj",
+        size = "SOMESIZE",
+        sku = "SKUUUUU",
+        longitude = 1,
+        latitude = 1,
+    )
+
+    payload = Payload(
+        action = 0,
+        timestamp = 0,
+        create_asset = action,        
+    )
 
 payload_bytes = payload.SerializeToString()
 
@@ -40,11 +62,11 @@ txn_header_bytes = TransactionHeader(
     family_version='0.1',
     inputs=[addressing.NAMESPACE],
     outputs=[addressing.NAMESPACE],
-    signer_public_key=signer.get_public_key().as_hex(),
+    signer_public_key=public_key,
     # In this example, we're signing the batch with the same private key,
     # but the batch can be signed by another party, in which case, the
     # public key will need to be associated with that key.
-    batcher_public_key=signer.get_public_key().as_hex(),
+    batcher_public_key=public_key,
     # In this example, there are no dependencies.  This list should include
     # an previous transaction header signatures that must be applied for
     # this transaction to successfully commit.

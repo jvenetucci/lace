@@ -22,9 +22,6 @@ message Payload {
   CreateAssetAction create_asset = 3;
   CreateAgentAction create_agent = 4;
   TouchAssetAction touch_asset = 5;
-  GetAssetAction get_asset = 6;
-  GetAgentAction get_agent = 7;
-  GetHistoryAction get_history = 8;
 }
 
 message CreateAssetAction {
@@ -46,11 +43,10 @@ message CreateAgentAction {
   string public_key = 1;
 
   //The name of the user
-  string first_name = 2;
-  string last_name = 3;
+  string name = 2;
   
   //Job_position
-  int32 role = 4;
+  int32 role = 3;
 }
 
 message TouchAssetAction {
@@ -60,19 +56,4 @@ message TouchAssetAction {
   // Some location data
   sint64 longitude = 2;
   sint64 latitude = 3;
-}
-
-message GetAssetAction {
-  // get the rfid
-  string rfid = 1;
-}
-
-message GetAgentAction {
-  //User ID
-  string public_key = 1;
-}
-
-message GetHistoryAction {
-  // product id
-  string rfid = 1;
 }

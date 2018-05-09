@@ -19,29 +19,29 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='history.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\rhistory.proto\"\xb2\x01\n\x07History\x12\x0c\n\x04rfid\x18\x01 \x01(\r\x12\x1d\n\x15\x63urr_touchpoint_index\x18\x02 \x01(\r\x12\x13\n\x0bhas_wrapped\x18\x03 \x01(\x08\x12(\n\rreporter_list\x18\x04 \x03(\x0b\x32\x11.History.Reporter\x1a;\n\x08Reporter\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x1b\n\x13\x61uthorization_level\x18\x02 \x01(\r\"\\\n\nTouchPoint\x12\x11\n\tlongitude\x18\x01 \x01(\x12\x12\x10\n\x08latitude\x18\x02 \x01(\x12\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\x12\x16\n\x0ereporter_index\x18\x04 \x01(\r\"-\n\x10HistoryContainer\x12\x19\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x08.History\"3\n\x13TouchPointContainer\x12\x1c\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x0b.TouchPointb\x06proto3')
+  serialized_pb=_b('\n\rhistory.proto\";\n\x08Reporter\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x1b\n\x13\x61uthorization_level\x18\x02 \x01(\r\"m\n\x07History\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x1d\n\x15\x63urr_touchpoint_index\x18\x02 \x01(\r\x12\x13\n\x0bhas_wrapped\x18\x03 \x01(\x08\x12 \n\rreporter_list\x18\x04 \x03(\x0b\x32\t.Reporter\"\\\n\nTouchPoint\x12\x11\n\tlongitude\x18\x01 \x01(\x12\x12\x10\n\x08latitude\x18\x02 \x01(\x12\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\x12\x16\n\x0ereporter_index\x18\x04 \x01(\r\"-\n\x10HistoryContainer\x12\x19\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x08.History\"3\n\x13TouchPointContainer\x12\x1c\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x0b.TouchPointb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
 
-_HISTORY_REPORTER = _descriptor.Descriptor(
+_REPORTER = _descriptor.Descriptor(
   name='Reporter',
-  full_name='History.Reporter',
+  full_name='Reporter',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='public_key', full_name='History.Reporter.public_key', index=0,
+      name='public_key', full_name='Reporter.public_key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='authorization_level', full_name='History.Reporter.authorization_level', index=1,
+      name='authorization_level', full_name='Reporter.authorization_level', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -59,9 +59,10 @@ _HISTORY_REPORTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=137,
-  serialized_end=196,
+  serialized_start=17,
+  serialized_end=76,
 )
+
 
 _HISTORY = _descriptor.Descriptor(
   name='History',
@@ -72,8 +73,8 @@ _HISTORY = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='rfid', full_name='History.rfid', index=0,
-      number=1, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -101,7 +102,7 @@ _HISTORY = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_HISTORY_REPORTER, ],
+  nested_types=[],
   enum_types=[
   ],
   options=None,
@@ -110,8 +111,8 @@ _HISTORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=18,
-  serialized_end=196,
+  serialized_start=78,
+  serialized_end=187,
 )
 
 
@@ -162,8 +163,8 @@ _TOUCHPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=198,
-  serialized_end=290,
+  serialized_start=189,
+  serialized_end=281,
 )
 
 
@@ -193,8 +194,8 @@ _HISTORYCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=292,
-  serialized_end=337,
+  serialized_start=283,
+  serialized_end=328,
 )
 
 
@@ -224,33 +225,32 @@ _TOUCHPOINTCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=339,
-  serialized_end=390,
+  serialized_start=330,
+  serialized_end=381,
 )
 
-_HISTORY_REPORTER.containing_type = _HISTORY
-_HISTORY.fields_by_name['reporter_list'].message_type = _HISTORY_REPORTER
+_HISTORY.fields_by_name['reporter_list'].message_type = _REPORTER
 _HISTORYCONTAINER.fields_by_name['entries'].message_type = _HISTORY
 _TOUCHPOINTCONTAINER.fields_by_name['entries'].message_type = _TOUCHPOINT
+DESCRIPTOR.message_types_by_name['Reporter'] = _REPORTER
 DESCRIPTOR.message_types_by_name['History'] = _HISTORY
 DESCRIPTOR.message_types_by_name['TouchPoint'] = _TOUCHPOINT
 DESCRIPTOR.message_types_by_name['HistoryContainer'] = _HISTORYCONTAINER
 DESCRIPTOR.message_types_by_name['TouchPointContainer'] = _TOUCHPOINTCONTAINER
 
-History = _reflection.GeneratedProtocolMessageType('History', (_message.Message,), dict(
+Reporter = _reflection.GeneratedProtocolMessageType('Reporter', (_message.Message,), dict(
+  DESCRIPTOR = _REPORTER,
+  __module__ = 'history_pb2'
+  # @@protoc_insertion_point(class_scope:Reporter)
+  ))
+_sym_db.RegisterMessage(Reporter)
 
-  Reporter = _reflection.GeneratedProtocolMessageType('Reporter', (_message.Message,), dict(
-    DESCRIPTOR = _HISTORY_REPORTER,
-    __module__ = 'history_pb2'
-    # @@protoc_insertion_point(class_scope:History.Reporter)
-    ))
-  ,
+History = _reflection.GeneratedProtocolMessageType('History', (_message.Message,), dict(
   DESCRIPTOR = _HISTORY,
   __module__ = 'history_pb2'
   # @@protoc_insertion_point(class_scope:History)
   ))
 _sym_db.RegisterMessage(History)
-_sym_db.RegisterMessage(History.Reporter)
 
 TouchPoint = _reflection.GeneratedProtocolMessageType('TouchPoint', (_message.Message,), dict(
   DESCRIPTOR = _TOUCHPOINT,

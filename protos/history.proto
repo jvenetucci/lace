@@ -1,8 +1,7 @@
 syntax = "proto3";
 
 
-message History {
-  message Reporter {
+message Reporter {
 
     // Reporter's public_key / agent ID.
     string public_key = 1;
@@ -12,8 +11,10 @@ message History {
     uint32 authorization_level = 2;
   }
 
+message History {
+
   // Unique key for handling hash collisions
-  uint32 rfid = 1;
+  string rfid = 1;
     
   // The address suffix / index of the current
   // touchpoint. Ranges 0001-ffff. Can wrap around.
