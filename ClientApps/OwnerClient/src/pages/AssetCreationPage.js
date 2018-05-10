@@ -31,13 +31,21 @@ class AssetCreationPage extends Component {
         "\nSize: " + this.state.size + 
         "\nManufacture Date: " + this.state.manufactureDate
       );
-      //createTransaction("Create", 
-      // this.state.model,
-      // this.state.size,
-      // this.state.sku,
-      // this.state.id,
-      // this.state.manufactureDate
-      //);
+      fetch('/api/send', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: this.state.model,
+          size: this.state.size,
+          sku: this.state.sku,
+          product: this.state.id,
+          date: this.state.manufactureDate
+        })
+      })
+      .then(response => console.log(response));
       event.preventDefault();
     }
 
