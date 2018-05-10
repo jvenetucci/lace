@@ -3,7 +3,6 @@ const {createHash} = require('crypto');
 const {protobuf} = require('sawtooth-sdk');
 const cbor = require('cbor');
 
-
 //This is all account stuff, not for this file in the long run, but it's here for now because there is nowhere else.
 const {createContext, CryptoFactory} = require('sawtooth-sdk/signing');
 const context = createContext('secp256k1');
@@ -18,22 +17,11 @@ const placeholderInputOutput = '19d832';
 //Function creates a transaction 
 //Input: String for: 0) Kind of action that you are doing 1) shoe type 2) shoe size 3) sku 4) RFID#
 //Output: A single transaction object ready to be batched and sent. 
-function createTransaction(action, productType, size, sku, rfid, date) {
-
-    //payload is the data of the shoe, add more fields as desired, it doesn't affect anything else.
-    const payload = {
-            Action: action,
-            ProductType: productType,
-            Size: size,
-            SKU: sku,
-            RFID: rfid,
-            Date: date
-        };
+function createTransaction(payload) {
 
 
     //Encode the payload as bytes
     const payloadBytes = cbor.encode(payload);
-
 
     //Create the transaction header
     const transactionHeaderBytes = protobuf.TransactionHeader.encode({
@@ -94,7 +82,7 @@ function createTransaction(action, productType, size, sku, rfid, date) {
    const batchListBytes = protobuf.BatchList.encode({
        batches: [batch]
    }).finish();
-   
+
    return batchListBytes;
    
 };
@@ -102,3 +90,13 @@ function createTransaction(action, productType, size, sku, rfid, date) {
 module.exports = {
     createTransaction
 }
+
+
+
+
+
+
+
+
+
+

@@ -3,9 +3,17 @@ var transaction = require('./TransactionCreator');
 
 async function send(payload){
   // Create batch list
-  var batchListBytes = transaction.createTransaction(payload.Action, payload.ModelID, payload.Size, payload.SkuID, payload.ProductID, payload.Date);
+  var batchListBytes = transaction.createTransaction(payload);
   // get a response use await to wait to get a response then return value
   var response = await submit(batchListBytes);
+
+  // Endpoint localhost:8080 is not up and running response is undefined
+  if(response === undefined)
+  {
+    console.log("Make Sure Docker Running");
+    return false;
+  }
+
   // Error check the response
   if(!errorCheckResponse(response)){
     return response;

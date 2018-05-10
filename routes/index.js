@@ -5,7 +5,7 @@ var request = require('./request');
 // Make request on server end
 router.post('/api/send', async function(req, res){
     var payload = {
-        Action: req.body.action,
+        Action: 0,
         ModelID: req.body.model,
         Size: req.body.size,
         SkuID: req.body.sku,
@@ -27,8 +27,23 @@ router.post('/api/send', async function(req, res){
     res.send(response);
 });
 
-router.get('/sending', function(req, res){
-    console.log("hello");
+router.post('/owner/touch', async function(req, res){
+    var payload = {
+        Action: 1,
+        AssetID: req.body.assetID,
+        TransferDate: req.body.transferDate
+    }
+    var response = await request.send(payload);
+    if(!request.errorCheckResponse(response))
+    {
+        // send back to the client with the status code error
+        res.statusCode = response.statusCode;
+        res.send("Invalid request status Code " + response.statusCode);
+        res.end;
+        return;
+    }
+    res.statusCode = 200;
+    res.send(response);
 });
 
 module.exports = router;
