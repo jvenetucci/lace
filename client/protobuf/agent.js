@@ -5,7 +5,7 @@
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-goog.provide('proto.GetAssetAction');
+goog.provide('proto.Agent');
 
 goog.require('jspb.Message');
 goog.require('jspb.BinaryReader');
@@ -22,12 +22,12 @@ goog.require('jspb.BinaryWriter');
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GetAssetAction = function(opt_data) {
+proto.Agent = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.GetAssetAction, jspb.Message);
+goog.inherits(proto.Agent, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.GetAssetAction.displayName = 'proto.GetAssetAction';
+  proto.Agent.displayName = 'proto.Agent';
 }
 
 
@@ -42,8 +42,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GetAssetAction.prototype.toObject = function(opt_includeInstance) {
-  return proto.GetAssetAction.toObject(opt_includeInstance, this);
+proto.Agent.prototype.toObject = function(opt_includeInstance) {
+  return proto.Agent.toObject(opt_includeInstance, this);
 };
 
 
@@ -52,12 +52,14 @@ proto.GetAssetAction.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GetAssetAction} msg The msg instance to transform.
+ * @param {!proto.Agent} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.GetAssetAction.toObject = function(includeInstance, msg) {
+proto.Agent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    rfid: jspb.Message.getFieldWithDefault(msg, 1, "")
+    publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -71,23 +73,23 @@ proto.GetAssetAction.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GetAssetAction}
+ * @return {!proto.Agent}
  */
-proto.GetAssetAction.deserializeBinary = function(bytes) {
+proto.Agent.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GetAssetAction;
-  return proto.GetAssetAction.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.Agent;
+  return proto.Agent.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GetAssetAction} msg The message object to deserialize into.
+ * @param {!proto.Agent} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GetAssetAction}
+ * @return {!proto.Agent}
  */
-proto.GetAssetAction.deserializeBinaryFromReader = function(msg, reader) {
+proto.Agent.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -96,7 +98,15 @@ proto.GetAssetAction.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setRfid(value);
+      msg.setPublicKey(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setTimestamp(value);
       break;
     default:
       reader.skipField();
@@ -111,9 +121,9 @@ proto.GetAssetAction.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GetAssetAction.prototype.serializeBinary = function() {
+proto.Agent.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GetAssetAction.serializeBinaryToWriter(this, writer);
+  proto.Agent.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -121,15 +131,29 @@ proto.GetAssetAction.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GetAssetAction} message
+ * @param {!proto.Agent} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.GetAssetAction.serializeBinaryToWriter = function(message, writer) {
+proto.Agent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getRfid();
+  f = message.getPublicKey();
   if (f.length > 0) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getTimestamp();
+  if (f !== 0) {
+    writer.writeUint64(
+      3,
       f
     );
   }
@@ -137,17 +161,47 @@ proto.GetAssetAction.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string rfid = 1;
+ * optional string public_key = 1;
  * @return {string}
  */
-proto.GetAssetAction.prototype.getRfid = function() {
+proto.Agent.prototype.getPublicKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.GetAssetAction.prototype.setRfid = function(value) {
+proto.Agent.prototype.setPublicKey = function(value) {
   jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional string name = 2;
+ * @return {string}
+ */
+proto.Agent.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.Agent.prototype.setName = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional uint64 timestamp = 3;
+ * @return {number}
+ */
+proto.Agent.prototype.getTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.Agent.prototype.setTimestamp = function(value) {
+  jspb.Message.setField(this, 3, value);
 };
 
 

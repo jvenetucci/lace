@@ -5,7 +5,7 @@
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-goog.provide('proto.GetAgentAction');
+goog.provide('proto.CreateAgentAction');
 
 goog.require('jspb.Message');
 goog.require('jspb.BinaryReader');
@@ -22,12 +22,12 @@ goog.require('jspb.BinaryWriter');
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GetAgentAction = function(opt_data) {
+proto.CreateAgentAction = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.GetAgentAction, jspb.Message);
+goog.inherits(proto.CreateAgentAction, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.GetAgentAction.displayName = 'proto.GetAgentAction';
+  proto.CreateAgentAction.displayName = 'proto.CreateAgentAction';
 }
 
 
@@ -42,8 +42,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GetAgentAction.prototype.toObject = function(opt_includeInstance) {
-  return proto.GetAgentAction.toObject(opt_includeInstance, this);
+proto.CreateAgentAction.prototype.toObject = function(opt_includeInstance) {
+  return proto.CreateAgentAction.toObject(opt_includeInstance, this);
 };
 
 
@@ -52,12 +52,14 @@ proto.GetAgentAction.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GetAgentAction} msg The msg instance to transform.
+ * @param {!proto.CreateAgentAction} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.GetAgentAction.toObject = function(includeInstance, msg) {
+proto.CreateAgentAction.toObject = function(includeInstance, msg) {
   var f, obj = {
-    publicKey: jspb.Message.getFieldWithDefault(msg, 1, "")
+    publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    role: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -71,23 +73,23 @@ proto.GetAgentAction.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GetAgentAction}
+ * @return {!proto.CreateAgentAction}
  */
-proto.GetAgentAction.deserializeBinary = function(bytes) {
+proto.CreateAgentAction.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GetAgentAction;
-  return proto.GetAgentAction.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.CreateAgentAction;
+  return proto.CreateAgentAction.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GetAgentAction} msg The message object to deserialize into.
+ * @param {!proto.CreateAgentAction} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GetAgentAction}
+ * @return {!proto.CreateAgentAction}
  */
-proto.GetAgentAction.deserializeBinaryFromReader = function(msg, reader) {
+proto.CreateAgentAction.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -97,6 +99,14 @@ proto.GetAgentAction.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setPublicKey(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRole(value);
       break;
     default:
       reader.skipField();
@@ -111,9 +121,9 @@ proto.GetAgentAction.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GetAgentAction.prototype.serializeBinary = function() {
+proto.CreateAgentAction.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GetAgentAction.serializeBinaryToWriter(this, writer);
+  proto.CreateAgentAction.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -121,15 +131,29 @@ proto.GetAgentAction.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GetAgentAction} message
+ * @param {!proto.CreateAgentAction} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.GetAgentAction.serializeBinaryToWriter = function(message, writer) {
+proto.CreateAgentAction.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPublicKey();
   if (f.length > 0) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getRole();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
       f
     );
   }
@@ -140,14 +164,44 @@ proto.GetAgentAction.serializeBinaryToWriter = function(message, writer) {
  * optional string public_key = 1;
  * @return {string}
  */
-proto.GetAgentAction.prototype.getPublicKey = function() {
+proto.CreateAgentAction.prototype.getPublicKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.GetAgentAction.prototype.setPublicKey = function(value) {
+proto.CreateAgentAction.prototype.setPublicKey = function(value) {
   jspb.Message.setField(this, 1, value);
+};
+
+
+/**
+ * optional string name = 2;
+ * @return {string}
+ */
+proto.CreateAgentAction.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.CreateAgentAction.prototype.setName = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * optional int32 role = 3;
+ * @return {number}
+ */
+proto.CreateAgentAction.prototype.getRole = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.CreateAgentAction.prototype.setRole = function(value) {
+  jspb.Message.setField(this, 3, value);
 };
 
 

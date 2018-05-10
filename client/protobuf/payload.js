@@ -13,9 +13,6 @@ goog.require('jspb.BinaryReader');
 goog.require('jspb.BinaryWriter');
 goog.require('proto.CreateAgentAction');
 goog.require('proto.CreateAssetAction');
-goog.require('proto.GetAgentAction');
-goog.require('proto.GetAssetAction');
-goog.require('proto.GetHistoryAction');
 goog.require('proto.TouchAssetAction');
 
 
@@ -68,10 +65,7 @@ proto.Payload.toObject = function(includeInstance, msg) {
     timestamp: jspb.Message.getFieldWithDefault(msg, 2, 0),
     createAsset: (f = msg.getCreateAsset()) && proto.CreateAssetAction.toObject(includeInstance, f),
     createAgent: (f = msg.getCreateAgent()) && proto.CreateAgentAction.toObject(includeInstance, f),
-    touchAsset: (f = msg.getTouchAsset()) && proto.TouchAssetAction.toObject(includeInstance, f),
-    getAsset: (f = msg.getGetAsset()) && proto.GetAssetAction.toObject(includeInstance, f),
-    getAgent: (f = msg.getGetAgent()) && proto.GetAgentAction.toObject(includeInstance, f),
-    getHistory: (f = msg.getGetHistory()) && proto.GetHistoryAction.toObject(includeInstance, f)
+    touchAsset: (f = msg.getTouchAsset()) && proto.TouchAssetAction.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -130,21 +124,6 @@ proto.Payload.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.TouchAssetAction;
       reader.readMessage(value,proto.TouchAssetAction.deserializeBinaryFromReader);
       msg.setTouchAsset(value);
-      break;
-    case 6:
-      var value = new proto.GetAssetAction;
-      reader.readMessage(value,proto.GetAssetAction.deserializeBinaryFromReader);
-      msg.setGetAsset(value);
-      break;
-    case 7:
-      var value = new proto.GetAgentAction;
-      reader.readMessage(value,proto.GetAgentAction.deserializeBinaryFromReader);
-      msg.setGetAgent(value);
-      break;
-    case 8:
-      var value = new proto.GetHistoryAction;
-      reader.readMessage(value,proto.GetHistoryAction.deserializeBinaryFromReader);
-      msg.setGetHistory(value);
       break;
     default:
       reader.skipField();
@@ -212,30 +191,6 @@ proto.Payload.serializeBinaryToWriter = function(message, writer) {
       proto.TouchAssetAction.serializeBinaryToWriter
     );
   }
-  f = message.getGetAsset();
-  if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      proto.GetAssetAction.serializeBinaryToWriter
-    );
-  }
-  f = message.getGetAgent();
-  if (f != null) {
-    writer.writeMessage(
-      7,
-      f,
-      proto.GetAgentAction.serializeBinaryToWriter
-    );
-  }
-  f = message.getGetHistory();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      proto.GetHistoryAction.serializeBinaryToWriter
-    );
-  }
 };
 
 
@@ -245,10 +200,7 @@ proto.Payload.serializeBinaryToWriter = function(message, writer) {
 proto.Payload.Action = {
   CREATE_ASSET: 0,
   CREATE_AGENT: 1,
-  TOUCH_ASSET: 2,
-  GET_ASSET: 3,
-  GET_AGENT: 4,
-  GET_HISTORY: 5
+  TOUCH_ASSET: 2
 };
 
 /**
@@ -368,96 +320,6 @@ proto.Payload.prototype.clearTouchAsset = function() {
  */
 proto.Payload.prototype.hasTouchAsset = function() {
   return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional GetAssetAction get_asset = 6;
- * @return {?proto.GetAssetAction}
- */
-proto.Payload.prototype.getGetAsset = function() {
-  return /** @type{?proto.GetAssetAction} */ (
-    jspb.Message.getWrapperField(this, proto.GetAssetAction, 6));
-};
-
-
-/** @param {?proto.GetAssetAction|undefined} value */
-proto.Payload.prototype.setGetAsset = function(value) {
-  jspb.Message.setWrapperField(this, 6, value);
-};
-
-
-proto.Payload.prototype.clearGetAsset = function() {
-  this.setGetAsset(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.Payload.prototype.hasGetAsset = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * optional GetAgentAction get_agent = 7;
- * @return {?proto.GetAgentAction}
- */
-proto.Payload.prototype.getGetAgent = function() {
-  return /** @type{?proto.GetAgentAction} */ (
-    jspb.Message.getWrapperField(this, proto.GetAgentAction, 7));
-};
-
-
-/** @param {?proto.GetAgentAction|undefined} value */
-proto.Payload.prototype.setGetAgent = function(value) {
-  jspb.Message.setWrapperField(this, 7, value);
-};
-
-
-proto.Payload.prototype.clearGetAgent = function() {
-  this.setGetAgent(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.Payload.prototype.hasGetAgent = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * optional GetHistoryAction get_history = 8;
- * @return {?proto.GetHistoryAction}
- */
-proto.Payload.prototype.getGetHistory = function() {
-  return /** @type{?proto.GetHistoryAction} */ (
-    jspb.Message.getWrapperField(this, proto.GetHistoryAction, 8));
-};
-
-
-/** @param {?proto.GetHistoryAction|undefined} value */
-proto.Payload.prototype.setGetHistory = function(value) {
-  jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-proto.Payload.prototype.clearGetHistory = function() {
-  this.setGetHistory(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.Payload.prototype.hasGetHistory = function() {
-  return jspb.Message.getField(this, 8) != null;
 };
 
 

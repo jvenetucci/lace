@@ -58,11 +58,10 @@ proto.CreateAssetAction.prototype.toObject = function(opt_includeInstance) {
 proto.CreateAssetAction.toObject = function(includeInstance, msg) {
   var f, obj = {
     rfid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    sizeL: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    sizeR: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    sku: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    longitude: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    latitude: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    size: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    sku: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    longitude: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    latitude: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -104,22 +103,18 @@ proto.CreateAssetAction.deserializeBinaryFromReader = function(msg, reader) {
       msg.setRfid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setSizeL(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSize(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setSizeR(value);
-      break;
-    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setSku(value);
       break;
-    case 5:
+    case 4:
       var value = /** @type {number} */ (reader.readSint64());
       msg.setLongitude(value);
       break;
-    case 6:
+    case 5:
       var value = /** @type {number} */ (reader.readSint64());
       msg.setLatitude(value);
       break;
@@ -158,38 +153,31 @@ proto.CreateAssetAction.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getSizeL();
-  if (f !== 0) {
-    writer.writeUint32(
+  f = message.getSize();
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f
-    );
-  }
-  f = message.getSizeR();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
       f
     );
   }
   f = message.getSku();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      3,
       f
     );
   }
   f = message.getLongitude();
   if (f !== 0) {
     writer.writeSint64(
-      5,
+      4,
       f
     );
   }
   f = message.getLatitude();
   if (f !== 0) {
     writer.writeSint64(
-      6,
+      5,
       f
     );
   }
@@ -212,77 +200,62 @@ proto.CreateAssetAction.prototype.setRfid = function(value) {
 
 
 /**
- * optional uint32 size_l = 2;
- * @return {number}
+ * optional string size = 2;
+ * @return {string}
  */
-proto.CreateAssetAction.prototype.getSizeL = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.CreateAssetAction.prototype.getSize = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {number} value */
-proto.CreateAssetAction.prototype.setSizeL = function(value) {
+/** @param {string} value */
+proto.CreateAssetAction.prototype.setSize = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
 /**
- * optional uint32 size_r = 3;
- * @return {number}
- */
-proto.CreateAssetAction.prototype.getSizeR = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/** @param {number} value */
-proto.CreateAssetAction.prototype.setSizeR = function(value) {
-  jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * optional string sku = 4;
+ * optional string sku = 3;
  * @return {string}
  */
 proto.CreateAssetAction.prototype.getSku = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
 proto.CreateAssetAction.prototype.setSku = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setField(this, 3, value);
 };
 
 
 /**
- * optional sint64 longitude = 5;
+ * optional sint64 longitude = 4;
  * @return {number}
  */
 proto.CreateAssetAction.prototype.getLongitude = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
 proto.CreateAssetAction.prototype.setLongitude = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setField(this, 4, value);
 };
 
 
 /**
- * optional sint64 latitude = 6;
+ * optional sint64 latitude = 5;
  * @return {number}
  */
 proto.CreateAssetAction.prototype.getLatitude = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /** @param {number} value */
 proto.CreateAssetAction.prototype.setLatitude = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setField(this, 5, value);
 };
 
 

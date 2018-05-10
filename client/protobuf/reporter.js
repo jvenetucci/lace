@@ -5,7 +5,7 @@
  */
 // GENERATED CODE -- DO NOT EDIT!
 
-goog.provide('proto.Agent');
+goog.provide('proto.Reporter');
 
 goog.require('jspb.Message');
 goog.require('jspb.BinaryReader');
@@ -22,12 +22,12 @@ goog.require('jspb.BinaryWriter');
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Agent = function(opt_data) {
+proto.Reporter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Agent, jspb.Message);
+goog.inherits(proto.Reporter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.Agent.displayName = 'proto.Agent';
+  proto.Reporter.displayName = 'proto.Reporter';
 }
 
 
@@ -42,8 +42,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Agent.prototype.toObject = function(opt_includeInstance) {
-  return proto.Agent.toObject(opt_includeInstance, this);
+proto.Reporter.prototype.toObject = function(opt_includeInstance) {
+  return proto.Reporter.toObject(opt_includeInstance, this);
 };
 
 
@@ -52,15 +52,13 @@ proto.Agent.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Agent} msg The msg instance to transform.
+ * @param {!proto.Reporter} msg The msg instance to transform.
  * @return {!Object}
  */
-proto.Agent.toObject = function(includeInstance, msg) {
+proto.Reporter.toObject = function(includeInstance, msg) {
   var f, obj = {
     publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    firstName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    lastName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    timestamp: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    authorizationLevel: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -74,23 +72,23 @@ proto.Agent.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Agent}
+ * @return {!proto.Reporter}
  */
-proto.Agent.deserializeBinary = function(bytes) {
+proto.Reporter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Agent;
-  return proto.Agent.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.Reporter;
+  return proto.Reporter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Agent} msg The message object to deserialize into.
+ * @param {!proto.Reporter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Agent}
+ * @return {!proto.Reporter}
  */
-proto.Agent.deserializeBinaryFromReader = function(msg, reader) {
+proto.Reporter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -102,16 +100,8 @@ proto.Agent.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPublicKey(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setFirstName(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setLastName(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setTimestamp(value);
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setAuthorizationLevel(value);
       break;
     default:
       reader.skipField();
@@ -126,9 +116,9 @@ proto.Agent.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Agent.prototype.serializeBinary = function() {
+proto.Reporter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Agent.serializeBinaryToWriter(this, writer);
+  proto.Reporter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -136,10 +126,10 @@ proto.Agent.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Agent} message
+ * @param {!proto.Reporter} message
  * @param {!jspb.BinaryWriter} writer
  */
-proto.Agent.serializeBinaryToWriter = function(message, writer) {
+proto.Reporter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPublicKey();
   if (f.length > 0) {
@@ -148,24 +138,10 @@ proto.Agent.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getFirstName();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getLastName();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getTimestamp();
+  f = message.getAuthorizationLevel();
   if (f !== 0) {
-    writer.writeUint64(
-      4,
+    writer.writeUint32(
+      2,
       f
     );
   }
@@ -176,59 +152,29 @@ proto.Agent.serializeBinaryToWriter = function(message, writer) {
  * optional string public_key = 1;
  * @return {string}
  */
-proto.Agent.prototype.getPublicKey = function() {
+proto.Reporter.prototype.getPublicKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.Agent.prototype.setPublicKey = function(value) {
+proto.Reporter.prototype.setPublicKey = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
 /**
- * optional string first_name = 2;
- * @return {string}
- */
-proto.Agent.prototype.getFirstName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.Agent.prototype.setFirstName = function(value) {
-  jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * optional string last_name = 3;
- * @return {string}
- */
-proto.Agent.prototype.getLastName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/** @param {string} value */
-proto.Agent.prototype.setLastName = function(value) {
-  jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * optional uint64 timestamp = 4;
+ * optional uint32 authorization_level = 2;
  * @return {number}
  */
-proto.Agent.prototype.getTimestamp = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+proto.Reporter.prototype.getAuthorizationLevel = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /** @param {number} value */
-proto.Agent.prototype.setTimestamp = function(value) {
-  jspb.Message.setField(this, 4, value);
+proto.Reporter.prototype.setAuthorizationLevel = function(value) {
+  jspb.Message.setField(this, 2, value);
 };
 
 
