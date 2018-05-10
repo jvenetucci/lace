@@ -1,0 +1,25 @@
+{
+  "name": "school-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "cd ClientApps/OwnerClient && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Group B",
+  "license": "ISC",
+  "dependencies": {
+    "cbor": "^4.0.0",
+    "concurrently": "^3.5.1",
+    "express": "^4.16.3",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "sawtooth-sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}
