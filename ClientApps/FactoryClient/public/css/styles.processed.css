@@ -1,0 +1,153 @@
+html {
+    box-sizing: border-box;
+    color: #333;
+    font: 18pt 'Oswald';
+    letter-spacing: 0.05em;
+  }
+  
+  * {
+    box-sizing: inherit;
+  }
+  
+  body {
+    margin: 0;
+  }
+  
+  .primary-layout,
+  .unauthorized-layout {
+    margin: 1em;
+  }
+  
+  h1 {
+    font-size: 1.3em;
+    margin: 0;
+  }
+  
+  a {
+    text-decoration: none;
+    color: blue;
+  }
+  
+  button {
+    border: none;
+    border-radius: 0.3em;
+    padding: 0.5em 1em;
+    background-color: #4db14d;
+    color: #fff;
+    cursor: pointer;
+    outline: 0;
+    font-size: 15pt;
+  }
+  
+  button:focus {
+    background-color: #3e8d3e;
+  }
+  
+  button.outline {
+    border: 1px solid #999;
+    background-color: #fff;
+    color: #555;
+  }
+  
+  button.outline:hover {
+    border-color: #4db14d;
+    color: #4db14d;
+  }
+  
+  .primary-header {
+    display: -ms-flexbox;
+    display: flex;
+  }
+  
+  .primary-header nav {
+    -ms-flex: 1;
+    flex: 1;
+    margin-left: 2em;
+    border-bottom: 2px solid #555;
+  }
+  
+  .primary-header nav a {
+    display: inline-block;
+    padding: 0.3em 1em;
+    color: #555;
+  }
+  
+  .primary-header nav a:hover {
+    background-color: #eee;
+  }
+  
+  .primary-header nav a.active {
+    background-color: #555;
+    color: #fff;
+  }
+  
+  main {
+    margin-top: 1em;
+  }
+  
+  .user-sub-layout {
+    display: -ms-flexbox;
+    display: flex;
+  }
+  
+  .user-sub-layout aside {
+    width: 200px;
+  }
+  
+  .user-sub-layout aside nav a {
+    color: #333;
+    padding: 0.2em 1em;
+    display: block;
+  }
+  
+  .user-sub-layout aside nav a.active {
+    background-color: #555;
+    color: #fff;
+  }
+  
+  .user-sub-layout .primary-content {
+    -ms-flex: 1;
+    flex: 1;
+    margin-left: 2em;
+  }
+  
+  .mock-browser {
+    background-color: #eee;
+    border-bottom: 1px solid #ccc;
+    padding: 0.3em;
+    font: 14pt Arial;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  
+  .mock-browser .path {
+    margin-left: 0.5em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    -ms-flex: 1;
+    flex: 1;
+    display: -ms-flexbox;
+    display: flex;
+    color: #999;
+    border-radius: 3px;
+  }
+  
+  .mock-browser .path>div:last-child {
+    -ms-flex: 1;
+    flex: 1;
+  }
+  
+  .mock-browser .path input {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-weight: bold;
+    font-size: 1em;
+    padding: 0;
+    outline: none;
+  }
+  
+  .mock-browser .path input:focus {
+    color: blue;
+  }
