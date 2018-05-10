@@ -17,5 +17,5 @@ app.use('/', routes);
 app.set('port', process.env.PORT || 5001);
 
 var server = app.listen(app.get('port'), function(){
-    console.log("app started on environment port or 5001");
+    console.log("app started on environment port or", app.get('port'));
 })
