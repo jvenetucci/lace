@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+
+message Asset {
+
+  // A unique string used to calculate the
+  // address.
+  string rfid = 1;
+
+  // The sizes for each shoe.
+  string size = 2;
+
+  // Barcode?
+  string sku = 3;
+}
+
+// Handle hash collisions.
+message AssetContainer {
+  repeated Asset entries = 1;
+}
