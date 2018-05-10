@@ -25,6 +25,46 @@ function queryBlockChainForState() {
     }];
 }
 
+function fakeHistoryReport(RFID) {
+    return RFID == 1 ? {
+        ProductName: "Shoe",
+        History: [
+            {
+                Owner: "Factory",
+                Lat: "0",
+                Long: "0"
+            } , {
+                Owner: "Truck1",
+                Lat: "1",
+                Long: "1"
+            } , {
+                Owner: "Boat",
+                Lat: "2",
+                Long: "2"
+            }
+        ]
+    } : {
+        ProductName: "Sock",
+        History: [
+            {
+                Owner: "Factory2",
+                Lat: "1",
+                Long: "0"
+            } , {
+                Owner: "Truck4",
+                Lat: "1",
+                Long: "3"
+            } , {
+                Owner: "Boat19",
+                Lat: "2",
+                Long: "1"
+            }
+        ]
+
+    }
+}
+
 module.exports = {
-    queryBlockChainForState
+    queryBlockChainForState,
+    fakeHistoryReport
 }

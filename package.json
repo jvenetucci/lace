@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "cd ClientApps/FactoryClient && npm start",
+    "client": "cd ClientApps/OwnerClient && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Group B",
