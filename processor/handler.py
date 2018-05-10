@@ -85,7 +85,7 @@ def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
 
 def _create_agent(payload, signer, timestamp, state):
     name = payload.name
-    public_key = payload.public_key
+    public_key = signer
 
     if not name:
         raise InvalidTransaction(
