@@ -24,23 +24,6 @@ services:
       - validator
     entrypoint: settings-tp -vv -C tcp://validator:4004
 
-<<<<<<< HEAD
-=======
-  intkey-tp-python:
-    image: hyperledger/sawtooth-intkey-tp-python:1.0
-    container_name: sawtooth-intkey-tp-python-default
-    depends_on:
-      - validator
-    entrypoint: intkey-tp-python -vv -C tcp://validator:4004
-
-  xo-tp-python:
-    image: hyperledger/sawtooth-xo-tp-python:1.0
-    container_name: sawtooth-xo-tp-python-default
-    depends_on:
-      - validator
-    entrypoint: xo-tp-python -vv -C tcp://validator:4004
-
->>>>>>> master
   validator:
     image: hyperledger/sawtooth-validator:1.0
     container_name: sawtooth-validator-default
@@ -78,7 +61,6 @@ services:
         sawtooth keygen && \
         tail -f /dev/null \
         \""
-<<<<<<< HEAD
 
   processor:
     image: lace-tp
@@ -96,5 +78,3 @@ services:
       - validator
     entrypoint: |
       /lace/processor/startup -vv tcp://validator:4004
-=======
->>>>>>> master
