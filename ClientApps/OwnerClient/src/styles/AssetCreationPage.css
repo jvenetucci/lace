@@ -43,3 +43,11 @@ input {
     width: 25%;
     padding-left: 10px;
 }
+
+.hidden{
+    display: none;
+}
+
+.show{
+    display: inline;
+}
