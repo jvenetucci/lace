@@ -1,6 +1,18 @@
 var request = require('request-promise');
 var transaction = require('./TransactionCreator');
 
+
+//Address information notes
+// Get the asset information. What shoe, size, etc
+// localhost:8008/state/{Family Name}0{RFID hashed or something}0000
+
+// Main history of item + other pages (touchpoints and stuff)
+// localhost:8008?reverse=t&address={Family Name}1{RFID hashed or something}[{0000} or {0001} or {etc}]
+
+
+
+
+
 async function send(payload){
   // Create batch list
   var batchListBytes = transaction.createTransaction(payload);
