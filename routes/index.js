@@ -24,7 +24,7 @@ router.post('/api/send', async function(req, res){
         return;
     }
     res.statusCode = 200;
-    res.send(response);
+    res.send(response.body);
 });
 
 router.post('/owner/touch', async function(req, res){
@@ -43,7 +43,7 @@ router.post('/owner/touch', async function(req, res){
         return;
     }
     res.statusCode = 200;
-    res.send(response);
+    res.send(response.body);
 });
 
 //A Function to get the history of an item from its RFID. 
