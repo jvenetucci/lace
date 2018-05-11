@@ -113,7 +113,7 @@ class AssetCreationPage extends Component {
                 <input type="submit" value="Submit" />
               </div>
             </form>
-            <button id="button" className="hidden" data-toggle="collapse" data-target="#status"></button>
+            <p5 id="button" className="hidden" data-toggle="collapse" data-target="#status"></p5>
             <div id="status">
             </div>
           </div>
