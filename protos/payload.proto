@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+message Payload {
+  enum Action {
+    CREATE_ASSET = 0;
+    CREATE_AGENT = 1;
+    TOUCH_ASSET = 2;
+  }
+
+  // An action tells the handler which function
+  // the payload requested to use.
+  Action action = 1;
+
+  // Time the transaction was sent.
+  uint64 timestamp = 2;
+  
+  // All the data neccessitated by the actions
+  // defined in the enum.
+  CreateAssetAction create_asset = 3;
+  CreateAgentAction create_agent = 4;
+  TouchAssetAction touch_asset = 5;
+}
+
+message CreateAssetAction {
+
+  // The asset's unique ID.
+  string rfid = 1;
+
+  // Information about the shoe.
+  string size = 2;
+  string sku = 3;
+
+  // Some location data.
+  sint64 longitude = 4;
+  sint64 latitude = 5;
+}
+
+message CreateAgentAction {
+  //info about user
+  string public_key = 1;
+
+  //The name of the user
+  string name = 2;
+  
+  //Job_position
+  int32 role = 3;
+}
+
+message TouchAssetAction {
+  // The asset's unqiue ID, used to find the history.
+  string rfid = 1;
+ 
+  // Some location data
+  sint64 longitude = 2;
+  sint64 latitude = 3;
+}

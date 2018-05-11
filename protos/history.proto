@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+
+message Reporter {
+
+    // Reporter's public_key / agent ID.
+    string public_key = 1;
+        
+    // Info about what this reporter can change.
+    // Turn into bitmask?
+    uint32 authorization_level = 2;
+}
+
+message History {
+
+  // Unique key for handling hash collisions
+  string rfid = 1;
+    
+  // The address suffix / index of the current
+  // touchpoint. Ranges 0001-ffff. Can wrap around.
+  uint32     curr_touchpoint_index = 2;
+  bool       has_wrapped = 3;
+    
+  // List containing the history of people who have
+  // reported touching the asset.
+  repeated Reporter   reporter_list = 4;
+}
+
+message TouchPoint {
+
+	// Some location data.
+  sint64     longitude = 1;
+  sint64     latitude = 2;
+    
+  // The time that this touchpoint was created.
+  uint64     timestamp = 3;
+    
+  // The index in the reporter_list that contains
+  // the reporter data.
+  uint32     reporter_index = 4;
+}
+
+// Handle hash collisions.
+message HistoryContainer {
+  repeated History entries = 1;
+}
+
+// Handle hash collisions
+message TouchPointContainer {
+  repeated TouchPoint entries = 1;
+}
