@@ -44,8 +44,11 @@ class AssetCreationPage extends Component {
           product: this.state.id,
           date: this.state.manufactureDate
         })
-      })
-      .then(response => console.log(response));
+      }).then(function(response){
+        response.json().then(body => document.getElementById("button").innerHTML = body.link
+        );
+        document.getElementById("button").className = 'show';
+      });
       event.preventDefault();
     }
 
@@ -110,6 +113,9 @@ class AssetCreationPage extends Component {
                 <input type="submit" value="Submit" />
               </div>
             </form>
+            <button id="button" className="hidden" data-toggle="collapse" data-target="#status"></button>
+            <div id="status">
+            </div>
           </div>
         );
       }
