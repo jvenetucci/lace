@@ -46,4 +46,26 @@ router.post('/owner/touch', async function(req, res){
     res.send(response);
 });
 
+//A Function to get the history of an item from its RFID. 
+//NOT DONE
+router.post('/owner/history', async function(req, res) {
+    var payload = {
+        Action: 1,
+        RFID: req.body.assetID
+    }
+
+    var response = await request.send(payload);
+    if(!request.errorCheckResponse(response))
+    {
+        // send back to the client with the status code error
+        res.statusCode = response.statusCode;
+        res.send("Invalid request status Code " + response.statusCode);
+        res.end;
+        return;
+    }
+    res.statusCode = 200;
+
+    res.send(response);
+});
+
 module.exports = router;
