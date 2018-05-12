@@ -40,3 +40,10 @@ function makeAgentAddress(identifier) {
             AGENT + 
             hash(identifier).slice(0, 63);
 }
+
+module.exports={
+    makeAgentAddress,
+    makeAssetAddress,
+    makeHistoryAddress,
+    makeTouchpointAddress
+}
