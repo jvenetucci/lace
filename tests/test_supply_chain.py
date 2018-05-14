@@ -42,3 +42,49 @@ class SupplyChainClient(RestClient):
         super().__init__(
             url=url,
             namespace=addressing.NAMESPACE)
+
+    def send_empty_payload(self):
+        return self._post_lace_transaction
+
+    def _post_lace_transaction(self, transaction):
+        return self.send_batches(
+            self.factory.create_batch(
+                transaction))
+
+class TestSupplyChain(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wait_for_rest_apis([REST_API]) # integration_tools.py
+
+    def assert_valid(self, result):
+        try:
+            self.assertEqual("COMMITTED", result[1]['data'][0]['status'])
+            self.assertIn('link', result[1])
+        except AssertionError:
+            raise AssertionError(
+                'Transaction is unexpectedly invalid -- {}'.format(
+                    result['data'][0]['invalid_transactions'][0]['message']))
+
+    def assert_invalid(self, result):
+        self.narrate('{}', result)
+        try:
+            self.assertEqual(
+                'INVALID',
+                result[1]['data'][0]['status'])
+        except (KeyError, IndexError):
+            raise AssertionError(
+                'Transaction is unexpectedly valid')
+                
+    def narrate(self, message, *interpolations):
+        if NARRATION:
+            LOGGER.info(
+                message.format(
+                    *interpolations))
+
+    def test_track_and_trade(self):
+        jin = SupplyChainClient()
+
+        self.assert_invalid(
+            jin.send_empty_payload())
+
+        

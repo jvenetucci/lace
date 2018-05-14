@@ -183,17 +183,7 @@ def _create_asset(payload, signer, timestamp, state):
     # Set the state for the asset and its history.
     _set_container(state, asset_address, asset_container)
     _set_container(state, history_address, history_container)
-    _set_container(state, touchpoint_address, touchpoint_container)
-
-    # list.extend over iterable list asset appends asset to container.entries
-
-    # returns new sorted list anon function I think ag is a parameter ag.public_key is an expression
-    # lambda arguments: expression yields a function object that looks like
-        # def <lambda>(arguments):
-            # return expression
-    # key specifies a function to use for comparison, it looks like we're ordering by public_key
-    #     
-
+    _set_container(state, touchpoint_address, touchpoint_container) 
 
 
 def _touch_asset(payload, signer, timestamp, state):
