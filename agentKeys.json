@@ -1,27 +1,27 @@
 [
     {
         "name": "ShipperBoat",
-        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
-        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+        "public_key": "026d529e3955f7cde5f89dec9dc1defeeffe462765a183c411cafa32406eb2a990",
+        "private_key": "a36ecdfdc14aa1c9fde23c2128ef04836dc46ee084678f05713c3f4417daf57b"
     },
     {
         "name": "ShipperTruck",
-        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
-        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+        "public_key": "031498a3d386e2ff9c6e6eca56f48f8d796248aa3135c9f88e5d7f871bfa12a7ca",
+        "private_key": "4546bcd235297b192b0336dce4bddcdbcd187462d9da1495d920b595f0e377e3"
     },
     {
         "name": "Company",
-        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
-        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+        "public_key": "020b0132a725e8fe6a6ee74a902cfc3f0bcbb7ae7b5d2218aad18b16df422a0f5d",
+        "private_key": "a2460b6e004576ba5a6b11fcce38582eda1cc622682d765cabbb854eb49f068c"
     },
     {
         "name": "Factory",
-        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
-        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+        "public_key": "02bc83bb8d3f5e99ab4cde7bb576ecb6898683261cc044349c15b7076261555f68",
+        "private_key": "8cd7b45d543079857e3dbbf3b4cc581fe924a0633468c8c6be31d563f2fb6cbf"
     },
     {
         "name": "ShipperTruck2",
-        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
-        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+        "public_key": "035db7b0c2e1ffd44c7274fb0245ba4b66fb723ccf90800e60ebc08f8d3bf0cf9b",
+        "private_key": "d0595cc9784237cadf3e1d58b815927e81dcfbbd8fd071f058be4fe5dbd06801"
     }
 ]
