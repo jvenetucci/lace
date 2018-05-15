@@ -1,0 +1,28 @@
+
+[
+    {
+        "name": "ShipperBoat",
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+    },
+    {
+        "name": "ShipperTruck",
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+    },
+    {
+        "name": "Company",
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+    },
+    {
+        "name": "Factory",
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+    },
+    {
+        "name": "ShipperTruck2",
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+    }
+]
