@@ -57,7 +57,7 @@ class LaceMessageFactory:
             outputs = make_asset
         )
 
-    
+    #need to add make empty payload
 
     def _create_transaction(self, payload, inputs, outputs):
         return self._factory._create_transaction(payload, inputs, outputs, [])
