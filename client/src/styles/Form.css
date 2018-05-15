@@ -1,0 +1,52 @@
+.Form {
+    width: 100%;
+    display: table;
+    padding: 50px 0 50px 0;
+}
+
+legend {
+    font-size: larger;
+    margin: 10px;
+    text-align: left;
+}
+
+p {
+    display: table-row;
+    white-space: nowrap;
+}
+
+label {
+    display: table-cell;
+    text-align: right;
+}
+
+input {
+    width: 100%;
+    display: table-cell;
+}
+
+.form-group {
+    padding: 10px;
+}
+
+.row {
+    display: table;
+}
+
+.col-md {
+    float: left;
+    width: 50%;
+}
+
+.col-md input {
+    width: 90%;
+}
+
+.col-md .form-group input {
+    margin-left: -15px;
+}
+
+.btn-submit {
+    width: 25%;
+    padding-left: 10px;
+}

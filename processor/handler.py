@@ -85,7 +85,7 @@ def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
 
 def _create_agent(payload, signer, timestamp, state):
     name = payload.name
-    public_key = payload.public_key
+    public_key = signer
 
     if not name:
         raise InvalidTransaction(
@@ -154,14 +154,14 @@ def _create_asset(payload, signer, timestamp, state):
         curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX,
         has_wrapped = False,
     )
-
+    
     history.reporter_list.extend([
         Reporter(
             public_key          = signer,
             authorization_level = DEFAULT_AUTH_LEVEL, # Default for now.
         )
     ])
-
+    
     # Extend the history container
     history_container.entries.extend([history])
 
@@ -183,7 +183,7 @@ def _create_asset(payload, signer, timestamp, state):
     # Set the state for the asset and its history.
     _set_container(state, asset_address, asset_container)
     _set_container(state, history_address, history_container)
-    _set_container(state, touchpoint_address, touchpoint_container) 
+    _set_container(state, touchpoint_address, touchpoint_container)  
 
 
 def _touch_asset(payload, signer, timestamp, state):
@@ -209,13 +209,14 @@ def _touch_asset(payload, signer, timestamp, state):
     except StopIteration:
         raise InvalidTransaction(
             'History could not be found. Asset likely doesn\'t exist.')
-    
+
     # Find the correct reporter index or loop out.
-    reporter_index = INITIAL_REPORTER_INDEX
+    reporter_count = INITIAL_REPORTER_INDEX
+    reporter_index = -1     # reporter does not exist
     for reporter in history.reporter_list:
         if reporter.public_key == signer:
-            break
-        reporter_index += 1
+            reporter_index = reporter_count
+        reporter_count += 1
 
     touchpoint = TouchPoint (
             longitude = payload.longitude,
@@ -223,20 +224,22 @@ def _touch_asset(payload, signer, timestamp, state):
             reporter_index = INITIAL_REPORTER_INDEX,
             timestamp = timestamp,
     )
-
+   
     # Check if we need to create a new reporter list entry.
-    if reporter_index == len(history.reporter_list):
+    if reporter_index == -1:    # then it wasn't found
         reporter = Reporter(
             public_key = signer,
             authorization_level = DEFAULT_AUTH_LEVEL,
         )
-        history.reporter_list.extend(reporter)
+
+        history.reporter_list.extend([reporter])
         touchpoint.reporter_index = history.reporter_list.len() - 1
     else:
         touchpoint.reporter_index = reporter_index
 
     # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
+        history.has_wrapped = True
         address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
     else:
         address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index + 1)

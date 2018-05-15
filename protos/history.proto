@@ -9,7 +9,7 @@ message Reporter {
     // Info about what this reporter can change.
     // Turn into bitmask?
     uint32 authorization_level = 2;
-  }
+}
 
 message History {
 

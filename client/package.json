@@ -1,17 +1,19 @@
 {
-  "name": "pizza-cli",
-  "version": "1.0.0",
-  "description": "A Command Line Interface for testing and using the pizzaTP",
-  "main": "submit.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Joseph Venetucci",
-  "license": "The Venetucci License",
+  "name": "supply-chain",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "cbor": "^4.0.0",
-    "request": "^2.85.0",
-    "sawtooth-sdk": "^1.0.2"
-  }
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-scripts": "1.1.4",
+    "ajv": "^6.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:5001"
 }

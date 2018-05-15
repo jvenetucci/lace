@@ -1,0 +1,16 @@
+[
+  '{{repeat(90, 100)}}',
+  {
+    productId: '{{guid()}}',
+    sku: '{{objectId()}}',
+    model: '{{random("moon", "modelX", "swing", "lace", "jonsnow", "nyc", "pdx", "psu", "sunrise", "aurora", "eclipse", "corona", "gene", "myth", "link", "steve", "gato", "perro")}}',
+    size: function (tags) {
+      var sizes = ['xs', 's', 'm', 'l', 'xl',
+                   6, 7, 8, 9, 10, 11, 12, 13, 14];
+      return sizes[Math.floor(Math.random() * sizes.length)];
+    },
+    manufactureDate: '{{date(new Date(2014, 0, 1), new Date(), "YYYY-MM-dd")}}'
+  }
+]
+
+@https://www.json-generator.com/#
