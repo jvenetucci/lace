@@ -1,3 +1,16 @@
+''' to use this test one must already know the private key.  on the cli
+input usr0_prv_key, usr1_prv_key, or usr2_prv_key.  This distinction would
+exist depending on who holds keys and has access to the form from which a 
+transaction is created.  
+
+When testing, create_agent should be run with one of the aforementioned 
+users, then we can see if assets can be created and touched repeatedly.
+
+It can also be seen that a bogus private key is the default case when an
+invalid input is provided from the cli. We'd like to see that not every 
+user can touch an asset.'''
+
+
 # Utilities
 from hashlib import sha512
 import sys
@@ -18,51 +31,55 @@ from protobuf.payload_pb2 import Payload, CreateAssetAction
 from protobuf.payload_pb2 import CreateAgentAction, TouchAssetAction
 import addressing
 
+# considering making private key for user0 0000000...000000 and user1 111111...11111 etc
+def _get_prv_key(args):
+    if 1 < len(args) :
+        if args[1] == "usr0_key":       # len 64 vs 66
+            return "03640e18e4f5d932236daa53e10f5e09609c8e21a8e71caaa4674ee35dfb4266"#,  \
+                     "033910a7acbd4a8469e333ca74542e319660e4eddf374ddbe5e1524df79fed542f" 
+        elif args[1] == "usr1_key":
+            return "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551", \
+                    "03121109a430bb7086d07b3b75b07c1697df8dd961a878e717c3ebda877560515f"
+        elif args[1] == "usr2_key":
+            return "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421", \
+                    "0247a2ed6830e495f9f868fd1082858b828fa55684b214a9d415f3cfc7f66cdba5"
+    else:
+        # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
+        print("The format is `test.py touch_asset <required private_key> <required rfid>`, \
+              generated a new private key\n")
+        return "3957568ed763a276a9c60bb1678cfe4c653f8039a9e592100fb28f0fa9e64351", \
+                "02f762ee434326e88d2caed92097ab5d5097842d5b19ac431e6be598eb10cc6fa9"
 
 def _get_time():
     return int(time.time())
+
 
 def _make_rfid():
     rfid = str(uuid.uuid4()).replace("-", "")
     print("Generated RFID: '" + rfid + "'")
     return rfid
 
+
 class TestLace():
     def __init__(self):
-        self.usr0_prv_key = "3957568ed763a276a9c60bb1678cfe4c653f8039a9e592100fb28f0fa9e64351"
-        self.usr1_prv_key = "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421"
-        self.usr2_prv_key = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
-        self.bogus_prv_key = "03640e18e4f5d932236daa53e10f5e09609c8e21a8e71caaa4674ee35dfb4266bb"
         self.signer = secp256k1.PrivateKey()
+        self.public_key = self.signer.pubkey.serialize().hex()
 
-    def create_agent(self, args):       # args [create_agent, name, usr_prv_key]
+    def create_agent(self, args):       # args [create_agent, private_key, name]
         if len(args) < 1:
-            print("\nA name is required to create an agent.\n")
+            print("\nA private key is required to create and agent.\n")
             exit()
 
-        usr_prv_key = ''
-        if 2 < len(args):
-            if args[2] == "usr0_prv_key":
-                usr_prv_key = self.usr0_prv_key
-            elif args[2] == "usr1_prv_key":
-                usr_prv_key = self.usr1_prv_key
-            elif args[2] == "usr2_prv_key":
-                usr_prv_key = self.usr2_prv_key
-            else:
-                # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
-                usr_prv_key = self.bogus_prv_key
-        else:
-            # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
-            usr_prv_key = self.bogus_prv_key
+        private_key, public_key = _get_prv_key(args)
 
-        if 1 < len(args):
+        if 2 < len(args):
             name = args[1]
         else:
             name = "noname"
 
         # make the agent_payload, and specific attributes
         agent_action = CreateAgentAction(
-                public_key = usr_prv_key,
+                public_key = self.public_key,
                 name = name,
         )
 
@@ -76,27 +93,13 @@ class TestLace():
         payload_bytes = agent_payload.SerializeToString()
 
         # Pack it all up and ship it out
-        self.create_transaction(usr_prv_key, payload_bytes)
+        self.create_transaction(private_key, public_key, payload_bytes)
 
 
-    def create_asset(self, args):    # args [create_asset, usr_prv_key]
+    def create_asset(self, args):    # args [create_asset, private_key]
         # must have private key, otherwise the user could create an asset 
         # without the proper credentials, potentially polluting state.
-        usr_prv_key = ''
-        if 1 < len(args) :
-            if args[1] == "usr0_prv_key":
-                usr_prv_key = usr0_prv_key
-            elif args[1] == "usr1_prv_key":
-                usr_prv_key = usr1_prv_key
-            elif args[1] == "usr2_prv_key":
-                usr_prv_key = usr2_prv_key
-            else:
-                # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
-                usr_prv_key = bogus_prv_key
-        else:
-            # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
-            usr_prv_key = bogus_prv_key
-
+        private_key, public_key = _get_prv_key(args)
 
         # make the asset_payload, and specific attributes
         asset_action = CreateAssetAction(
@@ -113,23 +116,48 @@ class TestLace():
             create_asset = asset_action,        
         )
 
+        print("Asset created.\n Generated rfid: {}", asset_action.rfid)
+
         # serialize before sending
         payload_bytes = asset_payload.SerializeToString()
 
         # Pack it all up and ship it out
-        self.create_transaction(usr_prv_key, payload_bytes)
+        self.create_transaction(private_key, public_key, payload_bytes)
 
-    def touch_asset(self, args):    # args [touch_asset, public_key, rfid]
+
+    def touch_asset(self, args):    # args [touch_asset, private_key, rfid]
         # sawtooth-supply-chain/server/system/config.js takes in a json object that
         # contains a private key and a secret, plus network info, and 
         # must know the rfid of an asset to touch it (in theory, obtained through scan)
         if 1 < len(args):
+            print("A private key must be provided to touch an asset")
+            exit()
+        elif 2 < len(args):
+            print("A rfid is necessary to discern the item being touched")
+            exit()
+        
+        private_key, public_key = _get_prv_key(args)    # verify the private key is valid in handler.py
+        rfid = args[2]
+
+        touch_action = TouchAssetAction(
+            rfid = rfid,
+            longitude = 2,
+            latitude = 3,
+        )
+
+        touch_payload = Payload(
+            action = 2,
+            timestamp = _get_time(),
+            touch_asset = touch_action,
+        )
+
+        payload_bytes = touch_payload.SerializeToString()
+
+        self.create_transaction(private_key, public_key, payload_bytes)
 
 
-
-    def create_transaction(self, private_key, payload_bytes):
+    def create_transaction(self, private_key, public_key, payload_bytes):
         self.signer.set_raw_privkey(bytes.fromhex(private_key))
-        public_key = self.signer.pubkey.serialize().hex()
 
         txn_header_bytes = TransactionHeader(
             family_name='lace',
@@ -185,7 +213,6 @@ class TestLace():
         output.write(batch_list_bytes)
 
         print("Outputed batch file to 'lace.batches'.")
-
 
 
 # Get arg from command line.
