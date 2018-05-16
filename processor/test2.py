@@ -35,7 +35,7 @@ class TestLace():
         self.bogus_prv_key = "03640e18e4f5d932236daa53e10f5e09609c8e21a8e71caaa4674ee35dfb4266bb"
         self.signer = secp256k1.PrivateKey()
 
-    def create_agent(self, args):
+    def create_agent(self, args):       # args [create_agent, name, usr_prv_key]
         if len(args) < 1:
             print("\nA name is required to create an agent.\n")
             exit()
@@ -79,10 +79,11 @@ class TestLace():
         self.create_transaction(usr_prv_key, payload_bytes)
 
 
-    def create_asset(self, args):
-        # mandate having a public key here
+    def create_asset(self, args):    # args [create_asset, usr_prv_key]
+        # must have private key, otherwise the user could create an asset 
+        # without the proper credentials, potentially polluting state.
         usr_prv_key = ''
-        if len(args) <= 1:
+        if 1 < len(args) :
             if args[1] == "usr0_prv_key":
                 usr_prv_key = usr0_prv_key
             elif args[1] == "usr1_prv_key":
@@ -118,7 +119,12 @@ class TestLace():
         # Pack it all up and ship it out
         self.create_transaction(usr_prv_key, payload_bytes)
 
-    #def touch_asset(self, args):
+    def touch_asset(self, args):    # args [touch_asset, public_key, rfid]
+        # sawtooth-supply-chain/server/system/config.js takes in a json object that
+        # contains a private key and a secret, plus network info, and 
+        # must know the rfid of an asset to touch it (in theory, obtained through scan)
+        if 1 < len(args):
+
 
 
     def create_transaction(self, private_key, payload_bytes):
@@ -189,7 +195,7 @@ if len(args) <= 0:
     print("\nAn action is require:")
     print("test.py create_agent \"Your name\"")
     print("test.py create_asset <optional rfid>")
-    print("test.py touch_asset <required rfid>\n")
+    print("test.py touch_asset <required private_key> <required rfid>\n")
     exit()
 else:
     cmd = args[0]
