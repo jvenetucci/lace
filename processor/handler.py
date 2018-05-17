@@ -360,7 +360,19 @@ def _unpack_transaction(transaction):
     action = payload.action
     timestamp = payload.timestamp
 
+    #Need to recompile protos of agent
+    #1: Nike (create agent)
+    #2: Factory (create asset)
+    #3: Shipper (touch asset)
+
     try:
+        role_of_agent = _get_Agent_Role(state, signer)
+        if role_of_agent == 2 and action == 'CREATE_AGENT':
+            raise InvalidTransaction('User may not create user')
+        elif role_of_agent == 3 and action == 'CREATE_AGENT':
+            raise InvalidTransaction('User may not create new agent')
+        elif role_of_agent == 3 and action == 'CREATE_ASSET':
+            raise InvalidTransaction('User may not create asset')
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
     except KeyError:
         raise Exception('Specified action is invalid')
@@ -415,6 +427,15 @@ def _verify_agent(state, public_key):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
 
+#using this to get the agent's role
+def _get_Agent_Role(state, public_key):
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    if all(agent.public_key == public_key for agent in container.entries):
+        return agent.role
+    else:
+        raise InternalError("Could not find agent")
 
 TYPE_TO_ACTION_HANDLER = { 
     Payload.CREATE_AGENT: ('create_agent', _create_agent),
