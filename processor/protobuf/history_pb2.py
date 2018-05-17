@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='history.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\rhistory.proto\";\n\x08Reporter\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x1b\n\x13\x61uthorization_level\x18\x02 \x01(\r\"m\n\x07History\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x1d\n\x15\x63urr_touchpoint_index\x18\x02 \x01(\r\x12\x13\n\x0bhas_wrapped\x18\x03 \x01(\x08\x12 \n\rreporter_list\x18\x04 \x03(\x0b\x32\t.Reporter\"\\\n\nTouchPoint\x12\x11\n\tlongitude\x18\x01 \x01(\x12\x12\x10\n\x08latitude\x18\x02 \x01(\x12\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\x12\x16\n\x0ereporter_index\x18\x04 \x01(\r\"-\n\x10HistoryContainer\x12\x19\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x08.History\"3\n\x13TouchPointContainer\x12\x1c\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x0b.TouchPointb\x06proto3')
+  serialized_pb=_b('\n\rhistory.proto\";\n\x08Reporter\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x1b\n\x13\x61uthorization_level\x18\x02 \x01(\r\"}\n\x07History\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x1d\n\x15\x63urr_touchpoint_index\x18\x02 \x01(\r\x12\x13\n\x0bhas_wrapped\x18\x03 \x01(\x08\x12 \n\rreporter_list\x18\x04 \x03(\x0b\x32\t.Reporter\x12\x0e\n\x06locked\x18\x05 \x01(\x08\"\\\n\nTouchPoint\x12\x11\n\tlongitude\x18\x01 \x01(\x12\x12\x10\n\x08latitude\x18\x02 \x01(\x12\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\x12\x16\n\x0ereporter_index\x18\x04 \x01(\r\"-\n\x10HistoryContainer\x12\x19\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x08.History\"3\n\x13TouchPointContainer\x12\x1c\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x0b.TouchPointb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -99,6 +99,13 @@ _HISTORY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='locked', full_name='History.locked', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -112,7 +119,7 @@ _HISTORY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=78,
-  serialized_end=187,
+  serialized_end=203,
 )
 
 
@@ -163,8 +170,8 @@ _TOUCHPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=189,
-  serialized_end=281,
+  serialized_start=205,
+  serialized_end=297,
 )
 
 
@@ -194,8 +201,8 @@ _HISTORYCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=283,
-  serialized_end=328,
+  serialized_start=299,
+  serialized_end=344,
 )
 
 
@@ -225,8 +232,8 @@ _TOUCHPOINTCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=330,
-  serialized_end=381,
+  serialized_start=346,
+  serialized_end=397,
 )
 
 _HISTORY.fields_by_name['reporter_list'].message_type = _REPORTER
