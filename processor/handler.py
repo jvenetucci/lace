@@ -240,9 +240,11 @@ def _touch_asset(payload, signer, timestamp, state):
     # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
         history.has_wrapped = True
-        address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
+        history.curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX
     else:
-        address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index + 1)
+        history.curr_touchpoint_index += 1
+
+    address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index)
   
     container = _get_container(state, address)
 
