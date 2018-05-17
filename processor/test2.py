@@ -248,7 +248,7 @@ args = ["create_agent", "usr0_key", "bob"]
 getattr(test, args[0])(args)
 args = ["create_agent", "usr1_key", "jan"]
 getattr(test, args[0])(args)
-args = ["create_asset", "usr0_key"]
+args = ["create_agent", "usr2_key", "joe"]
 getattr(test, args[0])(args)
 args = ["create_asset", "usr1_key"]
 getattr(test, args[0])(args)
