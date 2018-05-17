@@ -17,6 +17,7 @@ import sys
 import secp256k1
 import time
 import uuid
+import requests
 
 # Sawtooth SDK
 from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
@@ -35,20 +36,15 @@ import addressing
 def _get_prv_key(args):
     if 1 < len(args) :
         if args[1] == "usr0_key":       # len 64 vs 66
-            return "03640e18e4f5d932236daa53e10f5e09609c8e21a8e71caaa4674ee35dfb4266"#,  \
-                     "033910a7acbd4a8469e333ca74542e319660e4eddf374ddbe5e1524df79fed542f" 
+            return "03640e18e4f5d932236daa53e10f5e09609c8e21a8e71caaa4674ee35dfb4266"
         elif args[1] == "usr1_key":
-            return "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551", \
-                    "03121109a430bb7086d07b3b75b07c1697df8dd961a878e717c3ebda877560515f"
+            return "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
         elif args[1] == "usr2_key":
-            return "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421", \
-                    "0247a2ed6830e495f9f868fd1082858b828fa55684b214a9d415f3cfc7f66cdba5"
-    else:
+            return "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421"
         # Generate a bogus pub key that will fail at _verify_agent(state, public_key)
-        print("The format is `test.py touch_asset <required private_key> <required rfid>`, \
-              generated a new private key\n")
-        return "3957568ed763a276a9c60bb1678cfe4c653f8039a9e592100fb28f0fa9e64351", \
-                "02f762ee434326e88d2caed92097ab5d5097842d5b19ac431e6be598eb10cc6fa9"
+    print("The format is `test.py touch_asset <required private_key> <required rfid>`"
+            + "generated a new private key\n")
+    return "3957568ed763a276a9c60bb1678cfe4c653f8039a9e592100fb28f0fa9e64351"
 
 def _get_time():
     return int(time.time())
@@ -60,26 +56,31 @@ def _make_rfid():
     return rfid
 
 
+def _create_signer(private_key):
+    signer = secp256k1.PrivateKey()
+    signer.set_raw_privkey(bytes.fromhex(private_key))
+    return signer
+    
+
 class TestLace():
-    def __init__(self):
-        self.signer = secp256k1.PrivateKey()
-        self.public_key = self.signer.pubkey.serialize().hex()
 
     def create_agent(self, args):       # args [create_agent, private_key, name]
         if len(args) < 1:
             print("\nA private key is required to create and agent.\n")
             exit()
 
-        private_key, public_key = _get_prv_key(args)
+        private_key = _get_prv_key(args)
+        signer = _create_signer(private_key)
 
         if 2 < len(args):
-            name = args[1]
+            name = args[2]
         else:
             name = "noname"
 
         # make the agent_payload, and specific attributes
         agent_action = CreateAgentAction(
-                public_key = self.public_key,
+                #public_key = self.public_key,
+                public_key = signer.pubkey.serialize().hex(),
                 name = name,
         )
 
@@ -93,13 +94,14 @@ class TestLace():
         payload_bytes = agent_payload.SerializeToString()
 
         # Pack it all up and ship it out
-        self.create_transaction(private_key, public_key, payload_bytes)
+        self.create_transaction(signer, payload_bytes)
 
 
     def create_asset(self, args):    # args [create_asset, private_key]
         # must have private key, otherwise the user could create an asset 
         # without the proper credentials, potentially polluting state.
-        private_key, public_key = _get_prv_key(args)
+        private_key = _get_prv_key(args)
+        signer = _create_signer(private_key)
 
         # make the asset_payload, and specific attributes
         asset_action = CreateAssetAction(
@@ -110,33 +112,40 @@ class TestLace():
             latitude = 1,
         )
 
+        ###### GLOBAL RFID FOR TESTING PURPOSES ######
+        global rfid0
+        rfid0 = asset_action.rfid
+        ##############################################
+
         asset_payload = Payload(
             action = 0,
             timestamp = _get_time(),
             create_asset = asset_action,        
         )
 
-        print("Asset created.\n Generated rfid: {}", asset_action.rfid)
+        print("Asset created. Generated rfid: {}", asset_action.rfid)
 
         # serialize before sending
         payload_bytes = asset_payload.SerializeToString()
 
         # Pack it all up and ship it out
-        self.create_transaction(private_key, public_key, payload_bytes)
+        self.create_transaction(signer, payload_bytes)
 
 
     def touch_asset(self, args):    # args [touch_asset, private_key, rfid]
         # sawtooth-supply-chain/server/system/config.js takes in a json object that
         # contains a private key and a secret, plus network info, and 
         # must know the rfid of an asset to touch it (in theory, obtained through scan)
-        if 1 < len(args):
+        if len(args) < 1:
             print("A private key must be provided to touch an asset")
             exit()
-        elif 2 < len(args):
+        elif len(args) < 2:
             print("A rfid is necessary to discern the item being touched")
             exit()
         
-        private_key, public_key = _get_prv_key(args)    # verify the private key is valid in handler.py
+        private_key = _get_prv_key(args)    # verify the private key is valid in handler.py
+        signer = _create_signer(private_key)
+
         rfid = args[2]
 
         touch_action = TouchAssetAction(
@@ -153,22 +162,20 @@ class TestLace():
 
         payload_bytes = touch_payload.SerializeToString()
 
-        self.create_transaction(private_key, public_key, payload_bytes)
+        self.create_transaction(signer, payload_bytes)
 
 
-    def create_transaction(self, private_key, public_key, payload_bytes):
-        self.signer.set_raw_privkey(bytes.fromhex(private_key))
-
+    def create_transaction(self, signer, payload_bytes):
         txn_header_bytes = TransactionHeader(
             family_name='lace',
             family_version='0.1',
             inputs=[addressing.NAMESPACE],
             outputs=[addressing.NAMESPACE],
-            signer_public_key=public_key,
+            signer_public_key = signer.pubkey.serialize().hex(),
             # In this example, we're signing the batch with the same private key,
             # but the batch can be signed by another party, in which case, the
             # public key will need to be associated with that key.
-            batcher_public_key=public_key,
+            batcher_public_key = signer.pubkey.serialize().hex(),
             # In this example, there are no dependencies.  This list should include
             # an previous transaction header signatures that must be applied for
             # this transaction to successfully commit.
@@ -179,8 +186,8 @@ class TestLace():
         ).SerializeToString()
 
         # Ecdsa signing standard, then remove extra ecdsa bytes using compact.
-        txn_signature = self.signer.ecdsa_sign(txn_header_bytes)
-        txn_signature_bytes = self.signer.ecdsa_serialize_compact(txn_signature)
+        txn_signature = signer.ecdsa_sign(txn_header_bytes)
+        txn_signature_bytes = signer.ecdsa_serialize_compact(txn_signature)
         signature = txn_signature_bytes.hex()
 
         txn = Transaction(
@@ -192,13 +199,13 @@ class TestLace():
         txns = [txn]
 
         batch_header_bytes = BatchHeader(
-            signer_public_key=public_key,
+            signer_public_key = signer.pubkey.serialize().hex(),
             transaction_ids=[txn.header_signature for txn in txns],
         ).SerializeToString()
 
 
-        batch_signature = self.signer.ecdsa_sign(batch_header_bytes)
-        batch_signature_bytes = self.signer.ecdsa_serialize_compact(batch_signature)
+        batch_signature = signer.ecdsa_sign(batch_header_bytes)
+        batch_signature_bytes = signer.ecdsa_serialize_compact(batch_signature)
         signature = batch_signature_bytes.hex()
 
         batch = Batch(
@@ -209,24 +216,46 @@ class TestLace():
 
         batch_list_bytes = BatchList(batches=[batch]).SerializeToString()
 
-        output = open('lace.batches', 'wb')
-        output.write(batch_list_bytes)
 
-        print("Outputed batch file to 'lace.batches'.")
+        # ship it out
+        # potentially catch error code here
+        url = "http://localhost:8008/batches"
+        headers = { 'Content-Type' : 'application/octet-stream' }
+        payload = batch_list_bytes
+        resp = requests.post(url, data=payload, headers=headers)
+        print("status code: " + str(resp.status_code))
+        print(resp.text)
 
 
 # Get arg from command line.
-args = sys.argv[1:]
+#args = sys.argv[1:]
+#
+# if len(args) <= 0:
+#     print("\nAn action is require:")
+#     print("test.py create_agent \"Your name\"")
+#     print("test.py create_asset")
+#     print("test.py touch_asset <required private_key> <required rfid>\n")
+#     exit()
+# else:
+#     cmd = args[0]
+#     test = TestLace()
+#     x = getattr(test, cmd)(args)
+rfid0 = ''
+test = TestLace()
 
-if len(args) <= 0:
-    print("\nAn action is require:")
-    print("test.py create_agent \"Your name\"")
-    print("test.py create_asset <optional rfid>")
-    print("test.py touch_asset <required private_key> <required rfid>\n")
-    exit()
-else:
-    cmd = args[0]
-    print(cmd)
-    test = TestLace()
-    x = getattr(test, cmd)(args)
-    print(x)
+# happy path
+args = ["create_agent", "usr0_key", "bob"]
+getattr(test, args[0])(args)
+args = ["create_agent", "usr1_key", "jan"]
+getattr(test, args[0])(args)
+args = ["create_asset", "usr0_key"]
+getattr(test, args[0])(args)
+args = ["create_asset", "usr1_key"]
+getattr(test, args[0])(args)
+print("RFID = " + str(rfid0))
+args = ["touch_asset", "usr0_key", rfid0]
+getattr(test, args[0])(args)
+agrs = ["touch_asset", "usr1_key", rfid0]
+getattr(test, args[0])(args)
+agrs = ["touch_asset", "usr2_key", rfid0]
+getattr(test, args[0])(args)
