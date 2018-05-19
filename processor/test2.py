@@ -13,11 +13,13 @@ user can touch an asset.'''
 
 # Utilities
 from hashlib import sha512
+import subprocess
 import sys
 import secp256k1
 import time
 import uuid
 import requests
+import json
 
 # Sawtooth SDK
 from sawtooth_sdk.protobuf.transaction_pb2 import TransactionHeader
@@ -52,7 +54,6 @@ def _get_time():
 
 def _make_rfid():
     rfid = str(uuid.uuid4()).replace("-", "")
-    print("Generated RFID: '" + rfid + "'")
     return rfid
 
 
@@ -122,8 +123,6 @@ class TestLace():
             timestamp = _get_time(),
             create_asset = asset_action,        
         )
-
-        print("Asset created. Generated rfid: {}", asset_action.rfid)
 
         # serialize before sending
         payload_bytes = asset_payload.SerializeToString()
@@ -217,45 +216,101 @@ class TestLace():
         batch_list_bytes = BatchList(batches=[batch]).SerializeToString()
 
 
-        # ship it out
-        # potentially catch error code here
+        # ship it out and scrape
         url = "http://localhost:8008/batches"
         headers = { 'Content-Type' : 'application/octet-stream' }
         payload = batch_list_bytes
         resp = requests.post(url, data=payload, headers=headers)
-        print("status code: " + str(resp.status_code))
-        print(resp.text)
+
+        time.sleep(2)   # let the transactions be committed.
+        json_url = json.loads(resp.text)
+      #  print("Batch status link: \n\n" + json_url["link"] + "\n")
+        resp = requests.get(json_url["link"])
+        json_batch_status = json.loads(resp.text)
+        print("Batch status: " + json_batch_status["data"][0]["status"])
 
 
-# Get arg from command line.
-#args = sys.argv[1:]
-#
-# if len(args) <= 0:
-#     print("\nAn action is require:")
-#     print("test.py create_agent \"Your name\"")
-#     print("test.py create_asset")
-#     print("test.py touch_asset <required private_key> <required rfid>\n")
-#     exit()
-# else:
-#     cmd = args[0]
-#     test = TestLace()
-#     x = getattr(test, cmd)(args)
+subprocess.run(["docker-compose", "-f" "../sawtooth-default.yaml", "up", "-d"])
+time.sleep(15)
 rfid0 = ''
 test = TestLace()
 
-# happy path
+# create the same agent repeatedly
+# args = ["create_agent", "usr0_key", "bob"]
+# getattr(test, args[0])(args)
+# args = ["create_agent", "usr0_key", "bob"]
+# getattr(test, args[0])(args) 
+# args = ["create_agent", "usr0_key", "bob"]
+# getattr(test, args[0])(args)
+# args = ["create_agent", "usr0_key", "bob"]
+# getattr(test, args[0])(args)
+    # results of this are odd. running test2.py with 4 create agents using the same key and name
+    # only adds one agent to the blockchain.  however, running test2.py for a second time yields 
+    # the expected collision.
+
+print("\t\tHAPPY PATH :)") 
+
+print("\nCREATE THREE AGENTS")
 args = ["create_agent", "usr0_key", "bob"]
 getattr(test, args[0])(args)
 args = ["create_agent", "usr1_key", "jan"]
 getattr(test, args[0])(args)
 args = ["create_agent", "usr2_key", "joe"]
 getattr(test, args[0])(args)
+
+print("\nCREATE ONE ASSET")
 args = ["create_asset", "usr1_key"]
 getattr(test, args[0])(args)
-print("RFID = " + str(rfid0))
+
+print("\nEACH AGENT TOUCHES ASSET ONCE")
 args = ["touch_asset", "usr0_key", rfid0]
 getattr(test, args[0])(args)
 agrs = ["touch_asset", "usr1_key", rfid0]
 getattr(test, args[0])(args)
 agrs = ["touch_asset", "usr2_key", rfid0]
 getattr(test, args[0])(args)
+
+
+print("\n\t\tSAD PATH :(")
+
+print("\nCREATE ASSET WITH BOGUS KEY") 
+args = ["create_asset", "bogus_key", rfid0]
+getattr(test, args[0])(args)
+
+print("\nTOUCH W/ BOGUS KEY")
+args = ["touch_asset", "bogus_key", rfid0]
+getattr(test, args[0])(args)
+
+print("\nTOUCH W/ BOGUS RFID")
+args = ["touch_asset", "usr0_key", "bogus_rfid"]
+getattr(test, args[0])(args)
+
+subprocess.run(["docker-compose", "-f", "../sawtooth-default.yaml", "down"])
+time.sleep(30)
+# subprocess.run(["docker-compose -f sawtooth-default.yaml up"])
+
+# # # touch asset with a bogus key
+# args = ["touch_asset", "bogus_key", rfid0]
+# getattr(test, args[0])(args)
+
+# # touch asset with bogus rfid
+# args = ["touch_asset", "bogus_key", "bogus_rfid"]
+# getattr(test, args[0])(args)
+
+# # create asset with bogus key 
+# args = ["create_asset", "bogus_key", "rfid0"]
+# getattr(test, args[0])(args)
+
+# while loop to prove that wrapping works?
+
+# create an asset with bogus key?
+
+# more tests should be implemented once locking and other permissions have been put into place
+
+# any other notable test cases?
+
+# check for bogus private keys?
+
+# collision of names?
+
+# have rfid0 and rfid1, check that ownership works.
