@@ -41,6 +41,7 @@ DEFAULT_AUTH_LEVEL = 0
 INITIAL_TOUCHPOINT_INDEX = 1
 INITIAL_REPORTER_INDEX = 0
 
+
 class LaceTransactionHandler(TransactionHandler):
     @property
     def family_name(self):
@@ -66,7 +67,7 @@ class LaceTransactionHandler(TransactionHandler):
         appropriate payload attribute and handler function
         '''
         # TO DO : check that timestamp is valid before calling handler.
-        signer, timestamp, payload, handler = _unpack_transaction(transaction)
+        signer, timestamp, payload, handler = _unpack_transaction(transaction, state)
 
         handler(payload, signer, timestamp, state)
 
@@ -106,6 +107,7 @@ def _create_agent(payload, signer, timestamp, state):
     agent = Agent(
         public_key = public_key,
         name = name,
+        role = payload.role
     )
 
     container.entries.extend([agent])
@@ -119,9 +121,6 @@ def _create_asset(payload, signer, timestamp, state):
 
     rfid = payload.rfid
 
-    
-    if not rfid:
-        raise InvalidTransaction('Asset must have rfid.')
 
     asset_address = addressing.make_asset_address(rfid)
     asset_container = _get_container(state, asset_address)
@@ -259,7 +258,7 @@ def _touch_asset(payload, signer, timestamp, state):
 
 # Utility functions
 
-def _unpack_transaction(transaction):
+def _unpack_transaction(transaction, state):
     '''Return the transaction signing key, the SCPayload timestamp, the
     appropriate SCPayload action attribute, and the appropriate
     handler function (with the latter two determined by the constant
@@ -273,8 +272,21 @@ def _unpack_transaction(transaction):
     action = payload.action
     timestamp = payload.timestamp
 
+    #Need to recompile protos of agent
+    #1: Nike (create agent)
+    #2: Factory (create asset)
+    #3: Shipper (touch asset)
     try:
+        role_of_agent = _get_Agent_Role(state, signer)
+        if role_of_agent == 2 and action == 'CREATE_AGENT':
+            raise InvalidTransaction('User may not create user')
+        elif role_of_agent == 3 and action == 'CREATE_AGENT':
+            raise InvalidTransaction('User may not create new agent')
+        elif role_of_agent == 3 and action == 'CREATE_ASSET':
+            raise InvalidTransaction('User may not create asset')
+
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
+
     except KeyError:
         raise Exception('Specified action is invalid')
 
@@ -323,10 +335,19 @@ def _verify_agent(state, public_key):
     ''' Verify that public_key has been registered as an agent '''
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
-
+    
     if all(agent.public_key != public_key for agent in container.entries):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
+
+
+#using this to get the agent's role
+def _get_Agent_Role(state, public_key):
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    if all(agent.public_key == public_key for agent in container.entries):
+        return agent.role
 
 
 TYPE_TO_ACTION_HANDLER = { 
