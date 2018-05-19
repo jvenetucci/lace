@@ -3,3 +3,5 @@ node_modules
 *.log
 __pychache__/
 *.py[cod]
+/getTesting
+processor/lace.batches
