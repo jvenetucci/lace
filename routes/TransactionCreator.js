@@ -13,7 +13,7 @@ const {createContext, CryptoFactory} = require('sawtooth-sdk/signing');
 
 const context = createContext('secp256k1');
 
-//Here we go, using the actual protobuf stuff from backend to build a transaction. 
+//Using the actual protobuf stuff from backend to build a transaction. 
 //Arg1: the payload object to be sent
 //Arg2: some way to indicate the private key of the client. 
 //      Could be a name that we consult a map to get the private key, 
@@ -59,22 +59,13 @@ function createTransactionSecp(payload, tempPrivateKeyTemp) {
 
     //Touch Asset Action
     } else if(payload.Action === 2) {
+        //TOUCH ASSET IS NOT PROPERLY IMPLEMENTED.
+        //I'm trying to get create agent and asset to work so this is getting mostly ignored.
         console.log('DO NOT TRY TOUCH, IT DOES NOT WORK')
-        var touchAssetInformation = {
-            rfid: payload.ModelID,
-            longitude: (Math.random()*180),
-            latitude: (Math.random()*180)
-        };
-
-        var touchAssetPayload = Payload.TouchAssetAction({
-            action: payload.Action,
-            timestamp: (new Date).getTime(),
-            create_asset: touchAssetInformation
-        });
-
-        var payloadBytes = Payload.TouchAssetAction.serializeBinary(touchAssetPayload);
+        var payloadBytes = Payload.TouchAssetAction.serializeBinary('Touch Asset is not implemented.');
     } else {
-        payloadBytes = 'Ya done goofed; ya goofed real bad.';
+        console.log('Invalid action attempted.');
+        payloadBytes = 'Invalid action code';
     }
 
     const header = {
@@ -137,7 +128,7 @@ function createTransactionSecp(payload, tempPrivateKeyTemp) {
 
 //Function creates a transaction 
 //Input: String for: 0) Kind of action that you are doing 1) shoe type 2) shoe size 3) sku 4) RFID#
-//Output: A single transaction object ready to be batched and sent. 
+//Output: A polite error message. 
 function createTransaction(payload) {
     return 'Wrong function';
 };

@@ -13,8 +13,7 @@ var transaction = require('./TransactionCreator');
 //A temporary thing here to be the key and name for the agent.
 var agent = {
   name: 'Agent Smith',
-  privateKey: '41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551',
-  made_yet: false
+  privateKey: '41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551'
 };
 
 
@@ -23,15 +22,14 @@ var agent = {
 async function send(payload){
   //TEST CODE, DELETE LATER
   //This makes the agent so we can try out the code to add the asset.
-  //if(agent.made_yet === false) {
-    var batchListBytes = transaction.createTransactionSecp({
-      Action: 1,
-      Name: agent.name
-    }, agent.privateKey);
-    //agent.made_yet = true;
-    // get a response use await to wait to get a response then return value
-    var response = await submit(batchListBytes);
-  //}
+  //Just needs to be here until we have an actual way to make agents on app startup. 
+  var batchListBytes = transaction.createTransactionSecp({
+    Action: 1,
+    Name: agent.name
+  }, agent.privateKey);
+  var response = await submit(batchListBytes);
+  //END OF TEST CODE THAT NEEDS TO BE DELETED LATER.
+    
 
   // Create batch list
   var batchListBytes = transaction.createTransactionSecp(payload, agent.privateKey);
