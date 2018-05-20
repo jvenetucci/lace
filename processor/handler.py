@@ -210,12 +210,8 @@ def _touch_asset(payload, signer, timestamp, state):
         raise InvalidTransaction(
             'History could not be found. Asset likely doesn\'t exist.')
     
-    # Find the correct reporter index or loop out.
-    reporter_index = INITIAL_REPORTER_INDEX
-    for reporter in history.reporter_list:
-        if reporter.public_key == signer:
-            break
-        reporter_index += 1
+
+    # Create touchpoint and find or add the reporter
 
     touchpoint = TouchPoint (
             longitude = payload.longitude,
@@ -224,16 +220,24 @@ def _touch_asset(payload, signer, timestamp, state):
             timestamp = timestamp,
     )
 
+    # Find the correct reporter index or loop out.
+    reporter_index = INITIAL_REPORTER_INDEX
+    not_found = True
+    for reporter in history.reporter_list:
+        if reporter.public_key == signer:
+            touchpoint.reporter_index = reporter_index
+            not_found = False
+            break
+        reporter_index += 1
+
     # Check if we need to create a new reporter list entry.
-    if reporter_index == len(history.reporter_list):
+    if not_found:
         reporter = Reporter(
             public_key = signer,
             authorization_level = DEFAULT_AUTH_LEVEL,
         )
-        history.reporter_list.extend(reporter)
-        touchpoint.reporter_index = history.reporter_list.len() - 1
-    else:
-        touchpoint.reporter_index = reporter_index
+        history.reporter_list.extend([reporter])
+        touchpoint.reporter_index = reporter_index - 1
 
     # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
