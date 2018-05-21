@@ -31,7 +31,7 @@ from sawtooth_sdk.protobuf.batch_pb2 import BatchList
 
 # Lace structures and addressing
 from protobuf.payload_pb2 import Payload, CreateAssetAction
-from protobuf.payload_pb2 import CreateAgentAction, TouchAssetAction
+from protobuf.payload_pb2 import CreateAgentAction, TouchAssetAction, LockAssetAction, UnlockAssetAction
 import addressing
 
 
@@ -48,6 +48,8 @@ def _make_rfid():
 signer = secp256k1.PrivateKey()
 
 # Paste a new private key as hex here.
+#CUSTOM_KEY = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+CUSTOM_KEY = "8abb24b3c14cb80f84cd5e72048aaa9dd368174e0ce459b86ff91207ed440e07"
 CUSTOM_KEY = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
 #CUSTOM_KEY = "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421"
 
@@ -78,6 +80,14 @@ touch_action = TouchAssetAction(
     rfid = "",
     longitude = 2,
     latitude = 2,
+)
+
+lock_action = LockAssetAction(
+    rfid = ""
+)
+
+unlock_action = UnlockAssetAction(
+    rfid = ""
 )
 
 
@@ -147,6 +157,40 @@ elif test == "touch_asset":
     )
 
     payload_bytes = touch_payload.SerializeToString()
+
+elif test == "lock_asset":
+    if len(args) <= 1:
+        print("\nRFID is required to touch an asset.\n")
+        exit()
+    else:
+        rfid = args[1]
+
+    lock_action.rfid = rfid
+
+    lock_payload = Payload(
+        action = 3,
+        timestamp = _get_time(),
+        lock_asset = lock_action,
+    )
+
+    payload_bytes = lock_payload.SerializeToString()
+
+elif test == "unlock_asset":
+    if len(args) <= 1:
+        print("\nRFID is required to touch an asset.\n")
+        exit()
+    else:
+        rfid = args[1]
+
+    unlock_action.rfid = rfid
+
+    unlock_payload = Payload(
+        action = 4,
+        timestamp = _get_time(),
+        unlock_asset = unlock_action,
+    )
+
+    payload_bytes = unlock_payload.SerializeToString()
     
 else:
     print("\nA valid action is require:")

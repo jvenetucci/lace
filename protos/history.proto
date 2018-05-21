@@ -24,6 +24,9 @@ message History {
   // List containing the history of people who have
   // reported touching the asset.
   repeated Reporter   reporter_list = 4;
+
+  // Restrict the history from being modified.
+  bool locked = 5;
 }
 
 message TouchPoint {

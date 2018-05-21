@@ -5,6 +5,8 @@ message Payload {
     CREATE_ASSET = 0;
     CREATE_AGENT = 1;
     TOUCH_ASSET = 2;
+    LOCK_ASSET = 3;
+    UNLOCK_ASSET = 4;
   }
 
   // An action tells the handler which function
@@ -19,6 +21,8 @@ message Payload {
   CreateAssetAction create_asset = 3;
   CreateAgentAction create_agent = 4;
   TouchAssetAction touch_asset = 5;
+  LockAssetAction lock_asset = 6;
+  UnlockAssetAction unlock_asset = 7;
 }
 
 message CreateAssetAction {
@@ -53,4 +57,14 @@ message TouchAssetAction {
   // Some location data
   sint64 longitude = 2;
   sint64 latitude = 3;
+}
+
+message LockAssetAction {
+  // The asset's unqiue ID, used to find the history.
+  string rfid = 1;
+}
+
+message UnlockAssetAction {
+  // The asset's unqiue ID, used to find the history.
+  string rfid = 1;
 }

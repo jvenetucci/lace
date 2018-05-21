@@ -209,6 +209,11 @@ def _touch_asset(payload, signer, timestamp, state):
         raise InvalidTransaction(
             'History could not be found. Asset likely doesn\'t exist.')
 
+    # Check for a lock
+    if history.locked:
+        raise InvalidTransaction(
+            'Asset is locked. You must unlock it or request that it be unlocked.')
+
     # Find the correct reporter index or loop out.
     reporter_count = INITIAL_REPORTER_INDEX
     reporter_index = -1     # reporter does not exist
@@ -254,7 +259,91 @@ def _touch_asset(payload, signer, timestamp, state):
         container.entries.extend([touchpoint])
 
     _set_container(state, address, container)
+    _set_container(state, history_address, history_container)
 
+def _lock_asset(payload, signer, timestamp, state):
+    _verify_agent(state, signer)
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'RFID needed to lock asset.')
+
+    # Get the asset history.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
+
+    try:
+        history = next(
+            entry
+            for entry in history_container.entries
+            if entry.rfid == rfid
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'History could not be found. Asset likely doesn\'t exist.')
+
+    touchpoint_index = history.curr_touchpoint_index
+    touchpoint_address = addressing.make_touchpoint_address(rfid, touchpoint_index)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    try:
+        touchpoint = touchpoint_container.entries[0]
+    except:
+        raise InvalidTransaction('Unable to get needed touchpoint.')
+
+    last_reporter = history.reporter_list[touchpoint.reporter_index]
+
+    if not last_reporter.public_key == signer:
+        raise InvalidTransaction('Not authorized to lock this asset.')
+
+    history.locked = True
+
+    _set_container(state, history_address, history_container)
+
+
+def _unlock_asset(payload, signer, timestamp, state):
+    _verify_agent(state, signer)
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'RFID needed to lock asset.')
+
+    # Get the asset history.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
+
+    try:
+        history = next(
+            entry
+            for entry in history_container.entries
+            if entry.rfid == rfid
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'History could not be found. Asset likely doesn\'t exist.')
+
+    touchpoint_index = history.curr_touchpoint_index
+    touchpoint_address = addressing.make_touchpoint_address(rfid, touchpoint_index)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    try:
+        touchpoint = touchpoint_container.entries[0]
+    except:
+        raise InvalidTransaction('Unable to get needed touchpoint.')
+
+    last_reporter = history.reporter_list[touchpoint.reporter_index]
+
+    if not last_reporter.public_key == signer:
+        raise InvalidTransaction('Not authorized to unlock this asset.')
+
+    history.locked = False
+
+    _set_container(state, history_address, history_container)
+    
 
 # Utility functions
 
@@ -276,6 +365,7 @@ def _unpack_transaction(transaction, state):
     #1: Nike (create agent)
     #2: Factory (create asset)
     #3: Shipper (touch asset)
+
     try:
         role_of_agent = _get_Agent_Role(state, signer)
         if role_of_agent == 2 and action == 'CREATE_AGENT':
@@ -284,7 +374,6 @@ def _unpack_transaction(transaction, state):
             raise InvalidTransaction('User may not create new agent')
         elif role_of_agent == 3 and action == 'CREATE_ASSET':
             raise InvalidTransaction('User may not create asset')
-
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
 
     except KeyError:
@@ -340,6 +429,15 @@ def _verify_agent(state, public_key):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
 
+#using this to get the agent's role
+def _get_Agent_Role(state, public_key):
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    if all(agent.public_key == public_key for agent in container.entries):
+        return agent.role
+    else:
+        raise InternalError("Could not find agent")
 
 #using this to get the agent's role
 def _get_Agent_Role(state, public_key):
@@ -354,4 +452,6 @@ TYPE_TO_ACTION_HANDLER = {
     Payload.CREATE_AGENT: ('create_agent', _create_agent),
     Payload.CREATE_ASSET: ('create_asset', _create_asset),
     Payload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+    Payload.LOCK_ASSET: ('lock_asset', _lock_asset),
+    Payload.UNLOCK_ASSET: ('unlock_asset', _unlock_asset),
 }
