@@ -41,6 +41,7 @@ DEFAULT_AUTH_LEVEL = 0
 INITIAL_TOUCHPOINT_INDEX = 1
 INITIAL_REPORTER_INDEX = 0
 
+
 class LaceTransactionHandler(TransactionHandler):
     @property
     def family_name(self):
@@ -66,7 +67,7 @@ class LaceTransactionHandler(TransactionHandler):
         appropriate payload attribute and handler function
         '''
         # TO DO : check that timestamp is valid before calling handler.
-        signer, timestamp, payload, handler = _unpack_transaction(transaction)
+        signer, timestamp, payload, handler = _unpack_transaction(transaction, state)
 
         handler(payload, signer, timestamp, state)
 
@@ -106,6 +107,7 @@ def _create_agent(payload, signer, timestamp, state):
     agent = Agent(
         public_key = public_key,
         name = name,
+        role = payload.role
     )
 
     container.entries.extend([agent])
@@ -119,9 +121,6 @@ def _create_asset(payload, signer, timestamp, state):
 
     rfid = payload.rfid
 
-    
-    if not rfid:
-        raise InvalidTransaction('Asset must have rfid.')
 
     asset_address = addressing.make_asset_address(rfid)
     asset_container = _get_container(state, asset_address)
@@ -154,14 +153,14 @@ def _create_asset(payload, signer, timestamp, state):
         curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX,
         has_wrapped = False,
     )
-
+    
     history.reporter_list.extend([
         Reporter(
             public_key          = signer,
             authorization_level = DEFAULT_AUTH_LEVEL, # Default for now.
         )
     ])
-
+    
     # Extend the history container
     history_container.entries.extend([history])
 
@@ -215,7 +214,13 @@ def _touch_asset(payload, signer, timestamp, state):
         raise InvalidTransaction(
             'Asset is locked. You must unlock it or request that it be unlocked.')
 
-    # Create touchpoint and find or add the reporter
+    # Find the correct reporter index or loop out.
+    reporter_count = INITIAL_REPORTER_INDEX
+    reporter_index = -1     # reporter does not exist
+    for reporter in history.reporter_list:
+        if reporter.public_key == signer:
+            reporter_index = reporter_count
+        reporter_count += 1
 
     touchpoint = TouchPoint (
             longitude = payload.longitude,
@@ -223,31 +228,27 @@ def _touch_asset(payload, signer, timestamp, state):
             reporter_index = INITIAL_REPORTER_INDEX,
             timestamp = timestamp,
     )
-
-    # Find the correct reporter index or loop out.
-    reporter_index = INITIAL_REPORTER_INDEX
-    not_found = True
-    for reporter in history.reporter_list:
-        if reporter.public_key == signer:
-            touchpoint.reporter_index = reporter_index
-            not_found = False
-            break
-        reporter_index += 1
-
+   
     # Check if we need to create a new reporter list entry.
-    if not_found:
+    if reporter_index == -1:    # then it wasn't found
         reporter = Reporter(
             public_key = signer,
             authorization_level = DEFAULT_AUTH_LEVEL,
         )
+
         history.reporter_list.extend([reporter])
-        touchpoint.reporter_index = reporter_index - 1
+        touchpoint.reporter_index = history.reporter_list.len() - 1
+    else:
+        touchpoint.reporter_index = reporter_index
 
     # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
-        address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
+        history.has_wrapped = True
+        history.curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX
     else:
-        address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index + 1)
+        history.curr_touchpoint_index += 1
+
+    address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index)
   
     container = _get_container(state, address)
 
@@ -346,7 +347,7 @@ def _unlock_asset(payload, signer, timestamp, state):
 
 # Utility functions
 
-def _unpack_transaction(transaction):
+def _unpack_transaction(transaction, state):
     '''Return the transaction signing key, the SCPayload timestamp, the
     appropriate SCPayload action attribute, and the appropriate
     handler function (with the latter two determined by the constant
@@ -374,6 +375,7 @@ def _unpack_transaction(transaction):
         elif role_of_agent == 3 and action == 'CREATE_ASSET':
             raise InvalidTransaction('User may not create asset')
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
+
     except KeyError:
         raise Exception('Specified action is invalid')
 
@@ -422,7 +424,7 @@ def _verify_agent(state, public_key):
     ''' Verify that public_key has been registered as an agent '''
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
-
+    
     if all(agent.public_key != public_key for agent in container.entries):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
@@ -436,6 +438,15 @@ def _get_Agent_Role(state, public_key):
         return agent.role
     else:
         raise InternalError("Could not find agent")
+
+#using this to get the agent's role
+def _get_Agent_Role(state, public_key):
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    if all(agent.public_key == public_key for agent in container.entries):
+        return agent.role
+
 
 TYPE_TO_ACTION_HANDLER = { 
     Payload.CREATE_AGENT: ('create_agent', _create_agent),

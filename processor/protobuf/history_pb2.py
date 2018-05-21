@@ -21,7 +21,6 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_pb=_b('\n\rhistory.proto\";\n\x08Reporter\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x1b\n\x13\x61uthorization_level\x18\x02 \x01(\r\"}\n\x07History\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x1d\n\x15\x63urr_touchpoint_index\x18\x02 \x01(\r\x12\x13\n\x0bhas_wrapped\x18\x03 \x01(\x08\x12 \n\rreporter_list\x18\x04 \x03(\x0b\x32\t.Reporter\x12\x0e\n\x06locked\x18\x05 \x01(\x08\"\\\n\nTouchPoint\x12\x11\n\tlongitude\x18\x01 \x01(\x12\x12\x10\n\x08latitude\x18\x02 \x01(\x12\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\x12\x16\n\x0ereporter_index\x18\x04 \x01(\r\"-\n\x10HistoryContainer\x12\x19\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x08.History\"3\n\x13TouchPointContainer\x12\x1c\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x0b.TouchPointb\x06proto3')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -39,14 +38,14 @@ _REPORTER = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='authorization_level', full_name='Reporter.authorization_level', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -77,21 +76,21 @@ _HISTORY = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='curr_touchpoint_index', full_name='History.curr_touchpoint_index', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='has_wrapped', full_name='History.has_wrapped', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='reporter_list', full_name='History.reporter_list', index=3,
       number=4, type=11, cpp_type=10, label=3,
@@ -106,6 +105,7 @@ _HISTORY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -136,28 +136,28 @@ _TOUCHPOINT = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='latitude', full_name='TouchPoint.latitude', index=1,
       number=2, type=18, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='timestamp', full_name='TouchPoint.timestamp', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='reporter_index', full_name='TouchPoint.reporter_index', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -188,7 +188,7 @@ _HISTORYCONTAINER = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -219,7 +219,7 @@ _TOUCHPOINTCONTAINER = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -244,6 +244,7 @@ DESCRIPTOR.message_types_by_name['History'] = _HISTORY
 DESCRIPTOR.message_types_by_name['TouchPoint'] = _TOUCHPOINT
 DESCRIPTOR.message_types_by_name['HistoryContainer'] = _HISTORYCONTAINER
 DESCRIPTOR.message_types_by_name['TouchPointContainer'] = _TOUCHPOINTCONTAINER
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Reporter = _reflection.GeneratedProtocolMessageType('Reporter', (_message.Message,), dict(
   DESCRIPTOR = _REPORTER,

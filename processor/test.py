@@ -50,6 +50,8 @@ signer = secp256k1.PrivateKey()
 # Paste a new private key as hex here.
 #CUSTOM_KEY = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
 CUSTOM_KEY = "8abb24b3c14cb80f84cd5e72048aaa9dd368174e0ce459b86ff91207ed440e07"
+CUSTOM_KEY = "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551"
+#CUSTOM_KEY = "13143ae71c154fb44d931d3745dd71d5541e189e00bc4d3aa2d53d69bfe7b421"
 
 # Comment out this next line to get a new key.
 signer.set_raw_privkey(bytes.fromhex(CUSTOM_KEY))
