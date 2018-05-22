@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import '../styles/AssetTransferPage.css'
+import '../styles/AssetHistory.css'
 
-class AssetTransferPage extends Component {
+class AssetHistoryPage extends Component {
   constructor(props) {
     super(props);
         this.state = {
@@ -18,17 +18,17 @@ class AssetTransferPage extends Component {
 
   handleSubmit(event) {
     alert(
-      "Touch Asset \nAsset ID: " + this.state.rfid
+      "History\nRFID: " + this.state.rfid
     );
   
-  fetch('/api/touch/Company', {
+  fetch('/api/history/Company', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      rfid: this.state.rfid,
+      RFID: this.state.rfid,
     })
   })
   .then(response => console.log(response));
@@ -37,11 +37,11 @@ class AssetTransferPage extends Component {
 
   render() {
       return (
-        <div className="AssetTransferPage">
+        <div className="AssetHistoryPage">
           <form onSubmit={this.handleSubmit}>
-            <legend>Asset Transfer Form</legend>
+            <legend>Display History Form</legend>
             <div className="form-group">
-              <label>RFID</label>
+              <label>RFRID</label>
               <input 
                 type="text" 
                 name="rfid"
@@ -62,4 +62,4 @@ class AssetTransferPage extends Component {
     }
 }
 
-export default AssetTransferPage
+export default AssetHistoryPage
