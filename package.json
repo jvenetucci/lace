@@ -15,10 +15,13 @@
     "cbor": "^4.0.0",
     "concurrently": "^3.5.1",
     "express": "^4.16.3",
+    "google-protobuf": "^3.5.0",
+    "mysql": "^2.15.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "sawtooth-sdk": "^1.0.4",
-    "secp256k1": "^3.5.0"
+    "secp256k1": "^3.5.0",
+    "ws": "^5.1.1"
   },
   "devDependencies": {
     "nodemon": "^1.17.3"

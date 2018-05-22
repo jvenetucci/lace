@@ -78,3 +78,15 @@ services:
       - validator
     entrypoint: |
       /lace/processor/startup -vv tcp://validator:4004
+
+  mysql-sc:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: supplychain
+    ports:
+      - "3308:3306"
+      # MYSQL_USER: user
+      # MYSQL_PASSWORD: password  
+
+    
