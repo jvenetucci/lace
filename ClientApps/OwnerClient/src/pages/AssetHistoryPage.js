@@ -20,7 +20,7 @@ class AssetHistoryPage extends Component {
     alert(
       "History\nRFID: " + this.state.rfid
     );
-  
+
   fetch('/api/history/Company', {
     method: 'POST',
     headers: {
@@ -31,8 +31,25 @@ class AssetHistoryPage extends Component {
       RFID: this.state.rfid,
     })
   })
-  .then(response => console.log(response));
+  .then(response => {
+    //Need to extract the data from the response
+    const reader = response.body.getReader();
+    reader.read().then((({done, value}) => {
+      //decode and parse into JSON
+      var obj = new TextDecoder("utf-8").decode(value);
+      let jsonObj = JSON.parse(obj);
+
+      //Reference for names of JSON fields.
+      //alert(obj);
+
+      //Extract relevant info.
+      var rfid = jsonObj.entriesList[0].rfid;
+      var reporterList = jsonObj.entriesList[0].reporterListList;
+      alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
+    }))
+  });
     event.preventDefault();
+
   }
 
   render() {
@@ -57,6 +74,12 @@ class AssetHistoryPage extends Component {
           </form>
           <div>
           </div>
+          <div className="TableDescriptor" id="tabDesc"/>
+            <div className="HistoryTable">
+              <table id="histTable">
+                <tbody></tbody>
+              </table>
+            </div>
         </div>
       );
     }

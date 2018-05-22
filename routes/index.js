@@ -69,7 +69,7 @@ router.post('/api/history/:user', async function(req, res) {
     console.log(instance);
 
     res.statusCode = 200;
-    res.send(response.body);
+    res.send(instance);
     
 });
 
