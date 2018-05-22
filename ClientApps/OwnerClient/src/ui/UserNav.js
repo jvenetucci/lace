@@ -6,6 +6,7 @@ const UserNav = ({ match }) => (
     <NavLink to={`${match.path}`} exact activeClassName="active">Transfer</NavLink>
     <NavLink to={`${match.path}/create`} activeClassName="active">Create</NavLink>
     <NavLink to={`${match.path}/view`} activeClassName="active">View</NavLink>
+    <NavLink to={`${match.path}/history`} activeClassName="active">History</NavLink>
   </nav>
 )
 
