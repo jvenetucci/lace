@@ -237,7 +237,7 @@ def _touch_asset(payload, signer, timestamp, state):
         )
 
         history.reporter_list.extend([reporter])
-        touchpoint.reporter_index = history.reporter_list.len() - 1
+        touchpoint.reporter_index = len(history.reporter_list) - 1
     else:
         touchpoint.reporter_index = reporter_index
 
@@ -368,7 +368,7 @@ def _unpack_transaction(transaction, state):
 
     payload = getattr(payload_header, attribute)
 
-    ***REMOVED*** = {
+    company = {
         Payload.CREATE_AGENT:True,
         Payload.CREATE_ASSET:True,
         Payload.TOUCH_ASSET:True,
@@ -395,12 +395,12 @@ def _unpack_transaction(transaction, state):
     if action == Payload.CREATE_AGENT:
         return signer, timestamp, payload, handler
 
-    if action not in ***REMOVED***:
+    if action not in company:
         raise InvalidTransaction('\'' + action + '\' is not a valid action.')
 
     agent_role = _get_Agent_Role(state, signer)
 
-    if agent_role <= 0 and (not ***REMOVED***[action]):
+    if agent_role <= 0 and (not company[action]):
         raise InvalidTransaction('Not authorized to perform this action.')
     elif agent_role == 1 and (not factory[action]):
         raise InvalidTransaction('Not authorized to perform this action.')
