@@ -355,31 +355,57 @@ def _unpack_transaction(transaction, state):
     '''
     signer = transaction.header.signer_public_key
 
-    payload = Payload()
-    payload.ParseFromString(transaction.payload)
+    payload_header = Payload()
+    payload_header.ParseFromString(transaction.payload)
 
-    action = payload.action
-    timestamp = payload.timestamp
-
-    #Need to recompile protos of agent
-    #1: Nike (create agent)
-    #2: Factory (create asset)
-    #3: Shipper (touch asset)
+    action = payload_header.action
+    timestamp = payload_header.timestamp
 
     try:
-        role_of_agent = _get_Agent_Role(state, signer)
-        if role_of_agent == 2 and action == 'CREATE_AGENT':
-            raise InvalidTransaction('User may not create user')
-        elif role_of_agent == 3 and action == 'CREATE_AGENT':
-            raise InvalidTransaction('User may not create new agent')
-        elif role_of_agent == 3 and action == 'CREATE_ASSET':
-            raise InvalidTransaction('User may not create asset')
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
-
     except KeyError:
         raise Exception('Specified action is invalid')
 
-    payload = getattr(payload, attribute)
+    payload = getattr(payload_header, attribute)
+
+    ***REMOVED*** = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:True,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:True,
+        Payload.UNLOCK_ASSET:True,
+    }
+
+    factory = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:True,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:True,
+        Payload.UNLOCK_ASSET:True,
+    }
+
+    shipper = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:False,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:False,
+        Payload.UNLOCK_ASSET:False,
+    }
+
+    if action == Payload.CREATE_AGENT:
+        return signer, timestamp, payload, handler
+
+    if action not in ***REMOVED***:
+        raise InvalidTransaction('\'' + action + '\' is not a valid action.')
+
+    agent_role = _get_Agent_Role(state, signer)
+
+    if agent_role <= 0 and (not ***REMOVED***[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
+    elif agent_role == 1 and (not factory[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
+    elif agent_role >= 2 and (not shipper[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
 
     return signer, timestamp, payload, handler
 
@@ -434,18 +460,17 @@ def _get_Agent_Role(state, public_key):
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
 
-    if all(agent.public_key == public_key for agent in container.entries):
-        return agent.role
-    else:
-        raise InternalError("Could not find agent")
+    try:
+        agent = next(
+            entry
+            for entry in container.entries
+            if entry.public_key == public_key
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'No agent found.')
 
-#using this to get the agent's role
-def _get_Agent_Role(state, public_key):
-    address = addressing.make_agent_address(public_key)
-    container = _get_container(state, address)
-
-    if all(agent.public_key == public_key for agent in container.entries):
-        return agent.role
+    return agent.role
 
 
 TYPE_TO_ACTION_HANDLER = { 
