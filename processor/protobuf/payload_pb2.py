@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='payload.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\rpayload.proto\"\xf8\x01\n\x07Payload\x12\x1f\n\x06\x61\x63tion\x18\x01 \x01(\x0e\x32\x0f.Payload.Action\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12(\n\x0c\x63reate_asset\x18\x03 \x01(\x0b\x32\x12.CreateAssetAction\x12(\n\x0c\x63reate_agent\x18\x04 \x01(\x0b\x32\x12.CreateAgentAction\x12&\n\x0btouch_asset\x18\x05 \x01(\x0b\x32\x11.TouchAssetAction\"=\n\x06\x41\x63tion\x12\x10\n\x0c\x43REATE_ASSET\x10\x00\x12\x10\n\x0c\x43REATE_AGENT\x10\x01\x12\x0f\n\x0bTOUCH_ASSET\x10\x02\"a\n\x11\x43reateAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\t\x12\x0b\n\x03sku\x18\x03 \x01(\t\x12\x11\n\tlongitude\x18\x04 \x01(\x12\x12\x10\n\x08latitude\x18\x05 \x01(\x12\"C\n\x11\x43reateAgentAction\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04role\x18\x03 \x01(\x05\"E\n\x10TouchAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x11\n\tlongitude\x18\x02 \x01(\x12\x12\x10\n\x08latitude\x18\x03 \x01(\x12\x62\x06proto3')
+  serialized_pb=_b('\n\rpayload.proto\"\xea\x02\n\x07Payload\x12\x1f\n\x06\x61\x63tion\x18\x01 \x01(\x0e\x32\x0f.Payload.Action\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12(\n\x0c\x63reate_asset\x18\x03 \x01(\x0b\x32\x12.CreateAssetAction\x12(\n\x0c\x63reate_agent\x18\x04 \x01(\x0b\x32\x12.CreateAgentAction\x12&\n\x0btouch_asset\x18\x05 \x01(\x0b\x32\x11.TouchAssetAction\x12$\n\nlock_asset\x18\x06 \x01(\x0b\x32\x10.LockAssetAction\x12(\n\x0cunlock_asset\x18\x07 \x01(\x0b\x32\x12.UnlockAssetAction\"_\n\x06\x41\x63tion\x12\x10\n\x0c\x43REATE_ASSET\x10\x00\x12\x10\n\x0c\x43REATE_AGENT\x10\x01\x12\x0f\n\x0bTOUCH_ASSET\x10\x02\x12\x0e\n\nLOCK_ASSET\x10\x03\x12\x10\n\x0cUNLOCK_ASSET\x10\x04\"a\n\x11\x43reateAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\t\x12\x0b\n\x03sku\x18\x03 \x01(\t\x12\x11\n\tlongitude\x18\x04 \x01(\x12\x12\x10\n\x08latitude\x18\x05 \x01(\x12\"C\n\x11\x43reateAgentAction\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04role\x18\x03 \x01(\x05\"E\n\x10TouchAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\x12\x11\n\tlongitude\x18\x02 \x01(\x12\x12\x10\n\x08latitude\x18\x03 \x01(\x12\"\x1f\n\x0fLockAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\t\"!\n\x11UnlockAssetAction\x12\x0c\n\x04rfid\x18\x01 \x01(\tb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -43,11 +43,19 @@ _PAYLOAD_ACTION = _descriptor.EnumDescriptor(
       name='TOUCH_ASSET', index=2, number=2,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='LOCK_ASSET', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='UNLOCK_ASSET', index=4, number=4,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=205,
-  serialized_end=266,
+  serialized_start=285,
+  serialized_end=380,
 )
 _sym_db.RegisterEnumDescriptor(_PAYLOAD_ACTION)
 
@@ -94,6 +102,20 @@ _PAYLOAD = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='lock_asset', full_name='Payload.lock_asset', index=5,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='unlock_asset', full_name='Payload.unlock_asset', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -108,7 +130,7 @@ _PAYLOAD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=18,
-  serialized_end=266,
+  serialized_end=380,
 )
 
 
@@ -166,8 +188,8 @@ _CREATEASSETACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=268,
-  serialized_end=365,
+  serialized_start=382,
+  serialized_end=479,
 )
 
 
@@ -211,8 +233,8 @@ _CREATEAGENTACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=367,
-  serialized_end=434,
+  serialized_start=481,
+  serialized_end=548,
 )
 
 
@@ -256,19 +278,85 @@ _TOUCHASSETACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=436,
-  serialized_end=505,
+  serialized_start=550,
+  serialized_end=619,
+)
+
+
+_LOCKASSETACTION = _descriptor.Descriptor(
+  name='LockAssetAction',
+  full_name='LockAssetAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rfid', full_name='LockAssetAction.rfid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=621,
+  serialized_end=652,
+)
+
+
+_UNLOCKASSETACTION = _descriptor.Descriptor(
+  name='UnlockAssetAction',
+  full_name='UnlockAssetAction',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='rfid', full_name='UnlockAssetAction.rfid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=654,
+  serialized_end=687,
 )
 
 _PAYLOAD.fields_by_name['action'].enum_type = _PAYLOAD_ACTION
 _PAYLOAD.fields_by_name['create_asset'].message_type = _CREATEASSETACTION
 _PAYLOAD.fields_by_name['create_agent'].message_type = _CREATEAGENTACTION
 _PAYLOAD.fields_by_name['touch_asset'].message_type = _TOUCHASSETACTION
+_PAYLOAD.fields_by_name['lock_asset'].message_type = _LOCKASSETACTION
+_PAYLOAD.fields_by_name['unlock_asset'].message_type = _UNLOCKASSETACTION
 _PAYLOAD_ACTION.containing_type = _PAYLOAD
 DESCRIPTOR.message_types_by_name['Payload'] = _PAYLOAD
 DESCRIPTOR.message_types_by_name['CreateAssetAction'] = _CREATEASSETACTION
 DESCRIPTOR.message_types_by_name['CreateAgentAction'] = _CREATEAGENTACTION
 DESCRIPTOR.message_types_by_name['TouchAssetAction'] = _TOUCHASSETACTION
+DESCRIPTOR.message_types_by_name['LockAssetAction'] = _LOCKASSETACTION
+DESCRIPTOR.message_types_by_name['UnlockAssetAction'] = _UNLOCKASSETACTION
 
 Payload = _reflection.GeneratedProtocolMessageType('Payload', (_message.Message,), dict(
   DESCRIPTOR = _PAYLOAD,
@@ -297,6 +385,20 @@ TouchAssetAction = _reflection.GeneratedProtocolMessageType('TouchAssetAction', 
   # @@protoc_insertion_point(class_scope:TouchAssetAction)
   ))
 _sym_db.RegisterMessage(TouchAssetAction)
+
+LockAssetAction = _reflection.GeneratedProtocolMessageType('LockAssetAction', (_message.Message,), dict(
+  DESCRIPTOR = _LOCKASSETACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:LockAssetAction)
+  ))
+_sym_db.RegisterMessage(LockAssetAction)
+
+UnlockAssetAction = _reflection.GeneratedProtocolMessageType('UnlockAssetAction', (_message.Message,), dict(
+  DESCRIPTOR = _UNLOCKASSETACTION,
+  __module__ = 'payload_pb2'
+  # @@protoc_insertion_point(class_scope:UnlockAssetAction)
+  ))
+_sym_db.RegisterMessage(UnlockAssetAction)
 
 
 # @@protoc_insertion_point(module_scope)

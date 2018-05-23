@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='agent.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x0b\x61gent.proto\"<\n\x05\x41gent\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x04\")\n\x0e\x41gentContainer\x12\x17\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x06.Agentb\x06proto3')
+  serialized_pb=_b('\n\x0b\x61gent.proto\"J\n\x05\x41gent\x12\x12\n\npublic_key\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04role\x18\x03 \x01(\x05\x12\x11\n\ttimestamp\x18\x04 \x01(\x04\")\n\x0e\x41gentContainer\x12\x17\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x06.Agentb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -48,8 +48,15 @@ _AGENT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='Agent.timestamp', index=2,
-      number=3, type=4, cpp_type=4, label=1,
+      name='role', full_name='Agent.role', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='Agent.timestamp', index=3,
+      number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -67,7 +74,7 @@ _AGENT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=15,
-  serialized_end=75,
+  serialized_end=89,
 )
 
 
@@ -97,8 +104,8 @@ _AGENTCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=77,
-  serialized_end=118,
+  serialized_start=91,
+  serialized_end=132,
 )
 
 _AGENTCONTAINER.fields_by_name['entries'].message_type = _AGENT

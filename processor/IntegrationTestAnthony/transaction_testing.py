@@ -60,10 +60,6 @@ class LaceClient(RestClient):
         #add in lace.batches
         return self.send_batches(self.factory.create_batch(transaction))
 
-    def send_empty_payload(self):
-        return self._post_transaction(
-            self.factory.make_empty_payload(
-                self.public_key))
     
     #need to add the translating hex: example in test.py
     def create_agent(self, name):
@@ -72,37 +68,4 @@ class LaceClient(RestClient):
         )
     
     
-
-class TestLace(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        wait_for_rest_apis(['localhost:8008'])
-
-    def assert_valid(self, result):
-        try:
-            self.assertEqual("COMMITTED", result[1]['data'][0]['status'])
-            self.assertIn('link', result[1])
-        except AssertionError:
-            raise AssertionError(
-                'Transaction is unexpectedly invalid -- {}'.format(
-                    result['data'][0]['invalid_transactions'][0]['message']))
-        def assert_invalid(self, result):
-        self.narrate('{}', result)
-        try:
-            self.assertEqual(
-                'INVALID',
-                result[1]['data'][0]['status'])
-        except (KeyError, IndexError):
-            raise AssertionError(
-                'Transaction is unexpectedly valid')
-
-    def narrate(self, message, *interpolations):
-        if NARRATION:
-            LOGGER.info(
-                message.format(
-                    *interpolations))
-
-    def test_track_and_trade(self):
-        Test = LaceClient()
-
     
