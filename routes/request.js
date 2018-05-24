@@ -41,7 +41,7 @@ function submit(batchListBytes){
 }
 
 // Go to url of transaction status and return the status
-function getStatus(transactionStatus){
+async function getStatus(transactionStatus){
   return request.get({
     url: transactionStatus,
     headers: {'Content-Type': 'application/json'},
@@ -87,5 +87,6 @@ function errorCheckResponse(response){
 module.exports={
     send,
     errorCheckResponse,
-    getHistory
+    getHistory,
+    getStatus
 }

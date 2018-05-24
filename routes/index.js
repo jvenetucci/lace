@@ -44,7 +44,7 @@ router.post('/api/touch/:user', async function(req, res){
         PrivateKey: agentPubPriKey["private_key"]
     }
     var response = await request.send(payload);
-    console.log(response);
+    //console.log(response);
     sendResponseToClient(res, response);
 });
 
@@ -73,6 +73,14 @@ router.post('/api/history/:user', async function(req, res) {
     
 });
 
+router.post('/api/status/:user', async function(req, res){
+    console.log(req.body.url);
+    
+    var response = await request.getStatus(req.body.url);
+
+    res.statusCode = 200;
+    res.send(response);
+});
 
 
 
