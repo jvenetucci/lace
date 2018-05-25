@@ -41,6 +41,7 @@ DEFAULT_AUTH_LEVEL = 0
 INITIAL_TOUCHPOINT_INDEX = 1
 INITIAL_REPORTER_INDEX = 0
 
+
 class LaceTransactionHandler(TransactionHandler):
     @property
     def family_name(self):
@@ -66,7 +67,7 @@ class LaceTransactionHandler(TransactionHandler):
         appropriate payload attribute and handler function
         '''
         # TO DO : check that timestamp is valid before calling handler.
-        signer, timestamp, payload, handler = _unpack_transaction(transaction)
+        signer, timestamp, payload, handler = _unpack_transaction(transaction, state)
 
         handler(payload, signer, timestamp, state)
 
@@ -106,6 +107,7 @@ def _create_agent(payload, signer, timestamp, state):
     agent = Agent(
         public_key = public_key,
         name = name,
+        role = payload.role
     )
 
     container.entries.extend([agent])
@@ -119,9 +121,6 @@ def _create_asset(payload, signer, timestamp, state):
 
     rfid = payload.rfid
 
-    
-    if not rfid:
-        raise InvalidTransaction('Asset must have rfid.')
 
     asset_address = addressing.make_asset_address(rfid)
     asset_container = _get_container(state, asset_address)
@@ -154,14 +153,14 @@ def _create_asset(payload, signer, timestamp, state):
         curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX,
         has_wrapped = False,
     )
-
+    
     history.reporter_list.extend([
         Reporter(
             public_key          = signer,
             authorization_level = DEFAULT_AUTH_LEVEL, # Default for now.
         )
     ])
-
+    
     # Extend the history container
     history_container.entries.extend([history])
 
@@ -209,13 +208,19 @@ def _touch_asset(payload, signer, timestamp, state):
     except StopIteration:
         raise InvalidTransaction(
             'History could not be found. Asset likely doesn\'t exist.')
-    
+
+    # Check for a lock
+    if history.locked:
+        raise InvalidTransaction(
+            'Asset is locked. You must unlock it or request that it be unlocked.')
+
     # Find the correct reporter index or loop out.
-    reporter_index = INITIAL_REPORTER_INDEX
+    reporter_count = INITIAL_REPORTER_INDEX
+    reporter_index = -1     # reporter does not exist
     for reporter in history.reporter_list:
         if reporter.public_key == signer:
-            break
-        reporter_index += 1
+            reporter_index = reporter_count
+        reporter_count += 1
 
     touchpoint = TouchPoint (
             longitude = payload.longitude,
@@ -223,23 +228,27 @@ def _touch_asset(payload, signer, timestamp, state):
             reporter_index = INITIAL_REPORTER_INDEX,
             timestamp = timestamp,
     )
-
+   
     # Check if we need to create a new reporter list entry.
-    if reporter_index == len(history.reporter_list):
+    if reporter_index == -1:    # then it wasn't found
         reporter = Reporter(
             public_key = signer,
             authorization_level = DEFAULT_AUTH_LEVEL,
         )
-        history.reporter_list.extend(reporter)
-        touchpoint.reporter_index = history.reporter_list.len() - 1
+
+        history.reporter_list.extend([reporter])
+        touchpoint.reporter_index = len(history.reporter_list) - 1
     else:
         touchpoint.reporter_index = reporter_index
 
     # Calculate index, considering that it may wrap around.
     if history.curr_touchpoint_index == MAX_TOUCH_POINT:
-        address = addressing.make_touchpoint_address(rfid, INITIAL_TOUCHPOINT_INDEX)
+        history.has_wrapped = True
+        history.curr_touchpoint_index = INITIAL_TOUCHPOINT_INDEX
     else:
-        address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index + 1)
+        history.curr_touchpoint_index += 1
+
+    address = addressing.make_touchpoint_address(rfid, history.curr_touchpoint_index)
   
     container = _get_container(state, address)
 
@@ -250,11 +259,95 @@ def _touch_asset(payload, signer, timestamp, state):
         container.entries.extend([touchpoint])
 
     _set_container(state, address, container)
+    _set_container(state, history_address, history_container)
 
+def _lock_asset(payload, signer, timestamp, state):
+    _verify_agent(state, signer)
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'RFID needed to lock asset.')
+
+    # Get the asset history.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
+
+    try:
+        history = next(
+            entry
+            for entry in history_container.entries
+            if entry.rfid == rfid
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'History could not be found. Asset likely doesn\'t exist.')
+
+    touchpoint_index = history.curr_touchpoint_index
+    touchpoint_address = addressing.make_touchpoint_address(rfid, touchpoint_index)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    try:
+        touchpoint = touchpoint_container.entries[0]
+    except:
+        raise InvalidTransaction('Unable to get needed touchpoint.')
+
+    last_reporter = history.reporter_list[touchpoint.reporter_index]
+
+    if not last_reporter.public_key == signer:
+        raise InvalidTransaction('Not authorized to lock this asset.')
+
+    history.locked = True
+
+    _set_container(state, history_address, history_container)
+
+
+def _unlock_asset(payload, signer, timestamp, state):
+    _verify_agent(state, signer)
+    rfid = payload.rfid
+
+    if not rfid:
+        raise InvalidTransaction(
+            'RFID needed to lock asset.')
+
+    # Get the asset history.
+
+    history_address = addressing.make_history_address(rfid)
+    history_container = _get_container(state, history_address)
+
+    try:
+        history = next(
+            entry
+            for entry in history_container.entries
+            if entry.rfid == rfid
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'History could not be found. Asset likely doesn\'t exist.')
+
+    touchpoint_index = history.curr_touchpoint_index
+    touchpoint_address = addressing.make_touchpoint_address(rfid, touchpoint_index)
+    touchpoint_container = _get_container(state, touchpoint_address)
+
+    try:
+        touchpoint = touchpoint_container.entries[0]
+    except:
+        raise InvalidTransaction('Unable to get needed touchpoint.')
+
+    last_reporter = history.reporter_list[touchpoint.reporter_index]
+
+    if not last_reporter.public_key == signer:
+        raise InvalidTransaction('Not authorized to unlock this asset.')
+
+    history.locked = False
+
+    _set_container(state, history_address, history_container)
+    
 
 # Utility functions
 
-def _unpack_transaction(transaction):
+def _unpack_transaction(transaction, state):
     '''Return the transaction signing key, the SCPayload timestamp, the
     appropriate SCPayload action attribute, and the appropriate
     handler function (with the latter two determined by the constant
@@ -262,18 +355,57 @@ def _unpack_transaction(transaction):
     '''
     signer = transaction.header.signer_public_key
 
-    payload = Payload()
-    payload.ParseFromString(transaction.payload)
+    payload_header = Payload()
+    payload_header.ParseFromString(transaction.payload)
 
-    action = payload.action
-    timestamp = payload.timestamp
+    action = payload_header.action
+    timestamp = payload_header.timestamp
 
     try:
         attribute, handler = TYPE_TO_ACTION_HANDLER[action]
     except KeyError:
         raise Exception('Specified action is invalid')
 
-    payload = getattr(payload, attribute)
+    payload = getattr(payload_header, attribute)
+
+    company = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:True,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:True,
+        Payload.UNLOCK_ASSET:True,
+    }
+
+    factory = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:True,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:True,
+        Payload.UNLOCK_ASSET:True,
+    }
+
+    shipper = {
+        Payload.CREATE_AGENT:True,
+        Payload.CREATE_ASSET:False,
+        Payload.TOUCH_ASSET:True,
+        Payload.LOCK_ASSET:False,
+        Payload.UNLOCK_ASSET:False,
+    }
+
+    if action == Payload.CREATE_AGENT:
+        return signer, timestamp, payload, handler
+
+    if action not in company:
+        raise InvalidTransaction('\'' + action + '\' is not a valid action.')
+
+    agent_role = _get_Agent_Role(state, signer)
+
+    if agent_role <= 0 and (not company[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
+    elif agent_role == 1 and (not factory[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
+    elif agent_role >= 2 and (not shipper[action]):
+        raise InvalidTransaction('Not authorized to perform this action.')
 
     return signer, timestamp, payload, handler
 
@@ -318,14 +450,33 @@ def _verify_agent(state, public_key):
     ''' Verify that public_key has been registered as an agent '''
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
-
+    
     if all(agent.public_key != public_key for agent in container.entries):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
+
+#using this to get the agent's role
+def _get_Agent_Role(state, public_key):
+    address = addressing.make_agent_address(public_key)
+    container = _get_container(state, address)
+
+    try:
+        agent = next(
+            entry
+            for entry in container.entries
+            if entry.public_key == public_key
+        )
+    except StopIteration:
+        raise InvalidTransaction(
+            'No agent found.')
+
+    return agent.role
 
 
 TYPE_TO_ACTION_HANDLER = { 
     Payload.CREATE_AGENT: ('create_agent', _create_agent),
     Payload.CREATE_ASSET: ('create_asset', _create_asset),
     Payload.TOUCH_ASSET: ('touch_asset', _touch_asset),
+    Payload.LOCK_ASSET: ('lock_asset', _lock_asset),
+    Payload.UNLOCK_ASSET: ('unlock_asset', _unlock_asset),
 }
