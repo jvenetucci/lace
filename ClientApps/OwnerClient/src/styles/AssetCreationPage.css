@@ -43,3 +43,55 @@ input {
     width: 25%;
     padding-left: 10px;
 }
+.dropdown-menu {
+    display: grid;
+    border-collapse: collapse;
+    grid-template-columns: 70px 70px 70px 70px 70px;
+    background-color: rgb(206, 212, 218);
+    position: absolute;
+    grid-gap: 0;
+    border-radius: 3px;
+}
+
+.dropdown-cell {
+    padding: 10px;
+    border: 1px solid #333333;
+    text-align: center;
+    font-size: 18px;
+}
+
+.form-group .size-btn {
+    width: 80px;
+    font-size: 18px;
+    padding: 5px 5px 5px 10px;
+    /* padding-right: 10px;
+    padding-left: 10px; */
+    border-radius: 5px;
+    background-color: rgb(206, 212, 218);
+    border: 1px solid #919191;
+}
+
+.dropdown-cell:hover, .active {
+    background-color: #919191;
+}
+
+.no-hover {
+    pointer-events: none;
+}
+
+.size-t-l {
+    border-top-left-radius: 3px;
+}
+
+.size-t-r {
+    border-top-right-radius: 3px;
+}
+
+.size-b-l {
+    border-bottom-left-radius: 3px;
+}
+
+.size-b-r {
+    border-bottom-right-radius: 3px;
+}
+

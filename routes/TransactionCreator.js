@@ -1,102 +1,149 @@
-
 const {createHash} = require('crypto');
 const {protobuf} = require('sawtooth-sdk');
-const cbor = require('cbor');
 
-//This is all account stuff, not for this file in the long run, but it's here for now because there is nowhere else.
+const addressing =  require('../addressing.js');
+const payload_pb = require('../protobufFiles/payload_pb');
+const Secp256k1PrivateKey = require('sawtooth-sdk/signing/secp256k1');
 const {createContext, CryptoFactory} = require('sawtooth-sdk/signing');
-const context = createContext('secp256k1');
-const privateKey = context.newRandomPrivateKey();
-const signer = new CryptoFactory(context).newSigner(privateKey);
-//End account stuff that doesn't belong here.
 
-//Placeholder value for input and output, discussed below where used.
-const placeholderInputOutput = '19d832';
+const FAMILY_NAME = 'lace';
+const FAMILY_VERSION = '0.1'
+const NAMESPACE_PREFIX = '22a6ae'
+
+
+//Using the actual protobuf stuff from backend to build a transaction. 
+//Arg1: the payload object to be sent
+//Arg2: some way to indicate the private key of the client. 
+//      Could be a name that we consult a map to get the private key, 
+//      or maybe it is just the private key, or maybe a signer object, whatever.
+//Returns: A batch containing the transaction made from payload.
+function createTransactionSecp(payload) {
+    var PKGen = Secp256k1PrivateKey.Secp256k1PrivateKey.fromHex(payload.PrivateKey);
+    const signer = new CryptoFactory(createContext('secp256k1')).newSigner(PKGen);
+
+    if(payload.Action === 0)
+    {
+        var createAsset = initializeAsset(payload);
+        var payloadToSend = initializeSendPayload(payload, createAsset);      
+    }
+    else if(payload.Action === 1)
+    {
+        var createAgent = initializeAgent(payload);
+        var payloadToSend = initializeSendPayload(payload, createAgent);
+    }
+    else if(payload.Action === 2)
+    {
+        var createTouch = initializeTouch(payload);
+        var payloadToSend = initializeSendPayload(payload, createTouch);
+    }
+    else{ return; }
+
+    return createBatchListBytes(signer, payload.PublicKey, payloadToSend.serializeBinary());
+}
 
 
 //Function creates a transaction 
 //Input: String for: 0) Kind of action that you are doing 1) shoe type 2) shoe size 3) sku 4) RFID#
-//Output: A single transaction object ready to be batched and sent. 
+//Output: A polite error message. 
 function createTransaction(payload) {
-
-
-    //Encode the payload as bytes
-    const payloadBytes = cbor.encode(payload);
-
-    //Create the transaction header
-    const transactionHeaderBytes = protobuf.TransactionHeader.encode({
-        //No idea what this is for, but it's probably important.
-        familyName: 'intkey',
-        familyVersion: '1.0',
-
-        /*
-        Inputs and outputs are the state addresses a transaction is allowed to read from or write to.
-        This isn't information I'm sure of how to get. The documentation says that this information is 
-        up to the transaction processor, so we may not have anything valid at this time for inputs or outputs. 
-        The tuna demo uses the string "19d832", which I've put here as a placeholder, the alternative is
-        an empty field like with dependencies below. Not sure which it should be.
-        */
-        inputs: [placeholderInputOutput],
-        outputs: [placeholderInputOutput],
-
-        //Add public key. Need to modify when we've added account stuff so that this uses the correct account's key.
-        signerPublicKey: signer.getPublicKey().asHex(),
-        batcherPublicKey: signer.getPublicKey().asHex(),
-
-        //This is supposed to be the previous transaction header, but we don't have any of that, 
-        //and as far as I know, we can't get it at this time.
-        //I've considered saving that, as the information needed is generated right here. Don't know if that would work.
-        dependencies: [],
-
-        //Hash the payload to symbolically link the header and payload. 
-        payloadSha512: createHash('sha512').update(payloadBytes).digest('hex')
-    }).finish();
-
-    //Sign the header with key.
-    const signedHeader = signer.sign(transactionHeaderBytes);
-
-    //Create the transaction
-    const transaction = protobuf.Transaction.create({
-        header: transactionHeaderBytes,
-        headerSignature: signedHeader,
-        payload: payloadBytes
-    });
-
-
-    //Alternative ending where the batch is made here, not sure if this was included in my task or not
-   const transactions = [transaction];
-
-   const batchHeaderBytes = protobuf.BatchHeader.encode({
-       signerPublicKey: signer.getPublicKey().asHex(),
-       transactionIds: transactions.map((txn) => txn.headerSignature),
-   }).finish();
-
-   const batchSignature = signer.sign(batchHeaderBytes);
-   
-   const batch = protobuf.Batch.create({
-       header: batchHeaderBytes,
-       headerSignature: batchSignature,
-       transactions: transactions
-   });
-
-   const batchListBytes = protobuf.BatchList.encode({
-       batches: [batch]
-   }).finish();
-
-   return batchListBytes;
-   
+    return 'Wrong function';
 };
 
-module.exports = {
-    createTransaction
+function initializeAsset(payload){
+    var createAsset = new payload_pb.CreateAssetAction();
+    createAsset.setRfid(payload.RFID);
+    createAsset.setSize(payload.Size);
+    createAsset.setSku(payload.SkuID);
+  //  createAsset.setModel(payload.ModelID);    Current protobuf does not have a set model 
+    createAsset.setLongitude(0);
+    createAsset.setLatitude(0);
+    return createAsset;
 }
 
 
+function initializeAgent(payload){
+    var createAgent = new payload_pb.CreateAgentAction();
+    createAgent.setName(payload.Name);
+    createAgent.setPublicKey(payload.PublicKey);
+    createAgent.setRole(payload.Action);
+    return createAgent;
+}
+
+function initializeTouch(payload){
+    var createTouch = new payload_pb.TouchAssetAction();
+    console.log(payload.RFID);
+    createTouch.setRfid(payload.RFID);
+    createTouch.setLongitude(0);
+    createTouch.setLatitude(0);
+    return createTouch;
+}
 
 
+function initializeSendPayload(payload, create){
+    var payloadToSend = new payload_pb.Payload();
+    payloadToSend.setAction(payload.Action);
+    payloadToSend.setTimestamp((new Date).getTime());
+    if(payload.Action === 0){
+        payloadToSend.setCreateAsset(create);
+    }
+    else if(payload.Action === 1){
+        payloadToSend.setCreateAgent(create);
+    }
+    else if(payload.Action === 2){
+        payloadToSend.setTouchAsset(create);
+    }
+
+    return payloadToSend;
+}
+
+function createBatchListBytes(signer, PublicKey, payloadBytes){
+    const transactionHeader = {
+        familyName: FAMILY_NAME,
+        familyVersion: FAMILY_VERSION,
+        inputs: [NAMESPACE_PREFIX],
+        outputs: [NAMESPACE_PREFIX],
+        signerPublicKey: PublicKey,
+        batcherPublicKey: PublicKey,
+        dependencies: [],
+        payloadSha512: createHash('sha512').update(payloadBytes).digest('hex')
+    };
+    
+    const transactionHeaderAsBytes = protobuf.TransactionHeader.encode(transactionHeader).finish();
+    const signature = signer.sign(transactionHeaderAsBytes);
 
 
+    var transaction = protobuf.Transaction.create({
+        header: transactionHeaderAsBytes,
+        headerSignature: signature,
+        payload: payloadBytes
+    });
 
+    var transactionList = [transaction];
 
+    var batchHeader = {
+        signerPublicKey: PublicKey,
+        transactionIds: transactionList.map((txn) => txn.headerSignature)
+    };
 
+    const batchHeaderBytes = protobuf.BatchHeader.encode(batchHeader).finish();
+    
+    const batchSignature = signer.sign(batchHeaderBytes);
+    
+    const batch = protobuf.Batch.create({
+        header: batchHeaderBytes,
+        headerSignature: batchSignature,
+        transactions: transactionList
+    });
+ 
+
+    const batchListBytes = protobuf.BatchList.encode({
+        batches: [batch]
+    }).finish();
+    return batchListBytes;
+}
+
+module.exports = {
+    createTransaction,
+    createTransactionSecp
+}
 

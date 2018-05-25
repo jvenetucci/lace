@@ -22,6 +22,18 @@ class AssetTransferPage extends Component {
       "TRANSFER INFO\nAsset ID: " + this.state.assetId +
       "\nTransfer Date: " + this.state.transferDate
     );
+
+    fetch('/shipper/touch', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        AssetId: this.state.assetId,
+        TransferDate: this.state.transferDate
+      })
+    }).then(response => console.log(response));
     
     event.preventDefault();
   }
