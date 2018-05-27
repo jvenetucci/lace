@@ -46,6 +46,8 @@ services:
   rest-api:
     image: hyperledger/sawtooth-rest-api:1.0
     container_name: sawtooth-rest-api-default
+    expose:
+      - "8008"
     ports:
       - "8008:8008"
     depends_on:
@@ -78,3 +80,17 @@ services:
       - validator
     entrypoint: |
       /lace/processor/startup -vv tcp://validator:4004
+
+  server:
+    container_name: server
+    build: ./server/
+    expose:
+      - "5001"
+    ports:
+      - "5001:5001"
+    environment:
+      - REST_API_ADDRESS=http://rest-api:8008
+    depends_on:
+      - validator
+      - rest-api
+      - processor

@@ -27,7 +27,7 @@ async function send(payload){
 // Send transaction to validator
 function submit(batchListBytes){
   return request.post({
-    url: 'http://localhost:8008/batches',
+    url: process.env.REST_API_ADDRESS + '/batches',
     body: batchListBytes,
     headers: {'Content-Type': 'application/octet-stream'},
     resolveWithFullResponse: true
@@ -56,7 +56,7 @@ async function getStatus(transactionStatus){
 // Get History Of Asset 
 function getHistory(addressing){
   return request.get({
-    url: "http://localhost:8008/state/" +  addressing,
+    url: process.env.REST_API_ADDRESS +  addressing,
     headers: {'Content-Type': 'application/json'},
     resolveWithFullResponse: true
   }).then(function(response){
