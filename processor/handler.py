@@ -43,14 +43,6 @@ INITIAL_REPORTER_INDEX = 0
 
 
 class LaceTransactionHandler(TransactionHandler):
-""" Contains business logic centered around asset transfers in a supply chain
-
-    Three different entities exist when tracking an asset from one location
-    to another.  There is an asset, an agent responsible for the asset, and the
-    history of the asset.  This transaction handler deals with modifying the 
-    global state for the lace transaction family. It is called by the Transaction
-    Processor in main."""
-
     @property
     def family_name(self):
         return addressing.FAMILY_NAME
@@ -64,7 +56,7 @@ class LaceTransactionHandler(TransactionHandler):
         return [addressing.NAMESPACE] # how to determine address prefix
 
     def apply(self, transaction, state):
-        """
+        '''
         A Payload consists of a timestamp, an action tag, and
         attributes corresponding to various actions (create_asset,
         touch_asset, etc).  The appropriate attribute will be selected
@@ -73,16 +65,14 @@ class LaceTransactionHandler(TransactionHandler):
         will be passed to the appropriate handler function
         unpack_transaction gets the signing key, the timestamp, and the 
         appropriate payload attribute and handler function
-        """
-
+        '''
+        # TO DO : check that timestamp is valid before calling handler.
         signer, timestamp, payload, handler = _unpack_transaction(transaction, state)
 
         handler(payload, signer, timestamp, state)
 
 # Helper
 def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
-    """ Creates handlers for the processor to call.  Used in main"""
-
     # For each handler you want to add, you'll
     # create the handler object and call 
     # 'processor.add_handler(<object name>)
@@ -95,14 +85,6 @@ def add_handlers(processor=TransactionProcessor('tcp://localhost:4004')):
 # Handler functions
 
 def _create_agent(payload, signer, timestamp, state):
-    """ Creates an agent with public key, name, and role. 
-
-    The position in the tree is determined by the addressing method used.  LaceTP identifies an 
-    asset with a 6 character hash of the transaction family, followed by a single character to 
-    indicate an agent(2), asset(1) or history(0).  All agents have this single character set
-    to agent(2).  The remaining 63 characters of the merkel tree address is a hash of the agent's
-    public key"""
-
     name = payload.name
     public_key = signer
 
@@ -135,15 +117,6 @@ def _create_agent(payload, signer, timestamp, state):
 
 
 def _create_asset(payload, signer, timestamp, state):
-    """Creates a history and initial touchpoint for an asset. 
-
-    The position in the tree is determined by the addressing method used.  LaceTP identifies an 
-    asset with a 6 character hash of the transaction family, followed by a single character to 
-    indicate an agent(2), asset(1) or history(0).  All touchpoints have this single character set
-    to asset(1).  Between this character and the last four (59 chars) is a random hash of an rfid.  
-    The final four characters indicate the touchpoint index.  The index can never be zero as that 
-    is reserved for the history.  The touchpoint can wrap around zero."""
-
     _verify_agent(state, signer)
 
     rfid = payload.rfid
@@ -213,15 +186,6 @@ def _create_asset(payload, signer, timestamp, state):
 
 
 def _touch_asset(payload, signer, timestamp, state):
-    """ Adds a touchpoint to the list of existing touchpoints for a given asset.
-
-    The position in the tree is determined by the addressing method used.  LaceTP identifies an 
-    asset with a 6 character hash of the transaction family, followed by a single character to 
-    indicate an agent(2), asset(1) or history(0).  All touchpoints have this single character set
-    to asset(1).  The final betweent this character and the final four is a random hash of 59 
-    characters.  The final four characters indicate the touchpoint index.  The index can never be
-    zero as that is reserved for the history.  The touchpoint can wrap around zero."""
-
     _verify_agent(state, signer)
 
     rfid = payload.rfid
@@ -298,12 +262,6 @@ def _touch_asset(payload, signer, timestamp, state):
     _set_container(state, history_address, history_container)
 
 def _lock_asset(payload, signer, timestamp, state):
-    """ Prevents an asset from being touched by locking it.
-
-    To lock an asset, an rfid must be provided by the agent who last
-    held it.  Locking sets the locked field in history to true, and 
-    prevents further touchpoints being added to state without unlocking"""
-
     _verify_agent(state, signer)
     rfid = payload.rfid
 
@@ -346,10 +304,6 @@ def _lock_asset(payload, signer, timestamp, state):
 
 
 def _unlock_asset(payload, signer, timestamp, state):
-    """ Unlocks an asset to allow new touchpoints being created
-
-    An agent needs the authorization to unlock an asset.  The credentials 
-    lie with the last reported holder of the object.""" 
     _verify_agent(state, signer)
     rfid = payload.rfid
 
@@ -394,13 +348,11 @@ def _unlock_asset(payload, signer, timestamp, state):
 # Utility functions
 
 def _unpack_transaction(transaction, state):
-    """ A transaction indicates the handler function and contains info.
-    
-    Return the transaction signing key, the SCPayload timestamp, the
+    '''Return the transaction signing key, the SCPayload timestamp, the
     appropriate SCPayload action attribute, and the appropriate
     handler function (with the latter two determined by the constant
-    TYPE_TO_ACTION_HANDLER table."""
-
+    TYPE_TO_ACTION_HANDLER table.
+    '''
     signer = transaction.header.signer_public_key
 
     payload_header = Payload()
@@ -459,8 +411,6 @@ def _unpack_transaction(transaction, state):
 
 
 def _get_container(state, address):
-    """ Dynamically chooses the appropriate container and grabs current state. """
-
     namespace = address[6:7]
 
     containers = {
@@ -472,10 +422,10 @@ def _get_container(state, address):
     }
 
     # uses namespace to choose Asset or History
-    container = containers[namespace]()
+    container = containers[namespace]() # why the (), c
     
-    entries = state.get_state([address])    
-    
+    entries = state.get_state([address])    # API call, entries 
+
     if entries:
         data = entries[0].data          # get the first address in a list of them
         container.ParseFromString(data) # it looks like some encoded data
@@ -484,8 +434,6 @@ def _get_container(state, address):
 
 
 def _set_container(state, address, container):
-    """ Updates the state once any given handler has run."""
-
     try:
         addresses = state.set_state({
         address: container.SerializeToString()
@@ -499,7 +447,7 @@ def _set_container(state, address, container):
 
 
 def _verify_agent(state, public_key):
-    """ Verify that public_key has been registered as an agent """
+    ''' Verify that public_key has been registered as an agent '''
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
     
@@ -507,8 +455,8 @@ def _verify_agent(state, public_key):
         raise InvalidTransaction(
             'Agent must be registered to perform this action')
 
+#using this to get the agent's role
 def _get_Agent_Role(state, public_key):
-    """ Find an agent's role attribute and return it."""
     address = addressing.make_agent_address(public_key)
     container = _get_container(state, address)
 
