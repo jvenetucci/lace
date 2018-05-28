@@ -5,21 +5,25 @@ import store from '../store'
 // We're just going to skip to the redux part and add a setTimeout
 // for some fake latency
 
+export var userCode = -1;
+
 export const getLoggedUser = () => {
   setTimeout(() => {
     store.dispatch({
-      type: 'GET_LOGGED_USER'
+      type: 'GET_LOGGED_USER',
+      user: userCode === 0 ? 'Shipper' : userCode === 1 ? 'ShipperBoat' : 'ShipperTruck2'
     })
   }, 500)
 }
 
-export const login = () => {
+export const login = (loginCode) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       store.dispatch({
         type: 'SET_LOGGED_USER',
         logged: true
       })
+      userCode = loginCode;
       resolve()
     }, 500)
   })
@@ -32,6 +36,7 @@ export const logout = () => {
         type: 'SET_LOGGED_USER',
         logged: false
       })
+      userCode = -1;
       resolve()
     }, 500)
   })
