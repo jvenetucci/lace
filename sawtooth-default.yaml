@@ -105,3 +105,25 @@ services:
     # See ./ClientApps/OwnerClient/package.json to change proxy
     depends_on:
       - server
+
+  client-shipper:
+    container_name: client-shipper
+    build: ./ClientApps/ShipperClient/
+    expose:
+      - "3000"
+    ports:
+      - "3002:3000"
+    # See ./ClientApps/ShipperClient/package.json to change proxy
+    depends_on:
+      - server
+
+  client-factory:
+    container_name: client-factory
+    build: ./ClientApps/FactoryClient/
+    expose:
+      - "3000"
+    ports:
+      - "3003:3000"
+    # See ./ClientApps/FactoryClient/package.json to change proxy
+    depends_on:
+      - server
