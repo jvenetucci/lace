@@ -27,5 +27,5 @@
     "name3": "Transport",
     "version3": "0.0.0"
   },
-  "proxy": "http://localhost:5001"
+  "proxy": "http://server:5001"
 }
