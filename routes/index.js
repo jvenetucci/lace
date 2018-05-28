@@ -60,12 +60,27 @@ router.post('/api/history/:user', async function(req, res) {
         return;
     }
 
+    console.log(address.makeHistoryAddress(req.body.RFID));
+
     // Decode the response
     var buffer = new Buffer(JSON.parse(response.body).data, 'base64');
     var uInt = new Uint8Array(buffer);
     var instance = history_pb.HistoryContainer.deserializeBinary(uInt).toObject();
 
-    //console.log(instance["entriesList"][0]["reporterListList"]);
+    console.log(instance["entriesList"][0]["reporterListList"]);
+    console.log(instance);
+
+    if(instance.entriesList[0].currTouchpointIndex > 0) {
+        var fullResponse = await request.getTheRestOfTheHistory(req.body.RFID, instance);
+
+        var instanceArray = [];
+        fullResponse.forEach(element => {
+            buffer = new Buffer(JSON.parse(element.body).data, 'base64');
+            uInt = new Uint8Array(buffer);
+            instanceArray[instanceArray.length] = history_pb.HistoryContainer.deserializeBinary(uInt).toObject();
+        });
+        instance = instanceArray;
+    }
     console.log(instance);
 
     res.statusCode = 200;

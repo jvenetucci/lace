@@ -32,16 +32,22 @@ class AssetHistoryPage extends Component {
   
   addTableRows(itemHistory) {
     var tableRef = document.getElementById('histTable');
+
+    //alert('Adding table rows. itemHistory:\n\n' + itemHistory);
   
     itemHistory.forEach(element => {
     var newRow = tableRef.insertRow(-1);
     var newCell = newRow.insertCell(-1);
-
-    var cellText = document.createTextNode(this.resolvePubKeyToName(element.publicKey));
+    //alert(element.entriesList[0].reporterListList[0]);
+    var cellText = document.createTextNode(this.resolvePubKeyToName(element.entriesList[0].reporterListList[0].publicKey));
     newCell.appendChild(cellText);
     });
   
   }
+
+  /*
+  * element.entriesList[0].reporterListList[0].publicKey) => Company in first box then undefined.
+  */
 
   resolvePubKeyToName(keyToResolve) {
 
@@ -63,9 +69,9 @@ class AssetHistoryPage extends Component {
   }
 
   handleSubmit(event) {
-    alert(
+    /*alert(
       "History\nRFID: " + this.state.rfid
-    );
+    );*/
 
   fetch('/api/history/Company', {
     method: 'POST',
@@ -86,12 +92,13 @@ class AssetHistoryPage extends Component {
       let jsonObj = JSON.parse(obj);
 
       //Reference for names of JSON fields.
-      alert(obj);
+      //alert(obj);
 
       //Extract relevant info.
-      var rfid = jsonObj.entriesList[0].rfid;
-      var reporterList = jsonObj.entriesList[0].reporterListList;
-      alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
+      var rfid = jsonObj[0].entriesList[0].rfid;
+      var reporterList = jsonObj;//.entriesList[0].reporterListList;
+      //alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
+      //alert('jsonObj:\n\n' + JSON.stringify(jsonObj));
       this.addTableHead(rfid);
       this.addTableRows(reporterList);
     }))

@@ -1,5 +1,6 @@
 var request = require('request-promise');
 var transaction = require('./TransactionCreator');
+var addressing = require('../addressing.js')
 
 
 //Address information notes
@@ -56,7 +57,7 @@ async function getStatus(transactionStatus){
 // Get History Of Asset 
 function getHistory(addressing){
   return request.get({
-    url: "http://localhost:8008/state/" +  addressing,
+    url: "http://localhost:8008/state/" +  addressing, //"http://localhost:8008/state?head=a8a6541b9df4c74f7589db34abda0974bef670a023dbfc7019e6d337bfac07087ebab9e91053c3a4da5e4e38e7079c311c432dcb8b42d9146dec34802a41a8fb&start=22a6ae1d404559f602eab6fd602ac7680dacbfaadd13630335e951f097af3900e90000&limit=100&address=22a6ae1d404559f602eab6fd602ac7680dacbfaadd13630335e951f097af3900e90000",
     headers: {'Content-Type': 'application/json'},
     resolveWithFullResponse: true
   }).then(function(response){
@@ -83,10 +84,32 @@ function errorCheckResponse(response){
 
 
 
+async function getTheRestOfTheHistory(address, entriesList) {
+  var touchPointIndex = entriesList.entriesList[0].currTouchpointIndex;
+  //var addressLength = address.length;
+  //address = address.substring(0, addressLength - 4);
+  var responseArray = [];
+  for(var i = 0; i <= touchPointIndex; ++i) {
+    //Update address for next one
+    //address[0] = i;
+
+    //Get the data for this position
+    console.log(addressing.makeTouchpointAddress(address, i));
+    var responseTemp = await getHistory(addressing.makeTouchpointAddress(address, i));
+
+    //Save the data
+    responseArray[i] = responseTemp;
+  }
+
+  return responseArray;
+}
+
+
 
 module.exports={
     send,
     errorCheckResponse,
     getHistory,
-    getStatus
+    getStatus,
+    getTheRestOfTheHistory
 }

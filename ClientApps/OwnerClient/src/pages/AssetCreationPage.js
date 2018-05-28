@@ -103,16 +103,6 @@ class AssetCreationPage extends Component {
                 />
               </div>
               <div className="row">
-                    <div className="form-group">
-                    <label>Model</label>
-                    <input 
-                      type="text" 
-                      name="model" 
-                      placeholder="Model"
-                      onChange={this.handleChange}
-                      required
-                    />
-                  </div>
                   <div className="form-group">
                     <div>
                     <label>Size</label>
@@ -143,19 +133,6 @@ class AssetCreationPage extends Component {
                     }
                   </div>
                 </div>
-              </div>
-
-              <div className="row">
-                  <div className="form-group">
-                    <label>Manufacture Date</label>
-                    <input 
-                      type="date" 
-                      name="manufactureDate" 
-                      placeholder="Manufature Date"
-                      onChange={this.handleChange}
-                      required
-                    />
-                  </div>
               </div>
               <div className="btn-submit">
                 <input type="submit" value="Submit" />
