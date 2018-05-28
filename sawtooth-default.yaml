@@ -88,5 +88,10 @@ services:
       - "3308:3306"
       # MYSQL_USER: user
       # MYSQL_PASSWORD: password  
+    volumes:
+      - db:/var/lib/mysql
+volumes:
+    db:
 
-    
+  #cat db/supplyChainDBDump.sql | docker exec -i lace_mysql-sc_1 /usr/bin/mysql -u root --password='password' supplychain 
+  #This puts the creates the table from the .sql file I made.
