@@ -21,7 +21,7 @@ async function send(payload){
     return response;
   }
 
-  var status = await getStatus(JSON.parse(response.body).link);
+  var status = await getStatus(JSON.parse(response.body).link + "&wait=true");
   return status;
 }
 
