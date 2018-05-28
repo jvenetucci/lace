@@ -6,7 +6,7 @@ class AssetCreationPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: '',
+            rfid: '',
             sku: '',
             model: '',
             size: '',
@@ -48,13 +48,13 @@ class AssetCreationPage extends Component {
     */
     handleSubmit(event) {
       alert(
-        "Product Info\nID: " + this.state.id +
+        "Product Info\nID: " + this.state.rfid +
         "\nSKU: " + this.state.sku +
         "\nModel: " + this.state.model +
         "\nSize: " + this.state.size + 
         "\nManufacture Date: " + this.state.manufactureDate
       );
-      fetch('/api/send', {
+      fetch('/api/send/Company', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -64,11 +64,13 @@ class AssetCreationPage extends Component {
           model: this.state.model,
           size: this.state.size,
           sku: this.state.sku,
-          product: this.state.id,
+          rfid: this.state.rfid,
           date: this.state.manufactureDate
         })
       }).then(function(response){
-        response.json().then(body => document.getElementById("button").innerHTML = body.link
+        response.json().then(body => document.getElementById("status").innerHTML = "Transaction ID: " + body.data[0].id 
+        + "\n Status: " + body.data[0].status
+        + "\n Link:" + body.link
         );
         document.getElementById("button").className = 'show';
       });
@@ -81,11 +83,11 @@ class AssetCreationPage extends Component {
             <form onSubmit={this.handleSubmit}>
               <legend>Asset Creation Form</legend>
               <div className="form-group">
-                <label>Product ID</label>
+                <label>RFID</label>
                 <input 
                   type="text" 
-                  name="id"
-                  placeholder="Product ID"
+                  name="rfid"
+                  placeholder="RFID"
                   onChange={this.handleChange} 
                   required
                 />
@@ -111,9 +113,8 @@ class AssetCreationPage extends Component {
                       required
                     />
                   </div>
-                  
                   <div className="form-group">
-                  <div>
+                    <div>
                     <label>Size</label>
                     <div className="size-btn" onClick={this.showSizeMenu}>
                       > {this.state.size}
@@ -145,7 +146,7 @@ class AssetCreationPage extends Component {
               </div>
 
               <div className="row">
-              <div className="form-group">
+                  <div className="form-group">
                     <label>Manufacture Date</label>
                     <input 
                       type="date" 
@@ -160,8 +161,8 @@ class AssetCreationPage extends Component {
                 <input type="submit" value="Submit" />
               </div>
             </form>
-            <p5 id="button" className="hidden" data-toggle="collapse" data-target="#status"></p5>
-            <div id="status">
+            <button id="button" className="btn-submit" data-toggle="collapse" value="Status"></button>
+            <div id="status" className="collapse">
             </div>
           </div>
         );

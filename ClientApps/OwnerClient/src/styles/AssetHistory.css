@@ -1,0 +1,119 @@
+form {
+    width: 60%;
+    display: table;
+    padding: 35px 0 40px 0;
+}
+
+form input {
+    width: 80%;
+}
+
+legend {
+    font-size: larger;
+    margin: 10px;
+    text-align: left;
+}
+
+p {
+    display: table-row;
+    white-space: nowrap;
+}
+
+label {
+    display: table-cell;
+    text-align: right;
+}
+
+input {
+    width: 100%;
+    display: table-cell;
+}
+
+legend {
+    font-size: larger;
+    font-weight: bold;
+    margin: 10px;
+    text-align: left;
+}
+
+table {
+    display: table;
+    border-collapse: collapse;
+    border-spacing: 2px;
+    border-color: gray;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+col {
+    display: table-column;
+}
+
+colgroup {
+    display: table-column-group;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
+    border: 1px solid #999;
+    padding: 0.5rem;
+    width: 250px;
+}
+
+th {
+    font-weight: bold;
+    text-align: left;
+    width: 250px;
+}
+
+caption {
+    display: table-caption;
+    text-align: -webkit-center
+}
+
+.form-group {
+    padding: 10px;
+}
+
+.row {
+    display: table;
+}
+
+.col-md {
+    float: left;
+    width: 50%;
+}
+
+.col-md input {
+    width: 90%;
+}
+
+.col-md .form-group input {
+    margin-left: -15px;
+}
+
+.btn-submit {
+    width: 25%;
+    padding-left: 10px;
+}

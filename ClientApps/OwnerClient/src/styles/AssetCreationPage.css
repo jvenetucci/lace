@@ -43,16 +43,6 @@ input {
     width: 25%;
     padding-left: 10px;
 }
-
-.hidden{
-    display: none;
-}
-
-.show{
-    display: inline;
-}
-/*  */
-
 .dropdown-menu {
     display: grid;
     border-collapse: collapse;
@@ -104,3 +94,4 @@ input {
 .size-b-r {
     border-bottom-right-radius: 3px;
 }
+
