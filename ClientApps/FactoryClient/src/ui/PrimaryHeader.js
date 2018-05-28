@@ -1,15 +1,16 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-
+//<img src={logo} className="Columns-logo" alt="logo" />
 const PrimaryHeader = () => (
-  <header className="primary-header">
-    <h1>Factory Manager</h1>
-    <nav>
-      <NavLink to="/app" exact activeClassName="active">Home</NavLink>
-      <NavLink to="/app/inventory" activeClassName="active">Inventory</NavLink>
-      <NavLink to="/app/history" activeClassName="active">History</NavLink>
-    </nav>
-  </header>
+  <div className="PrimaryHeader">
+    
+    <header className="primary-header">
+      <nav>
+        <NavLink to="/app" exact activeClassName="active">Home</NavLink>
+        <NavLink to="/app/assets" activeClassName="active">Assets</NavLink>
+      </nav>
+    </header>
+  </div>
 )
 
 export default PrimaryHeader

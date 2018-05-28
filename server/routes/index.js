@@ -9,6 +9,9 @@ const profileKey = require('../agentKeys.json');
 // Creates agents and sends to validator Comment out if you dont want to add clients at start up
 addAgents();
 
+// Create a mapping of public keys to names
+const publicKeyMap = mapPublicKeysToNames(profileKey)
+
 
 // Make request on server end
 router.post('/api/send/:user', async function(req, res){
@@ -53,24 +56,42 @@ router.post('/api/history/:user', async function(req, res) {
     // get user keys
     var agentPubPriKey = getKeys(req.params.user);
         
-    var response = await request.getHistory(address.makeHistoryAddress(req.body.RFID));
+    var response = await request.getHistory(address.makeAllHistoryAddress(req.body.RFID));
     if(!request.errorCheckResponse(response))
     {
         SendErrorReponseToClient(res);
         return;
     }
 
-    // Decode the response
-    var buffer = new Buffer(JSON.parse(response.body).data, 'base64');
+    var instanceArray = [];
+    var dataList = JSON.parse(response.body).data;
+
+    // Decode the history page container first
+    var buffer = new Buffer(dataList[0].data, 'base64');
     var uInt = new Uint8Array(buffer);
     var instance = history_pb.HistoryContainer.deserializeBinary(uInt).toObject();
 
-    //console.log(instance["entriesList"][0]["reporterListList"]);
-    console.log(instance);
+    // Find the correct history page in the container
+    instance.entriesList.forEach(entry => {
+        if (entry.rfid == req.body.RFID) {
+            instanceArray[instanceArray.length] = entry;
+        }
+    })
+
+    // Decode the remaining touchpoint containers
+    for (i = 1; i < dataList.length; i++) {
+        buffer = new Buffer(dataList[i].data, 'base64');
+        uInt = new Uint8Array(buffer);
+        instance = history_pb.TouchPointContainer.deserializeBinary(uInt).toObject();
+
+        // Add an entry to the touchpoint that maps the pub key to a name
+        var touchPoint = instance.entriesList[0];
+        touchPoint.name = publicKeyMap.get(instanceArray[0].reporterListList[touchPoint.reporterIndex].publicKey);
+        instanceArray[instanceArray.length] = touchPoint;
+    }
 
     res.statusCode = 200;
-    res.send(instance);
-    
+    res.send(instanceArray);
 });
 
 router.post('/api/status/:user', async function(req, res){
@@ -94,6 +115,16 @@ function SendErrorReponseToClient(res){
 
 function getKeys(agent){
     return(profileKey[agent]);
+}
+
+function mapPublicKeysToNames(profileJSON) {
+    var map = new Map();
+    for (var key in profileJSON) {
+       if (profileJSON.hasOwnProperty(key)) {
+           map.set(profileJSON[key].public_key, key)
+        }
+    }
+    return map
 }
 
 function sendResponseToClient(res, response){

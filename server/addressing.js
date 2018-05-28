@@ -35,6 +35,12 @@ function makeTouchpointAddress(identifier, index) {
             makeTouchpointPostfix(index);
 }
 
+function makeAllHistoryAddress(identifier) {
+    return NAMESPACE + 
+            HISTORY + 
+            hash(identifier).slice(0, 59);
+}
+
 function makeAgentAddress(identifier) {
     return  NAMESPACE + 
             AGENT + 
@@ -45,5 +51,6 @@ module.exports={
     makeAgentAddress,
     makeAssetAddress,
     makeHistoryAddress,
+    makeAllHistoryAddress,
     makeTouchpointAddress
 }
