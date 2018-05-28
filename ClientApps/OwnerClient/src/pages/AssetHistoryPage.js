@@ -28,20 +28,42 @@ class AssetHistoryPage extends Component {
     var newHeadCell = newHeadRow.insertCell(-1);
     var cellText = document.createTextNode("Holder");
     newHeadCell.appendChild(cellText);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("Timestamp");
+    newHeadCell.appendChild(cellText);
   }
   
   addTableRows(itemHistory) {
     var tableRef = document.getElementById('histTable');
-  
-    itemHistory.forEach(element => {
-    var newRow = tableRef.insertRow(-1);
-    var newCell = newRow.insertCell(-1);
 
-    var cellText = document.createTextNode(this.resolvePubKeyToName(element.publicKey));
-    newCell.appendChild(cellText);
-    });
+    //alert('Adding table rows. itemHistory:\n\n' + itemHistory);
+  
+    for (var i = 1; i < itemHistory.length; i++) {
+      var newRow = tableRef.insertRow(-1);
+      var newCell = newRow.insertCell(-1);
+      // console.log(element.entriesList);
+      // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
+      var cellText = document.createTextNode(itemHistory[i].name);
+      newCell.appendChild(cellText);
+      var newCell2 = newRow.insertCell(-1);
+      var cellText2 = document.createTextNode(itemHistory[i].timestamp);
+      newCell2.appendChild(cellText2);
+    }
+    // itemHistory.forEach(element => {
+    // var newRow = tableRef.insertRow(-1);
+    // var newCell = newRow.insertCell(-1);
+    // //alert(element.entriesList[0].reporterListList[0]);
+    // console.log(element.entriesList);
+    // // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
+    // var cellText = document.createTextNode('HELLO');
+    // newCell.appendChild(cellText);
+    // });
   
   }
+
+  /*
+  * element.entriesList[0].reporterListList[0].publicKey) => Company in first box then undefined.
+  */
 
   resolvePubKeyToName(keyToResolve) {
 
@@ -63,9 +85,9 @@ class AssetHistoryPage extends Component {
   }
 
   handleSubmit(event) {
-    alert(
+    /*alert(
       "History\nRFID: " + this.state.rfid
-    );
+    );*/
 
   fetch('/api/history/Company', {
     method: 'POST',
@@ -84,16 +106,18 @@ class AssetHistoryPage extends Component {
       //decode and parse into JSON
       var obj = new TextDecoder("utf-8").decode(value);
       let jsonObj = JSON.parse(obj);
+      console.log(jsonObj)
 
       //Reference for names of JSON fields.
-      alert(obj);
+      //alert(obj);
 
       //Extract relevant info.
-      var rfid = jsonObj.entriesList[0].rfid;
-      var reporterList = jsonObj.entriesList[0].reporterListList;
-      alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
+      var rfid = jsonObj[0].rfid;
+      // var reporterList = jsonObj;//.entriesList[0].reporterListList;
+      //alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
+      //alert('jsonObj:\n\n' + JSON.stringify(jsonObj));
       this.addTableHead(rfid);
-      this.addTableRows(reporterList);
+      this.addTableRows(jsonObj);
     }))
   });
     event.preventDefault();

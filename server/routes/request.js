@@ -1,5 +1,6 @@
 var request = require('request-promise');
 var transaction = require('./TransactionCreator');
+var addressing = require('../addressing.js')
 
 
 //Address information notes
@@ -20,14 +21,14 @@ async function send(payload){
     return response;
   }
 
-  var status = await getStatus(JSON.parse(response.body).link);
+  var status = await getStatus(JSON.parse(response.body).link + "&wait=true");
   return status;
 }
 
 // Send transaction to validator
 function submit(batchListBytes){
   return request.post({
-    url: 'http://localhost:8008/batches',
+    url: process.env.REST_API_ADDRESS + '/batches',
     body: batchListBytes,
     headers: {'Content-Type': 'application/octet-stream'},
     resolveWithFullResponse: true
@@ -53,10 +54,10 @@ async function getStatus(transactionStatus){
   });
 }
 
-// Get History Of Asset 
+// Get History Of Asset, the main history page, and all touchpoints
 function getHistory(addressing){
   return request.get({
-    url: "http://localhost:8008/state/" +  addressing,
+    url: process.env.REST_API_ADDRESS + '/state?address=' +  addressing,
     headers: {'Content-Type': 'application/json'},
     resolveWithFullResponse: true
   }).then(function(response){
@@ -83,10 +84,32 @@ function errorCheckResponse(response){
 
 
 
+async function getTheRestOfTheHistory(address, entriesList) {
+  var touchPointIndex = entriesList.entriesList[0].currTouchpointIndex;
+  //var addressLength = address.length;
+  //address = address.substring(0, addressLength - 4);
+  var responseArray = [];
+  for(var i = 1; i <= touchPointIndex; ++i) {
+    //Update address for next one
+    //address[0] = i;
+
+    //Get the data for this position
+    console.log(addressing.makeTouchpointAddress(address, i));
+    var responseTemp = await getHistory(addressing.makeTouchpointAddress(address, i));
+
+    //Save the data
+    responseArray[i] = responseTemp;
+  }
+
+  return responseArray;
+}
+
+
 
 module.exports={
     send,
     errorCheckResponse,
     getHistory,
-    getStatus
+    getStatus,
+    getTheRestOfTheHistory
 }

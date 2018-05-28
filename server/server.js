@@ -14,8 +14,12 @@ app.use(bodyParser.json());
 var routes = require('./routes/index');
 app.use('/', routes);
 
-app.set('port', process.env.PORT || 5001);
+if (process.env.PORT) {
+    app.set('port', process.env.PORT);
+} else {
+    app.set('port', 5001);
+}
 
 var server = app.listen(app.get('port'), function(){
-    console.log("app started on environment port or", app.get('port'));
+    console.log("app started on port:", app.get('port'));
 })

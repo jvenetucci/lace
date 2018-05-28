@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/AssetTransferPage.css'
-import { userCode } from '../utils/xhr'
+
+//For link: {address as normal}&wait=t
+//This will make the backend wait to send response until txn is no longer pending.
 
 class AssetTransferPage extends Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class AssetTransferPage extends Component {
       "Touch Asset \nAsset ID: " + this.state.rfid
     );
     var wait = ms => new Promise((r, j)=>setTimeout(r, ms));
-  fetch('/api/touch/' + this.getUserName(), {
+  fetch('/api/touch/Factory', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -55,7 +57,7 @@ class AssetTransferPage extends Component {
         //and looping just gives my computer... problems.
         this.sleep(250);
         //Check the returned url to find out the status of our transaction
-        fetch('/api/status/' + this.getUserName(), {
+        fetch('/api/status/Factory', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -66,7 +68,6 @@ class AssetTransferPage extends Component {
           })
         })
         .then(response => {
-          alert(this.getUserName())
           //Read the response
           const statusCodeReader = response.body.getReader();
           statusCodeReader.read().then((({done, value}) => {
@@ -119,11 +120,6 @@ class AssetTransferPage extends Component {
     }
   }
 }
-
-getUserName() {
-  return userCode === 0 ? 'Shipper' : userCode === 1 ? 'ShipperBoat' : 'ShipperTruck2';
-}
-
 
   render() {
       return (

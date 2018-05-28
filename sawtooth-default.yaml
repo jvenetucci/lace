@@ -46,6 +46,8 @@ services:
   rest-api:
     image: hyperledger/sawtooth-rest-api:1.0
     container_name: sawtooth-rest-api-default
+    expose:
+      - "8008"
     ports:
       - "8008:8008"
     depends_on:
@@ -78,3 +80,50 @@ services:
       - validator
     entrypoint: |
       /lace/processor/startup -vv tcp://validator:4004
+
+  server:
+    container_name: server
+    build: ./server/
+    expose:
+      - "5001"
+    ports:
+      - "5001:5001"
+    environment:
+      - REST_API_ADDRESS=http://rest-api:8008
+    depends_on:
+      - validator
+      - rest-api
+      - processor
+
+  client-owner:
+    container_name: client-owner
+    build: ./ClientApps/OwnerClient/
+    expose:
+      - "3000"
+    ports:
+      - "3001:3000"
+    # See ./ClientApps/OwnerClient/package.json to change proxy
+    depends_on:
+      - server
+
+  client-shipper:
+    container_name: client-shipper
+    build: ./ClientApps/ShipperClient/
+    expose:
+      - "3000"
+    ports:
+      - "3002:3000"
+    # See ./ClientApps/ShipperClient/package.json to change proxy
+    depends_on:
+      - server
+
+  client-factory:
+    container_name: client-factory
+    build: ./ClientApps/FactoryClient/
+    expose:
+      - "3000"
+    ports:
+      - "3003:3000"
+    # See ./ClientApps/FactoryClient/package.json to change proxy
+    depends_on:
+      - server

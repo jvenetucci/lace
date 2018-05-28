@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/AssetCreationPage.css'
+import { EWOULDBLOCK } from 'constants';
 
 class AssetCreationPage extends Component {
     constructor(props) {
@@ -8,11 +9,10 @@ class AssetCreationPage extends Component {
         this.state = {
             rfid: '',
             sku: '',
-            model: '',
             size: '',
-            manufactureDate: '',
             showSizeMenu: false
         }
+        this.URL = '';
         this.showSizeMenu = this.showSizeMenu.bind(this);
         this.closeSizeMenu = this.closeSizeMenu.bind(this);
         this.setSize = this.setSize.bind(this);
@@ -43,17 +43,52 @@ class AssetCreationPage extends Component {
       this.setState({ [event.target.name]: event.target.value });
     }
 
+
+    randomRFID(){
+      var result = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < 16; i++){
+        result += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return result;
+    }
+
+    randomNumber(length, min, max){
+      var result = "";
+      for(var i = 0; i < length; i++){
+        result += Math.floor(Math.random() * (Math.floor(max) - Math.floor(min)) + min);
+      }
+      return result;
+    }
+
+    scan = (event) =>{
+      event.preventDefault();
+      this.state.rfid = this.randomRFID();
+      this.state.sku = this.randomNumber(8, 0, 10);
+      this.state.size = this.randomNumber(1, 7, 14.5);
+      if(this.randomNumber(1,0,2) == 1){
+        var num = parseInt(this.state.size);
+        this.state.size = num + .5;
+      }
+      document.getElementById("rfid").value = this.state.rfid;
+      document.getElementById("sku").value = this.state.sku;
+      this.closeSizeMenu();
+    }
+
+    sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    }
+
     /*
       This function should call the batcher to create a transaction.
     */
-    handleSubmit(event) {
-      alert(
-        "Product Info\nID: " + this.state.rfid +
-        "\nSKU: " + this.state.sku +
-        "\nModel: " + this.state.model +
-        "\nSize: " + this.state.size + 
-        "\nManufacture Date: " + this.state.manufactureDate
-      );
+    handleSubmit (event){
+      const self = this;
       fetch('/api/send/Company', {
         method: 'POST',
         headers: {
@@ -61,18 +96,26 @@ class AssetCreationPage extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: this.state.model,
           size: this.state.size,
           sku: this.state.sku,
           rfid: this.state.rfid,
-          date: this.state.manufactureDate
         })
       }).then(function(response){
-        response.json().then(body => document.getElementById("status").innerHTML = "Transaction ID: " + body.data[0].id 
-        + "\n Status: " + body.data[0].status
-        + "\n Link:" + body.link
-        );
-        document.getElementById("button").className = 'show';
+        var response = response.json();
+        return response.then(body => body)
+      })
+      .then(function(response) {
+        var response = response;
+
+        document.getElementById("transaction-id").innerHTML = "Transaction ID: " + response.data[0].id;
+        if(response.data[0].invalid_transactions[0] !== undefined){
+          document.getElementById("invalid-transaction").innerHTML = "Invalid transactions: " + response.data[0].invalid_transactions[0].message;
+        }
+        else{
+          document.getElementById("invalid-transaction").innerHTML = "Invalid transactions: None"; 
+        }
+        document.getElementById("transaction-status").innerHTML = "Status: " + response.data[0].status;
+        document.getElementById("transaction-link").innerHTML = "Link: " + response.link;
       });
       event.preventDefault();
     }
@@ -84,7 +127,8 @@ class AssetCreationPage extends Component {
               <legend>Asset Creation Form</legend>
               <div className="form-group">
                 <label>RFID</label>
-                <input 
+                <input
+                  id="rfid" 
                   type="text" 
                   name="rfid"
                   placeholder="RFID"
@@ -95,28 +139,19 @@ class AssetCreationPage extends Component {
               <div className="form-group">
                 <label>SKU:&emsp;</label>
                 <input 
+                  id="sku" 
                   type="text" 
-                  name="sku" 
+                  name="sku"
                   placeholder="SKU"
                   onChange={this.handleChange}
                   required
                 />
               </div>
               <div className="row">
-                    <div className="form-group">
-                    <label>Model</label>
-                    <input 
-                      type="text" 
-                      name="model" 
-                      placeholder="Model"
-                      onChange={this.handleChange}
-                      required
-                    />
-                  </div>
                   <div className="form-group">
                     <div>
                     <label>Size</label>
-                    <div className="size-btn" onClick={this.showSizeMenu}>
+                    <div className="size-btn" onClick={this.showSizeMenu} id="Size-selection">
                       > {this.state.size}
                       </div>
                     {
@@ -136,7 +171,7 @@ class AssetCreationPage extends Component {
                           <div className="dropdown-cell size-b-l" id="12" onClick={this.setSize}> 12 </div>
                           <div className="dropdown-cell" id="12.5" onClick={this.setSize}> 12.5 </div>
                           <div className="dropdown-cell" id="13" onClick={this.setSize}> 13 </div>
-                          <div className="dropdown-cell" id="14" onClick={this.setSize}> 14 </div>
+                          <div className="dropdown-cell" id="13.5" onClick={this.setSize}> 13.5 </div>
                           <div className="dropdown-cell no-hover size-b-r" id="0"> </div>
                         </div>
                       ) : ( null )
@@ -144,26 +179,22 @@ class AssetCreationPage extends Component {
                   </div>
                 </div>
               </div>
-
-              <div className="row">
-                  <div className="form-group">
-                    <label>Manufacture Date</label>
-                    <input 
-                      type="date" 
-                      name="manufactureDate" 
-                      placeholder="Manufature Date"
-                      onChange={this.handleChange}
-                      required
-                    />
-                  </div>
-              </div>
               <div className="btn-submit">
                 <input type="submit" value="Submit" />
               </div>
             </form>
-            <button id="button" className="btn-submit" data-toggle="collapse" value="Status"></button>
-            <div id="status" className="collapse">
+            <div className="btn-attribute">
+              <input type="submit" value="Scan" onClick={this.scan}/>
             </div>
+            <br></br>
+            <p3 className="text" id="transaction-id" ><font size="6"></font></p3>
+            <br></br>
+            <p3 className="text" id="invalid-transaction"><font size="6"></font></p3>
+            <br></br>
+            <p3 className="text" id="transaction-status"><font size="6"></font></p3>
+            <br></br>
+            <p3 className="text" id="transaction-link"><font size="6"></font></p3>
+            <br></br>
           </div>
         );
       }
