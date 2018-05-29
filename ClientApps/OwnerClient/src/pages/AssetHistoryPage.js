@@ -12,28 +12,45 @@ class AssetHistoryPage extends Component {
   }
 
   addTableHead(rfidTag) {
-    var tableRef = document.getElementById('histTable');
+    var tableRef = document.getElementById('itemTable');
     tableRef.deleteTHead();
     tableRef.deleteCaption();
     
     var tableCaption = tableRef.createCaption();
     tableCaption.align = 'left';
-    var captionText = document.createTextNode('History of ' + rfidTag);
+    var captionText = document.createTextNode('History of :');
     tableCaption.appendChild(captionText);
-  
-  
     var tableHead = tableRef.createTHead();
     var newHeadRow = tableHead.insertRow(-1);
     var newHeadCell = newHeadRow.insertCell(-1);
-    var cellText = document.createTextNode("Holder");
+    var cellText = document.createTextNode("RFID");
+    newHeadCell.appendChild(cellText);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("Size");
+    newHeadCell.appendChild(cellText);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("SKU");
+    newHeadCell.appendChild(cellText);
+
+  
+    tableRef = document.getElementById('histTable');
+    tableRef.deleteTHead();
+    tableRef.deleteCaption();
+
+    tableHead = tableRef.createTHead();
+    newHeadRow = tableHead.insertRow(-1);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("Holder");
     newHeadCell.appendChild(cellText);
     newHeadCell = newHeadRow.insertCell(-1);
     cellText = document.createTextNode("Timestamp");
     newHeadCell.appendChild(cellText);
   }
   
-  addTableRows(itemHistory) {
-    var tableRef = document.getElementById('histTable');
+  addTableRows(itemHistory, elementId) {
+    var tableRef = document.getElementById(elementId);
+
+    
   
     for (var i = 1; i < itemHistory.length; i++) {
       var newRow = tableRef.insertRow(-1);
@@ -70,10 +87,26 @@ class AssetHistoryPage extends Component {
     reader.read().then((({done, value}) => {
       //decode and parse into JSON
       var obj = new TextDecoder("utf-8").decode(value);
+
+      //Extract the product info stored in the final array element
       let jsonObj = JSON.parse(obj);
+      let info = jsonObj.pop();
+
+      //Display the product info.
+      let infoTable = document.getElementById('itemTable');
+      var newRow = infoTable.insertRow(-1);
+      var newCell = newRow.insertCell(-1);
+      var cellText = document.createTextNode(info.entriesList[0].rfid);
+      newCell.appendChild(cellText);
+      newCell = newRow.insertCell(-1);
+      cellText = document.createTextNode(info.entriesList[0].size);
+      newCell.appendChild(cellText);
+      newCell = newRow.insertCell(-1);
+      cellText = document.createTextNode(info.entriesList[0].sku);
+      newCell.appendChild(cellText);
 
       this.addTableHead(jsonObj[0].rfid);
-      this.addTableRows(jsonObj);
+      this.addTableRows(jsonObj, 'histTable');
     }))
   });
     event.preventDefault();
@@ -103,6 +136,13 @@ class AssetHistoryPage extends Component {
           <div>
           </div>
           <div className="TableDescriptor" id="tabDesc"/>
+            <div className="AttributeTable">
+              <table id="itemTable">
+                <tbody></tbody>
+              </table>
+            </div>
+            <br/>
+            <div className="TableDescriptor" id="tabDesc"/>
             <div className="HistoryTable">
               <table id="histTable">
                 <tbody></tbody>
