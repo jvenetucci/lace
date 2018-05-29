@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import '../styles/AssetHistory.css'
 
 class AssetHistoryPage extends Component {
@@ -35,48 +34,16 @@ class AssetHistoryPage extends Component {
   
   addTableRows(itemHistory) {
     var tableRef = document.getElementById('histTable');
-
-    //alert('Adding table rows. itemHistory:\n\n' + itemHistory);
   
     for (var i = 1; i < itemHistory.length; i++) {
       var newRow = tableRef.insertRow(-1);
       var newCell = newRow.insertCell(-1);
-      // console.log(element.entriesList);
-      // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
       var cellText = document.createTextNode(itemHistory[i].name);
       newCell.appendChild(cellText);
       var newCell2 = newRow.insertCell(-1);
-      var cellText2 = document.createTextNode(itemHistory[i].timestamp);
+      var date = new Date(itemHistory[i].timestamp);
+      var cellText2 = document.createTextNode(date.toLocaleString());
       newCell2.appendChild(cellText2);
-    }
-    // itemHistory.forEach(element => {
-    // var newRow = tableRef.insertRow(-1);
-    // var newCell = newRow.insertCell(-1);
-    // //alert(element.entriesList[0].reporterListList[0]);
-    // console.log(element.entriesList);
-    // // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
-    // var cellText = document.createTextNode('HELLO');
-    // newCell.appendChild(cellText);
-    // });
-  
-  }
-
-  /*
-  * element.entriesList[0].reporterListList[0].publicKey) => Company in first box then undefined.
-  */
-
-  resolvePubKeyToName(keyToResolve) {
-
-    if('026d529e3955f7cde5f89dec9dc1defeeffe462765a183c411cafa32406eb2a990' === keyToResolve) {
-      return 'ShipperBoat';
-    } else if('031498a3d386e2ff9c6e6eca56f48f8d796248aa3135c9f88e5d7f871bfa12a7ca' === keyToResolve) {
-      return 'Shipper';
-    } else if('020b0132a725e8fe6a6ee74a902cfc3f0bcbb7ae7b5d2218aad18b16df422a0f5d' === keyToResolve) {
-      return 'Company';
-    } else if('02bc83bb8d3f5e99ab4cde7bb576ecb6898683261cc044349c15b7076261555f68' === keyToResolve) {
-      return 'Factory';
-    } else {
-      return 'ShipperTruck2';
     }
   }
   
@@ -85,9 +52,7 @@ class AssetHistoryPage extends Component {
   }
 
   handleSubmit(event) {
-    /*alert(
-      "History\nRFID: " + this.state.rfid
-    );*/
+
 
   fetch('/api/history/Company', {
     method: 'POST',
@@ -106,17 +71,8 @@ class AssetHistoryPage extends Component {
       //decode and parse into JSON
       var obj = new TextDecoder("utf-8").decode(value);
       let jsonObj = JSON.parse(obj);
-      console.log(jsonObj)
 
-      //Reference for names of JSON fields.
-      //alert(obj);
-
-      //Extract relevant info.
-      var rfid = jsonObj[0].rfid;
-      // var reporterList = jsonObj;//.entriesList[0].reporterListList;
-      //alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
-      //alert('jsonObj:\n\n' + JSON.stringify(jsonObj));
-      this.addTableHead(rfid);
+      this.addTableHead(jsonObj[0].rfid);
       this.addTableRows(jsonObj);
     }))
   });
