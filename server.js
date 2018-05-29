@@ -69,6 +69,14 @@ ws.on('message', function incoming(data) {
     console.log('\n--------------------------------');
     console.log('-----START OF TRANSACTION EXTRACTION');
 
+    var owner_pub_key = '020b0132a725e8fe6a6ee74a902cfc3f0bcbb7ae7b5d2218aad18b16df422a0f5d';
+    var touchHistoryAsset = [false, false, false];
+    var currentOwnerPublicKey = '';
+    var touchpointTimestamp = '';
+    // To hold new owner pub key, rfid, and timestamp
+    var touchInfo = ['', '', ''];
+    var assetInfo = ['', '', '', '', ''];
+
     for(i in parsed_data.state_changes) {
         console.log('=============');
 
@@ -79,31 +87,80 @@ ws.on('message', function incoming(data) {
         data = Buffer.from(new_state, 'base64');
         data = new Uint8Array(data);
 
+        // When an asset is created, add it to Company inventory(db)
         if (subtype == '0') {
             data = assetProto.AssetContainer.deserializeBinary(new_state).toObject();
             console.log('AN ASSET');
             console.log(data);
+            data = data.entriesList[0];
+            assetInfo[1] = data.rfid;
+            assetInfo[2] = data.sku;
+            assetInfo[3] = data.size;
+            assetInfo[4] = (new Date).getTime();
+            //db.addAsset(owner_pub_key, data.rfid, data.sku, data.size, (new Date).getTime());
+            touchHistoryAsset[2] = true;
         }
         else if (subtype == '1') {
             // history if last four chars of address == 0000
             if (parsed_data.state_changes[i].address.slice(-4) == '0000') {
                 data = historyProto.HistoryContainer.deserializeBinary(new_state).toObject();
                 console.log('A HISTORY');
-                // console.log(historyProto.History.deserializeBinary(new_state).toObject());
                 console.log(data);
+                touchInfo[1] = data.entriesList[0].rfid;
+
+                // History of all past owners
+                console.log(data.entriesList[0].reporterListList);
+                // The most recent touchpoint is in the last index.
+                var historylength = data.entriesList[0].reporterListList.length;
+                assetInfo[0] = data.entriesList[0].reporterListList[0].publicKey;
+                // data = data.entriesList[0].reporterListList[0];
+                data = data.entriesList[0].reporterListList[historylength - 1];
+                console.log(historylength);
+                console.log(data.publicKey);
+
+                touchInfo[0] = data.publicKey;
+                currentOwner = data;
+                touchHistoryAsset[1] = true;
+                
+
             }
-            else {
+            else { // When an item in the db is touched, change owner
                 data = historyProto.TouchPointContainer.deserializeBinary(new_state).toObject();
                 console.log('A TOUCH');
+                console.log(data);
+                touchpointTimestamp = data.entriesList[0].timestamp;
+                touchInfo[2] = data.entriesList[0].timestamp.toString();
+                touchHistoryAsset[0] = true;
             }
-            console.log(data);
+            // console.log(data);
         }
         else if (subtype == '2') {
             data = agentProto.AgentContainer.deserializeBinary(new_state).toObject();
             console.log('AN AGENT');
             console.log(data);
+            data = data.entriesList[0];
+            console.log('ADDING: ' + data.name + ':' +data.publicKey);
+            db.addAgent(data.publicKey, data.name);
+            
+
         }
         console.log('=============');
+    }
+
+    // If the transaction involved a touch and a history but not an asset
+    // perform touch in db.
+    if(touchHistoryAsset[0] && touchHistoryAsset[1] && !touchHistoryAsset[2]) {
+        // console.log('Touch info: ' + touchInfo[0] + ' ' + touchInfo[1] + ' ' + touchInfo[2]);
+        for(i in touchInfo) {
+            console.log(touchInfo[i]);
+        }
+        db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2]);
+    }
+    else if(touchHistoryAsset[2]) {
+        for(i in assetInfo) {
+            console.log(assetInfo[i]);
+        }
+        db.addAsset(assetInfo[0], assetInfo[1], assetInfo[2], assetInfo[3], assetInfo[4]);
     }
     console.log('--------------------------------');
     console.log('--------------------------------');
