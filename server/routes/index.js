@@ -1,13 +1,22 @@
 var express = require('express');
 var router = express.Router();
 var request = require('./request');
+var txns = require('./TransactionCreator');
 var address = require('../addressing');
 var history_pb = require('../protobufFiles/history_pb');
-const profileKey = require('../agentKeys.json');
 
+var profileKey = undefined;
+if (process.env.EXTENDED_KEYS) {
+    profileKey = require('../agentKeysExtended.json');
+} else{
+    profileKey = require('../agentKeys.json');
+}
 
-// Creates agents and sends to validator Comment out if you dont want to add clients at start up
-addAgents();
+if (process.env.SEND_KEYS) {
+    // Creates agents and sends to validator Comment out if you dont want to add clients at start up
+    addAgents(); 
+}
+
 
 // Create a mapping of public keys to names
 const publicKeyMap = mapPublicKeysToNames(profileKey)
@@ -139,18 +148,25 @@ function sendResponseToClient(res, response){
 }
 
 function addAgents(){
+    const batchSigner = txns.signerFromPrivateKey(profileKey["Company"]["private_key"]);
+
     var payload = {
         Action: 1,
         Name: "",
         PublicKey: "",
         PrivateKey: "",
     }
+
+    var transactions = [];
     for(var agent in profileKey){
         payload.Name = agent;
         payload.PublicKey = (profileKey[agent]["public_key"]);
         payload.PrivateKey = (profileKey[agent]["private_key"]);
-        request.send(payload);
+        var signer = txns.signerFromPrivateKey(payload.PrivateKey);
+        transactions[transactions.length] = txns.createTransactionBytes(signer, batchSigner, txns.createTransaction(payload))
     }
+    const batchBytes = txns.createBatchListBytesFromMany(batchSigner, transactions);
+    request.submit(batchBytes);
 }
 
 module.exports = router;

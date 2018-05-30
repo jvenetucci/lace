@@ -111,5 +111,6 @@ module.exports={
     errorCheckResponse,
     getHistory,
     getStatus,
-    getTheRestOfTheHistory
+    getTheRestOfTheHistory,
+    submit
 }
