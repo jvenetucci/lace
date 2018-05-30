@@ -7,7 +7,7 @@ const LoginPage = ({ history }) => (
     <h1>Factory Client</h1>
     <br/>
     <p>
-      Login to manage your Asics supply chain.
+      
     </p>
     <br/>
     <button onClick={() => {

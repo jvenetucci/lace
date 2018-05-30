@@ -67,6 +67,17 @@ function getHistory(addressing){
   })
 }
 
+async function getAssetInfo(addressing){
+  return request.get({
+    url: process.env.REST_API_ADDRESS + '/state?address=' +  addressing,
+    headers: {'Content-Type': 'application/json'},
+    resolveWithFullResponse: true
+  }).then(function(response){
+    return response;
+  }).catch(function(error){
+    return error;
+  })
+}
 
 
 
@@ -112,5 +123,6 @@ module.exports={
     getHistory,
     getStatus,
     getTheRestOfTheHistory,
-    submit
+    submit,
+    getAssetInfo
 }

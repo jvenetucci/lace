@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import '../styles/AssetCreationPage.css'
-import { EWOULDBLOCK } from 'constants';
 
 class AssetCreationPage extends Component {
     constructor(props) {
@@ -12,7 +10,6 @@ class AssetCreationPage extends Component {
             size: '',
             showSizeMenu: false
         }
-        this.URL = '';
         this.showSizeMenu = this.showSizeMenu.bind(this);
         this.closeSizeMenu = this.closeSizeMenu.bind(this);
         this.setSize = this.setSize.bind(this);
@@ -63,32 +60,21 @@ class AssetCreationPage extends Component {
 
     scan = (event) =>{
       event.preventDefault();
-      this.state.rfid = this.randomRFID();
-      this.state.sku = this.randomNumber(8, 0, 10);
-      this.state.size = this.randomNumber(1, 7, 14.5);
-      if(this.randomNumber(1,0,2) == 1){
-        var num = parseInt(this.state.size);
-        this.state.size = num + .5;
+      var rfidID = this.randomRFID();
+      var skuID = this.randomNumber(8, 0, 10);
+      var shoeSize = this.randomNumber(1, 7, 14.5);
+      this.setState({rfid : rfidID});
+      this.setState({sku : skuID});
+      this.setState({size : shoeSize});
+      if(this.randomNumber(1,0,2) === '1'){
+        this.setState({size : (parseInt(shoeSize, 10) + .5).toString()});
       }
-      document.getElementById("rfid").value = this.state.rfid;
-      document.getElementById("sku").value = this.state.sku;
+      document.getElementById("rfid").value = rfidID;
+      document.getElementById("sku").value = skuID;
       this.closeSizeMenu();
     }
 
-    sleep(milliseconds) {
-      var start = new Date().getTime();
-      for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds){
-          break;
-        }
-      }
-    }
-
-    /*
-      This function should call the batcher to create a transaction.
-    */
     handleSubmit (event){
-      const self = this;
       fetch('/api/send/Company', {
         method: 'POST',
         headers: {
@@ -101,23 +87,28 @@ class AssetCreationPage extends Component {
           rfid: this.state.rfid,
         })
       }).then(function(response){
-        var response = response.json();
-        return response.then(body => body)
+        return response.json().then(body => body)
       })
       .then(function(response) {
-        var response = response;
-
-        document.getElementById("transaction-id").innerHTML = "Transaction ID: " + response.data[0].id;
+        var responseBody = response.data[0];
         if(response.data[0].invalid_transactions[0] !== undefined){
-          document.getElementById("invalid-transaction").innerHTML = "Invalid transactions: " + response.data[0].invalid_transactions[0].message;
+          document.getElementById("invalid-transaction").innerHTML = "Invalid transactions: " + responseBody.invalid_transactions[0].message;
         }
         else{
           document.getElementById("invalid-transaction").innerHTML = "Invalid transactions: None"; 
         }
-        document.getElementById("transaction-status").innerHTML = "Status: " + response.data[0].status;
-        document.getElementById("transaction-link").innerHTML = "Link: " + response.link;
+        document.getElementById("transaction-status").innerHTML = "Status: " + responseBody.status;
       });
       event.preventDefault();
+    }
+
+    sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
     }
 
     render() {
@@ -187,13 +178,9 @@ class AssetCreationPage extends Component {
               <input type="submit" value="Scan" onClick={this.scan}/>
             </div>
             <br></br>
-            <p3 className="text" id="transaction-id" ><font size="6"></font></p3>
-            <br></br>
             <p3 className="text" id="invalid-transaction"><font size="6"></font></p3>
             <br></br>
             <p3 className="text" id="transaction-status"><font size="6"></font></p3>
-            <br></br>
-            <p3 className="text" id="transaction-link"><font size="6"></font></p3>
             <br></br>
           </div>
         );
