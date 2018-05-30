@@ -12,6 +12,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Joseph Venetucci",
-  "license": "ISC"
+  "author": "Joseph Venetucci"
 }
