@@ -76,6 +76,8 @@ ws.on('message', function incoming(data) {
     // To hold new owner pub key, rfid, and timestamp
     var touchInfo = ['', '', ''];
     var assetInfo = ['', '', '', '', ''];
+    var index;
+    var HistoryCont;
 
     for(i in parsed_data.state_changes) {
         console.log('=============');
@@ -102,31 +104,37 @@ ws.on('message', function incoming(data) {
         }
         else if (subtype == '1') {
             // history if last four chars of address == 0000
+
             if (parsed_data.state_changes[i].address.slice(-4) == '0000') {
-                data = historyProto.HistoryContainer.deserializeBinary(new_state).toObject();
+                HistoryCont = historyProto.HistoryContainer.deserializeBinary(new_state).toObject();
+
                 console.log('A HISTORY');
-                console.log(data);
-                touchInfo[1] = data.entriesList[0].rfid;
+                console.log(HistoryCont);
+                touchInfo[1] = HistoryCont.entriesList[0].rfid;
 
                 // History of all past owners
-                console.log(data.entriesList[0].reporterListList);
+                console.log(HistoryCont.entriesList[0].reporterListList);
                 // The most recent touchpoint is in the last index.
-                var historylength = data.entriesList[0].reporterListList.length;
-                assetInfo[0] = data.entriesList[0].reporterListList[0].publicKey;
+                var historylength = HistoryCont.entriesList[0].reporterListList.length;
+                assetInfo[0] = HistoryCont.entriesList[0].reporterListList[0].publicKey;
                 // data = data.entriesList[0].reporterListList[0];
-                data = data.entriesList[0].reporterListList[historylength - 1];
+                data = HistoryCont.entriesList[0].reporterListList[historylength - 1];
                 console.log(historylength);
                 console.log(data.publicKey);
 
                 touchInfo[0] = data.publicKey;
                 currentOwner = data;
                 touchHistoryAsset[1] = true;
-                
 
             }
             else { // When an item in the db is touched, change owner
                 data = historyProto.TouchPointContainer.deserializeBinary(new_state).toObject();
                 console.log('A TOUCH');
+                index = data.entriesList[0].reporterIndex;
+ 
+                //currentOwner = historyinfo.entriesList[0].reporterListList[index];
+                //console.log('current: ' + currentOwner)
+
                 console.log(data);
                 touchpointTimestamp = data.entriesList[0].timestamp;
                 touchInfo[2] = data.entriesList[0].timestamp.toString();
@@ -146,6 +154,10 @@ ws.on('message', function incoming(data) {
         }
         console.log('=============');
     }
+
+    console.log('index: ' + index);
+    pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
+    touchInfo[0] = pub_key;
 
     // If the transaction involved a touch and a history but not an asset
     // perform touch in db.
