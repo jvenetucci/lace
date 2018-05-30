@@ -1,0 +1,17 @@
+{
+  "name": "performancetesting",
+  "version": "1.0.0",
+  "description": "Populace lace blockchain network with assets in a short amount of time",
+  "main": "makeTransaction.js",
+  "dependencies": {
+    "google-protobuf": "^3.5.0",
+    "request": "^2.87.0",
+    "sawtooth-sdk": "^1.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Venetucci",
+  "license": "ISC"
+}

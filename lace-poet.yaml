@@ -213,6 +213,8 @@ services:
     expose:
       - 4004
       - 8003
+    ports:
+      - "8003:8003"
     command: |
       bash -c "
         sawtooth-rest-api \
@@ -226,6 +228,8 @@ services:
     expose:
       - 4004
       - 8004
+    ports:
+      - "8004:8004"
     command: |
       bash -c "
         sawtooth-rest-api \
