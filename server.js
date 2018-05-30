@@ -154,14 +154,15 @@ ws.on('message', function incoming(data) {
         }
         console.log('=============');
     }
+    
 
-    console.log('index: ' + index);
-    pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
-    touchInfo[0] = pub_key;
+    
 
     // If the transaction involved a touch and a history but not an asset
     // perform touch in db.
     if(touchHistoryAsset[0] && touchHistoryAsset[1] && !touchHistoryAsset[2]) {
+        pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
+        touchInfo[0] = pub_key;
         // console.log('Touch info: ' + touchInfo[0] + ' ' + touchInfo[1] + ' ' + touchInfo[2]);
         for(i in touchInfo) {
             console.log(touchInfo[i]);
@@ -169,6 +170,8 @@ ws.on('message', function incoming(data) {
         db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2]);
     }
     else if(touchHistoryAsset[2]) {
+        pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
+        touchInfo[0] = pub_key;
         for(i in assetInfo) {
             console.log(assetInfo[i]);
         }
