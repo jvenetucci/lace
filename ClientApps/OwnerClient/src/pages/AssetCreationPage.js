@@ -67,7 +67,7 @@ class AssetCreationPage extends Component {
       this.setState({sku : skuID});
       this.setState({size : shoeSize});
       if(this.randomNumber(1,0,2) === '1'){
-        this.setState({size : parseInt(shoeSize, 10) + .5});
+        this.setState({size : (parseInt(shoeSize, 10) + .5).toString()});
       }
       document.getElementById("rfid").value = rfidID;
       document.getElementById("sku").value = skuID;
