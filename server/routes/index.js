@@ -67,6 +67,12 @@ router.post('/api/history/:user', async function(req, res) {
     var instanceArray = [];
     var dataList = JSON.parse(response.body).data;
 
+    if(dataList[0] === undefined) {
+        res.statusCode = 404;
+        res.send(instanceArray);
+        return;
+    }
+
     // Decode the history page container first
     var buffer = new Buffer(dataList[0].data, 'base64');
     var uInt = new Uint8Array(buffer);

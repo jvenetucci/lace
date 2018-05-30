@@ -69,7 +69,25 @@ class AssetHistoryPage extends Component {
   }
 
   handleSubmit(event) {
+    document.getElementById('statusCode').innerHTML = '';
+    let infoTable = document.getElementById('itemTable');
 
+    //clear the table.
+    if(infoTable.rows.length !== 0){
+      infoTable.deleteTHead();
+      infoTable.deleteCaption();
+      infoTable.deleteRow(-1);
+    }
+
+    var tableRef = document.getElementById('histTable');
+
+    if(tableRef.rows.length !== 0) {
+      tableRef.deleteTHead();
+      tableRef.deleteCaption();
+      while(tableRef.rows.length > 0) {
+        tableRef.deleteRow(-1);
+      } 
+    }
 
   fetch('/api/history/Company', {
     method: 'POST',
@@ -90,10 +108,24 @@ class AssetHistoryPage extends Component {
 
       //Extract the product info stored in the final array element
       let jsonObj = JSON.parse(obj);
+
+      if(jsonObj[0] === undefined || jsonObj[0] === '') {
+        document.getElementById('statusCode').innerHTML = 'Error: RFID not found.';
+        return;
+      }
+
       let info = jsonObj.pop();
 
       //Display the product info.
-      let infoTable = document.getElementById('itemTable');
+      
+
+      //clear the table.
+      if(infoTable.rows.length !== 0){
+        infoTable.deleteTHead();
+        infoTable.deleteCaption();
+        infoTable.deleteRow(-1);
+      }
+
       var newRow = infoTable.insertRow(-1);
       var newCell = newRow.insertCell(-1);
       var cellText = document.createTextNode(info.entriesList[0].rfid);
@@ -107,6 +139,8 @@ class AssetHistoryPage extends Component {
 
       this.addTableHead(jsonObj[0].rfid);
       this.addTableRows(jsonObj, 'histTable');
+
+      
     }))
   });
     event.preventDefault();
@@ -148,6 +182,9 @@ class AssetHistoryPage extends Component {
                 <tbody></tbody>
               </table>
             </div>
+            <div className="statusCode" id="statusCode">
+            <p id="status"></p>
+          </div>
         </div>
       );
     }
