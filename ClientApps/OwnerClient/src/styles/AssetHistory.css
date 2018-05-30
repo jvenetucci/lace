@@ -40,7 +40,7 @@ table {
     display: table;
     border-collapse: collapse;
     border-spacing: 2px;
-    border-color: gray;
+    border-color: black;
 }
 
 thead {
@@ -76,7 +76,7 @@ tr {
 td, th {
     display: table-cell;
     vertical-align: inherit;
-    border: 1px solid #999;
+    border: 2px solid black;
     padding: 0.5rem;
     width: 250px;
 }

@@ -28,7 +28,7 @@ services:
     image: hyperledger/sawtooth-validator:1.0
     container_name: sawtooth-validator-default
     expose:
-      - 4004
+      - "4004"
     ports:
       - "4004:4004"
     # start the validator with an empty genesis batch
@@ -81,13 +81,42 @@ services:
     entrypoint: |
       /lace/processor/startup -vv tcp://validator:4004
 
-  server:
-    container_name: server
+  server-owner:
+    container_name: server-owner
     build: ./server/
     expose:
       - "5001"
     ports:
       - "5001:5001"
+    environment:
+      - REST_API_ADDRESS=http://rest-api:8008
+      - SEND_KEYS=TRUE
+    depends_on:
+      - validator
+      - rest-api
+      - processor
+
+  server-shipper:
+    container_name: server-shipper
+    build: ./server/
+    expose:
+      - "5001"
+    ports:
+      - "5002:5001"
+    environment:
+      - REST_API_ADDRESS=http://rest-api:8008
+    depends_on:
+      - validator
+      - rest-api
+      - processor
+
+  server-factory:
+    container_name: server-factory
+    build: ./server/
+    expose:
+      - "5001"
+    ports:
+      - "5003:5001"
     environment:
       - REST_API_ADDRESS=http://rest-api:8008
     depends_on:
@@ -104,7 +133,7 @@ services:
       - "3001:3000"
     # See ./ClientApps/OwnerClient/package.json to change proxy
     depends_on:
-      - server
+      - server-owner
 
   client-shipper:
     container_name: client-shipper
@@ -115,7 +144,7 @@ services:
       - "3002:3000"
     # See ./ClientApps/ShipperClient/package.json to change proxy
     depends_on:
-      - server
+      - server-shipper
 
   client-factory:
     container_name: client-factory
@@ -126,4 +155,4 @@ services:
       - "3003:3000"
     # See ./ClientApps/FactoryClient/package.json to change proxy
     depends_on:
-      - server
+      - server-factory

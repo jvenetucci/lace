@@ -8,7 +8,7 @@ WORKDIR /usr/src/server
 EXPOSE 5001
 
 # Update npm
-RUN npm install npm@latest -g
+# RUN npm install npm@latest -g
 RUN npm install
 
 CMD ["npm", "start"]

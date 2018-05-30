@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import '../styles/AssetHistory.css'
 
 class AssetHistoryPage extends Component {
@@ -13,70 +12,55 @@ class AssetHistoryPage extends Component {
   }
 
   addTableHead(rfidTag) {
-    var tableRef = document.getElementById('histTable');
+    var tableRef = document.getElementById('itemTable');
     tableRef.deleteTHead();
     tableRef.deleteCaption();
     
     var tableCaption = tableRef.createCaption();
     tableCaption.align = 'left';
-    var captionText = document.createTextNode('History of ' + rfidTag);
+    var captionText = document.createTextNode('History of :');
     tableCaption.appendChild(captionText);
-  
-  
     var tableHead = tableRef.createTHead();
     var newHeadRow = tableHead.insertRow(-1);
     var newHeadCell = newHeadRow.insertCell(-1);
-    var cellText = document.createTextNode("Holder");
+    var cellText = document.createTextNode("RFID");
+    newHeadCell.appendChild(cellText);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("Size");
+    newHeadCell.appendChild(cellText);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("SKU");
+    newHeadCell.appendChild(cellText);
+
+  
+    tableRef = document.getElementById('histTable');
+    tableRef.deleteTHead();
+    tableRef.deleteCaption();
+
+    tableHead = tableRef.createTHead();
+    newHeadRow = tableHead.insertRow(-1);
+    newHeadCell = newHeadRow.insertCell(-1);
+    cellText = document.createTextNode("Holder");
     newHeadCell.appendChild(cellText);
     newHeadCell = newHeadRow.insertCell(-1);
     cellText = document.createTextNode("Timestamp");
     newHeadCell.appendChild(cellText);
   }
   
-  addTableRows(itemHistory) {
-    var tableRef = document.getElementById('histTable');
+  addTableRows(itemHistory, elementId) {
+    var tableRef = document.getElementById(elementId);
 
-    //alert('Adding table rows. itemHistory:\n\n' + itemHistory);
+    
   
     for (var i = 1; i < itemHistory.length; i++) {
       var newRow = tableRef.insertRow(-1);
       var newCell = newRow.insertCell(-1);
-      // console.log(element.entriesList);
-      // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
       var cellText = document.createTextNode(itemHistory[i].name);
       newCell.appendChild(cellText);
       var newCell2 = newRow.insertCell(-1);
-      var cellText2 = document.createTextNode(itemHistory[i].timestamp);
+      var date = new Date(itemHistory[i].timestamp);
+      var cellText2 = document.createTextNode(date.toLocaleString());
       newCell2.appendChild(cellText2);
-    }
-    // itemHistory.forEach(element => {
-    // var newRow = tableRef.insertRow(-1);
-    // var newCell = newRow.insertCell(-1);
-    // //alert(element.entriesList[0].reporterListList[0]);
-    // console.log(element.entriesList);
-    // // var cellText = document.createTextNode(this.resolvePubKeyToName(element[0].reporterListList[0].publicKey));
-    // var cellText = document.createTextNode('HELLO');
-    // newCell.appendChild(cellText);
-    // });
-  
-  }
-
-  /*
-  * element.entriesList[0].reporterListList[0].publicKey) => Company in first box then undefined.
-  */
-
-  resolvePubKeyToName(keyToResolve) {
-
-    if('026d529e3955f7cde5f89dec9dc1defeeffe462765a183c411cafa32406eb2a990' === keyToResolve) {
-      return 'ShipperBoat';
-    } else if('031498a3d386e2ff9c6e6eca56f48f8d796248aa3135c9f88e5d7f871bfa12a7ca' === keyToResolve) {
-      return 'Shipper';
-    } else if('020b0132a725e8fe6a6ee74a902cfc3f0bcbb7ae7b5d2218aad18b16df422a0f5d' === keyToResolve) {
-      return 'Company';
-    } else if('02bc83bb8d3f5e99ab4cde7bb576ecb6898683261cc044349c15b7076261555f68' === keyToResolve) {
-      return 'Factory';
-    } else {
-      return 'ShipperTruck2';
     }
   }
   
@@ -85,9 +69,25 @@ class AssetHistoryPage extends Component {
   }
 
   handleSubmit(event) {
-    /*alert(
-      "History\nRFID: " + this.state.rfid
-    );*/
+    document.getElementById('statusCode').innerHTML = '';
+    let infoTable = document.getElementById('itemTable');
+
+    //clear the table.
+    if(infoTable.rows.length !== 0){
+      infoTable.deleteTHead();
+      infoTable.deleteCaption();
+      infoTable.deleteRow(-1);
+    }
+
+    var tableRef = document.getElementById('histTable');
+
+    if(tableRef.rows.length !== 0) {
+      tableRef.deleteTHead();
+      tableRef.deleteCaption();
+      while(tableRef.rows.length > 0) {
+        tableRef.deleteRow(-1);
+      } 
+    }
 
   fetch('/api/history/Company', {
     method: 'POST',
@@ -105,19 +105,42 @@ class AssetHistoryPage extends Component {
     reader.read().then((({done, value}) => {
       //decode and parse into JSON
       var obj = new TextDecoder("utf-8").decode(value);
+
+      //Extract the product info stored in the final array element
       let jsonObj = JSON.parse(obj);
-      console.log(jsonObj)
 
-      //Reference for names of JSON fields.
-      //alert(obj);
+      if(jsonObj[0] === undefined || jsonObj[0] === '') {
+        document.getElementById('statusCode').innerHTML = 'Error: RFID not found.';
+        return;
+      }
 
-      //Extract relevant info.
-      var rfid = jsonObj[0].rfid;
-      // var reporterList = jsonObj;//.entriesList[0].reporterListList;
-      //alert('rfid: ' + rfid + '\nreporter list:' + reporterList);
-      //alert('jsonObj:\n\n' + JSON.stringify(jsonObj));
-      this.addTableHead(rfid);
-      this.addTableRows(jsonObj);
+      let info = jsonObj.pop();
+
+      //Display the product info.
+      
+
+      //clear the table.
+      if(infoTable.rows.length !== 0){
+        infoTable.deleteTHead();
+        infoTable.deleteCaption();
+        infoTable.deleteRow(-1);
+      }
+
+      var newRow = infoTable.insertRow(-1);
+      var newCell = newRow.insertCell(-1);
+      var cellText = document.createTextNode(info.entriesList[0].rfid);
+      newCell.appendChild(cellText);
+      newCell = newRow.insertCell(-1);
+      cellText = document.createTextNode(info.entriesList[0].size);
+      newCell.appendChild(cellText);
+      newCell = newRow.insertCell(-1);
+      cellText = document.createTextNode(info.entriesList[0].sku);
+      newCell.appendChild(cellText);
+
+      this.addTableHead(jsonObj[0].rfid);
+      this.addTableRows(jsonObj, 'histTable');
+
+      
     }))
   });
     event.preventDefault();
@@ -147,11 +170,21 @@ class AssetHistoryPage extends Component {
           <div>
           </div>
           <div className="TableDescriptor" id="tabDesc"/>
+            <div className="AttributeTable">
+              <table id="itemTable">
+                <tbody></tbody>
+              </table>
+            </div>
+            <br/>
+            <div className="TableDescriptor" id="tabDesc"/>
             <div className="HistoryTable">
               <table id="histTable">
                 <tbody></tbody>
               </table>
             </div>
+            <div className="statusCode" id="statusCode">
+            <p id="status"></p>
+          </div>
         </div>
       );
     }

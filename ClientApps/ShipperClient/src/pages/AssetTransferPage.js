@@ -18,9 +18,6 @@ class AssetTransferPage extends Component {
   }
 
   handleSubmit(event) {
-    alert(
-      "Touch Asset \nAsset ID: " + this.state.rfid
-    );
     var wait = ms => new Promise((r, j)=>setTimeout(r, ms));
   fetch('/api/touch/' + this.getUserName(), {
     method: 'POST',
@@ -48,8 +45,7 @@ class AssetTransferPage extends Component {
 
       //If we somehow got a non-pending result
       if(touchStatus !== 'PENDING') {
-        //This will never happen.
-        alert('It went through?');
+        document.getElementById('status').innerHTML = touchStatus;
       } else {
         //This is necessary. The function executes so quickly that the status is still pending,
         //and looping just gives my computer... problems.

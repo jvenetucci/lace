@@ -1,13 +1,23 @@
 var express = require('express');
 var router = express.Router();
 var request = require('./request');
+var txns = require('./TransactionCreator');
 var address = require('../addressing');
 var history_pb = require('../protobufFiles/history_pb');
-const profileKey = require('../agentKeys.json');
+var asset_pb = require('../protobufFiles/asset_pb');
 
+var profileKey = undefined;
+if (process.env.EXTENDED_KEYS) {
+    profileKey = require('../agentKeysExtended.json');
+} else{
+    profileKey = require('../agentKeys.json');
+}
 
-// Creates agents and sends to validator Comment out if you dont want to add clients at start up
-addAgents();
+if (process.env.SEND_KEYS) {
+    // Creates agents and sends to validator Comment out if you dont want to add clients at start up
+    addAgents(); 
+}
+
 
 // Create a mapping of public keys to names
 const publicKeyMap = mapPublicKeysToNames(profileKey)
@@ -66,6 +76,12 @@ router.post('/api/history/:user', async function(req, res) {
     var instanceArray = [];
     var dataList = JSON.parse(response.body).data;
 
+    if(dataList[0] === undefined) {
+        res.statusCode = 404;
+        res.send(instanceArray);
+        return;
+    }
+
     // Decode the history page container first
     var buffer = new Buffer(dataList[0].data, 'base64');
     var uInt = new Uint8Array(buffer);
@@ -90,6 +106,19 @@ router.post('/api/history/:user', async function(req, res) {
         instanceArray[instanceArray.length] = touchPoint;
     }
 
+    var infoResponse = await request.getAssetInfo(address.makeAssetAddress(req.body.RFID));
+    if(!request.errorCheckResponse(infoResponse))
+    {
+        SendErrorReponseToClient(res);
+        return;
+    }
+    var infoData = JSON.parse(infoResponse.body).data;
+    var infoBuffer = new Buffer(infoData[0].data, 'base64');
+    var uIntInfo = new Uint8Array(infoBuffer);
+    var infoInstance = asset_pb.AssetContainer.deserializeBinary(uIntInfo).toObject();
+    instanceArray[instanceArray.length] = infoInstance;
+
+    
     res.statusCode = 200;
     res.send(instanceArray);
 });
@@ -97,10 +126,19 @@ router.post('/api/history/:user', async function(req, res) {
 router.post('/api/status/:user', async function(req, res){
     console.log(req.body.url);
     
-    var response = await request.getStatus(req.body.url);
+    var response = await request.getStatus(address.makeAssetAddress(req.body.url));
+    if(!request.errorCheckResponse(response))
+    {
+        SendErrorReponseToClient(res);
+        return;
+    }
+
+    var buffer = new Buffer(response, 'base64');
+    var uInt = new Uint8Array(buffer);
+    var instance = asset_pb.AssetContainer.deserializeBinary(uInt).toObject();
 
     res.statusCode = 200;
-    res.send(response);
+    res.send(instance);
 });
 
 
@@ -139,18 +177,25 @@ function sendResponseToClient(res, response){
 }
 
 function addAgents(){
+    const batchSigner = txns.signerFromPrivateKey(profileKey["Company"]["private_key"]);
+
     var payload = {
         Action: 1,
         Name: "",
         PublicKey: "",
         PrivateKey: "",
     }
+
+    var transactions = [];
     for(var agent in profileKey){
         payload.Name = agent;
         payload.PublicKey = (profileKey[agent]["public_key"]);
         payload.PrivateKey = (profileKey[agent]["private_key"]);
-        request.send(payload);
+        var signer = txns.signerFromPrivateKey(payload.PrivateKey);
+        transactions[transactions.length] = txns.createTransactionBytes(signer, batchSigner, txns.createTransaction(payload))
     }
+    const batchBytes = txns.createBatchListBytesFromMany(batchSigner, transactions);
+    request.submit(batchBytes);
 }
 
 module.exports = router;
