@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-//<img src={logo} className="Columns-logo" alt="logo" />
+
 const PrimaryHeader = () => (
   <div className="PrimaryHeader">
     

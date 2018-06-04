@@ -1,6 +1,7 @@
 import React from 'react'
 import { logout } from '../utils/xhr'
 
+// Main page. Nothing cool happens here.
 const AppHomePage = ({ history }) => (
   <div>
     Home
