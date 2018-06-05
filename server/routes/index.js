@@ -16,10 +16,7 @@ const publicKeyMap = mapPublicKeysToNames(profileKey)
 
 // Make request on server end
 router.post('/api/send/:user', async function(req, res){
-    // get user parameter
     var agentPubPriKey = getKeys(req.params.user); 
-
-    // create payload
     var payload = {
         Action: 0,
         ModelID: req.body.model,
@@ -30,17 +27,12 @@ router.post('/api/send/:user', async function(req, res){
         PublicKey: agentPubPriKey["public_key"],
         PrivateKey: agentPubPriKey["private_key"]
     }
-
-    // make request to send transaction to validator
     var response = await request.send(payload);
     sendResponseToClient(res, response);
 });
 
 router.post('/api/touch/:user', async function(req, res){
-    // get keys
     var agentPubPriKey = getKeys(req.params.user);
-
-    // create payload
     var payload = {
         Action: 2,
         RFID: req.body.rfid,
@@ -48,15 +40,12 @@ router.post('/api/touch/:user', async function(req, res){
         PrivateKey: agentPubPriKey["private_key"]
     }
     var response = await request.send(payload);
-    //console.log(response);
     sendResponseToClient(res, response);
 });
 
 //A Function to get the history of an item from its RFID. 
 router.post('/api/history/:user', async function(req, res) {
-    // get user keys
     var agentPubPriKey = getKeys(req.params.user);
-        
     var response = await request.getHistory(address.makeAllHistoryAddress(req.body.RFID));
     if(!request.errorCheckResponse(response))
     {
@@ -114,9 +103,8 @@ router.post('/api/history/:user', async function(req, res) {
     res.send(instanceArray);
 });
 
-router.post('/api/status/:user', async function(req, res){
-    console.log(req.body.url);
-    
+
+router.post('/api/status/:user', async function(req, res){    
     var response = await request.getStatus(address.makeAssetAddress(req.body.url));
     if(!request.errorCheckResponse(response))
     {
@@ -133,10 +121,7 @@ router.post('/api/status/:user', async function(req, res){
 });
 
 
-
-
 function SendErrorReponseToClient(res){
-    // send back to the client with the status code error
     res.statusCode = response.statusCode;
     res.send("Invalid request status Code " + response.statusCode);
     res.end;

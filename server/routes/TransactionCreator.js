@@ -11,11 +11,6 @@ const FAMILY_VERSION = '0.1'
 const NAMESPACE_PREFIX = '22a6ae'
 
 
-//Using the actual protobuf stuff from backend to build a transaction. 
-//Arg1: the payload object to be sent
-//Arg2: some way to indicate the private key of the client. 
-//      Could be a name that we consult a map to get the private key, 
-//      or maybe it is just the private key, or maybe a signer object, whatever.
 //Returns: A batch containing the transaction made from payload.
 function createTransactionSecp(payload) {
     var PKGen = Secp256k1PrivateKey.Secp256k1PrivateKey.fromHex(payload.PrivateKey);
@@ -41,20 +36,11 @@ function createTransactionSecp(payload) {
     return createBatchListBytes(signer, payload.PublicKey, payloadToSend.serializeBinary());
 }
 
-
-//Function creates a transaction 
-//Input: String for: 0) Kind of action that you are doing 1) shoe type 2) shoe size 3) sku 4) RFID#
-//Output: A polite error message. 
-function createTransaction(payload) {
-    return 'Wrong function';
-};
-
 function initializeAsset(payload){
     var createAsset = new payload_pb.CreateAssetAction();
     createAsset.setRfid(payload.RFID);
     createAsset.setSize(payload.Size);
     createAsset.setSku(payload.SkuID);
-  //  createAsset.setModel(payload.ModelID);    Current protobuf does not have a set model 
     createAsset.setLongitude(0);
     createAsset.setLatitude(0);
     return createAsset;
@@ -107,10 +93,9 @@ function createBatchListBytes(signer, PublicKey, payloadBytes){
         dependencies: [],
         payloadSha512: createHash('sha512').update(payloadBytes).digest('hex')
     };
-    
+
     const transactionHeaderAsBytes = protobuf.TransactionHeader.encode(transactionHeader).finish();
     const signature = signer.sign(transactionHeaderAsBytes);
-
 
     var transaction = protobuf.Transaction.create({
         header: transactionHeaderAsBytes,
@@ -143,7 +128,6 @@ function createBatchListBytes(signer, PublicKey, payloadBytes){
 }
 
 module.exports = {
-    createTransaction,
     createTransactionSecp
 }
 
