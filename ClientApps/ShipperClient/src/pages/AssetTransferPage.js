@@ -40,14 +40,12 @@ class AssetTransferPage extends Component {
       var touchStatus = jsonObj.data[0].status;
       //Link to get the real status code if this status code is pending (it is).
       var statusLink = jsonObj.link;
-      //alert(touchStatus);
 
       //If we somehow got a non-pending result
       if(touchStatus !== 'PENDING') {
         document.getElementById('status').innerHTML = touchStatus;
       } else {
         //This is necessary. The function executes so quickly that the status is still pending,
-        //and looping just gives my computer... problems.
         this.sleep(250);
         //Check the returned url to find out the status of our transaction
         fetch('/api/status/' + this.getUserName(), {
@@ -70,10 +68,8 @@ class AssetTransferPage extends Component {
           var checkedStatusResponse = new TextDecoder("utf-8").decode(value);
           var jsoncheckedStatusResponse = JSON.parse(checkedStatusResponse);
 
-          //What kind of sadist has an unparsed JSON inside of a JSON?
+          //unparsed JSON inside of a JSON
           touchStatus = JSON.parse(jsoncheckedStatusResponse.body).data[0].status;
-
-          //alert('touchStatus:\n\n' + touchStatus.data[0].status);
 
           document.getElementById('status').innerHTML = touchStatus;
 
@@ -102,9 +98,8 @@ class AssetTransferPage extends Component {
   */
 
   /*
-  * This godawful hack comes from the author of this article:
+  * This comes from the author of this article:
   * https://www.sitepoint.com/delay-sleep-pause-wait/
-  * I hope he feels as dirty about writing it as I do about using it.
   */
   sleep(milliseconds) {
   var start = new Date().getTime();
