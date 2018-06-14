@@ -6,7 +6,7 @@ WORKDIR /usr/src/OwnerClient
 EXPOSE 3000
 
 # Update npm
-RUN npm install npm@latest -g
-RUN npm install
+# RUN npm install npm@latest -g
+RUN npm install --silent
 
 CMD ["npm", "start"]

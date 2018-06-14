@@ -36,16 +36,15 @@ function createTransaction(action, productType, size, sku, rfid, date) {
 
     //Create the transaction header
     const transactionHeaderBytes = protobuf.TransactionHeader.encode({
-        //No idea what this is for, but it's probably important.
         familyName: 'intkey',
         familyVersion: '1.0',
 
         /*
         Inputs and outputs are the state addresses a transaction is allowed to read from or write to.
-        This isn't information I'm sure of how to get. The documentation says that this information is 
-        up to the transaction processor, so we may not have anything valid at this time for inputs or outputs. 
+        The documentation says that this information is up to the transaction processor, so we may
+        not have anything valid at this time for inputs or outputs. 
         The tuna demo uses the string "19d832", which I've put here as a placeholder, the alternative is
-        an empty field like with dependencies below. Not sure which it should be.
+        an empty field like with dependencies below.
         */
         inputs: [placeholderInputOutput],
         outputs: [placeholderInputOutput],
@@ -55,8 +54,6 @@ function createTransaction(action, productType, size, sku, rfid, date) {
         batcherPublicKey: signer.getPublicKey().asHex(),
 
         //This is supposed to be the previous transaction header, but we don't have any of that, 
-        //and as far as I know, we can't get it at this time.
-        //I've considered saving that, as the information needed is generated right here. Don't know if that would work.
         dependencies: [],
 
         //Hash the payload to symbolically link the header and payload. 
@@ -75,7 +72,6 @@ function createTransaction(action, productType, size, sku, rfid, date) {
 
     return transaction;
 
-    //Alternative ending where the batch is made here, not sure if this was included in my task or not
    const transactions = [transaction];
 
    const batchHeaderBytes = protobuf.BatchHeader.encode({

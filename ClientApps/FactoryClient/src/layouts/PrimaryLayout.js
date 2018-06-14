@@ -3,10 +3,10 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import PrimaryHeader from '../ui/PrimaryHeader'
 import AppHomePage from '../pages/AppHomePage'
 
-// Sub Layouts
+// Sub Layout
 import AssetsSubLayout from './AssetsSubLayout'
-import ProductSubLayout from './ProductSubLayout'
 
+// This is the only actual page in the app. It loads the asset sublayout which is where everything happens.
 const PrimaryLayout = ({ match }) => (
   <div className="primary-layout">
     <PrimaryHeader />
@@ -20,7 +20,5 @@ const PrimaryLayout = ({ match }) => (
     </main>
   </div>
 )
-
-//<Route path={`${match.path}/products`} component={ProductSubLayout} />
 
 export default PrimaryLayout
