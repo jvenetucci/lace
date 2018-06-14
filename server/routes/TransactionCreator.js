@@ -36,6 +36,31 @@ function createTransactionSecp(payload) {
     return createBatchListBytes(signer, payload.PublicKey, payloadToSend.serializeBinary());
 }
 
+
+//Function creates a transaction 
+//Input: String for: 0) Kind of action that you are doing 1) shoe type 2) shoe size 3) sku 4) RFID#
+//Output: A polite error message. 
+function createTransaction(payload) {
+    if(payload.Action === 0)
+    {
+        var createAsset = initializeAsset(payload);
+        var payloadToSend = initializeSendPayload(payload, createAsset);      
+    }
+    else if(payload.Action === 1)
+    {
+        var createAgent = initializeAgent(payload);
+        var payloadToSend = initializeSendPayload(payload, createAgent);
+    }
+    else if(payload.Action === 2)
+    {
+        var createTouch = initializeTouch(payload);
+        var payloadToSend = initializeSendPayload(payload, createTouch);
+    }
+    else{ return; }
+
+    return payloadToSend.serializeBinary();
+}
+
 function initializeAsset(payload){
     var createAsset = new payload_pb.CreateAssetAction();
     createAsset.setRfid(payload.RFID);
@@ -127,7 +152,65 @@ function createBatchListBytes(signer, PublicKey, payloadBytes){
     return batchListBytes;
 }
 
+function createTransactionBytes(signer, batchSigner, payloadBytes){
+    const transactionHeader = {
+        familyName: FAMILY_NAME,
+        familyVersion: FAMILY_VERSION,
+        inputs: [NAMESPACE_PREFIX],
+        outputs: [NAMESPACE_PREFIX],
+        signerPublicKey: signer.getPublicKey().asHex(),
+        batcherPublicKey: batchSigner.getPublicKey().asHex(),
+        dependencies: [],
+        payloadSha512: createHash('sha512').update(payloadBytes).digest('hex')
+    };
+    
+    const transactionHeaderAsBytes = protobuf.TransactionHeader.encode(transactionHeader).finish();
+    const signature = signer.sign(transactionHeaderAsBytes);
+
+
+    var transaction = protobuf.Transaction.create({
+        header: transactionHeaderAsBytes,
+        headerSignature: signature,
+        payload: payloadBytes
+    });
+
+    return transaction;
+}
+
+function createBatchListBytesFromMany(signer, listOfTransactions) {
+    var batchHeader = {
+        signerPublicKey: signer.getPublicKey().asHex(),
+        transactionIds: listOfTransactions.map((txn) => txn.headerSignature)
+    };
+
+    const batchHeaderBytes = protobuf.BatchHeader.encode(batchHeader).finish();
+    
+    const batchSignature = signer.sign(batchHeaderBytes);
+    
+    const batch = protobuf.Batch.create({
+        header: batchHeaderBytes,
+        headerSignature: batchSignature,
+        transactions: listOfTransactions
+    });
+ 
+    const batchListBytes = protobuf.BatchList.encode({
+        batches: [batch]
+    }).finish();
+
+    return batchListBytes;
+}
+
+function signerFromPrivateKey(privateKey) {
+    var PKGen = Secp256k1PrivateKey.Secp256k1PrivateKey.fromHex(privateKey);
+    const signer = new CryptoFactory(createContext('secp256k1')).newSigner(PKGen);
+    return signer;
+}
+
 module.exports = {
-    createTransactionSecp
+    createTransaction,
+    createTransactionSecp,
+    createTransactionBytes,
+    createBatchListBytesFromMany,
+    signerFromPrivateKey
 }
 

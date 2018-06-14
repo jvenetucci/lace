@@ -189,6 +189,8 @@ class TestLace():
         txn_signature_bytes = signer.ecdsa_serialize_compact(txn_signature)
         signature = txn_signature_bytes.hex()
 
+        print("txn_signature" + str(signature))
+
         txn = Transaction(
             header=txn_header_bytes,
             header_signature=signature,
@@ -196,6 +198,11 @@ class TestLace():
         )
 
         txns = [txn]
+
+        for txn in txns:
+            print(txn)
+
+        print("signer.pubkey " + str(signer.pubkey.serialize().hex()))
 
         batch_header_bytes = BatchHeader(
             signer_public_key = signer.pubkey.serialize().hex(),
@@ -206,7 +213,7 @@ class TestLace():
         batch_signature = signer.ecdsa_sign(batch_header_bytes)
         batch_signature_bytes = signer.ecdsa_serialize_compact(batch_signature)
         signature = batch_signature_bytes.hex()
-
+        print("batch signature: " + str(batch_signature))
         batch = Batch(
             header=batch_header_bytes,
             header_signature=signature,
@@ -215,7 +222,7 @@ class TestLace():
 
         batch_list_bytes = BatchList(batches=[batch]).SerializeToString()
 
-
+        print("batches:\n", batch_list_bytes)
         # ship it out and scrape
         url = "http://localhost:8008/batches"
         headers = { 'Content-Type' : 'application/octet-stream' }
@@ -230,8 +237,8 @@ class TestLace():
         print("Batch status: " + json_batch_status["data"][0]["status"])
 
 
-subprocess.run(["docker-compose", "-f" "../sawtooth-default.yaml", "up", "-d"])
-time.sleep(15)
+#subprocess.run(["docker-compose", "-f" "../sawtooth-default.yaml", "up", "-d"])
+# time.sleep(15)
 rfid0 = ''
 test = TestLace()
 
@@ -271,22 +278,22 @@ agrs = ["touch_asset", "usr2_key", rfid0]
 getattr(test, args[0])(args)
 
 
-print("\n\t\tSAD PATH :(")
+# print("\n\t\tSAD PATH :(")
 
-print("\nCREATE ASSET WITH BOGUS KEY") 
-args = ["create_asset", "bogus_key", rfid0]
-getattr(test, args[0])(args)
+# print("\nCREATE ASSET WITH BOGUS KEY") 
+# args = ["create_asset", "bogus_key", rfid0]
+# getattr(test, args[0])(args)
 
-print("\nTOUCH W/ BOGUS KEY")
-args = ["touch_asset", "bogus_key", rfid0]
-getattr(test, args[0])(args)
+# print("\nTOUCH W/ BOGUS KEY")
+# args = ["touch_asset", "bogus_key", rfid0]
+# getattr(test, args[0])(args)
 
-print("\nTOUCH W/ BOGUS RFID")
-args = ["touch_asset", "usr0_key", "bogus_rfid"]
-getattr(test, args[0])(args)
+# print("\nTOUCH W/ BOGUS RFID")
+# args = ["touch_asset", "usr0_key", "bogus_rfid"]
+# getattr(test, args[0])(args)
 
-subprocess.run(["docker-compose", "-f", "../sawtooth-default.yaml", "down"])
-time.sleep(30)
+# subprocess.run(["docker-compose", "-f", "../sawtooth-default.yaml", "down"])
+# time.sleep(30)
 # subprocess.run(["docker-compose -f sawtooth-default.yaml up"])
 
 # # # touch asset with a bogus key

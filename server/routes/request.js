@@ -92,5 +92,6 @@ module.exports={
     getHistory,
     getStatus,
     getTheRestOfTheHistory,
+    submit,
     getAssetInfo
 }
