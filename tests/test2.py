@@ -1,3 +1,21 @@
+# Team B is comprised of the following individuals:
+#     - Roberto Avila
+#     - Andrew Burnett
+#     - Jeff De La Mare
+#     - Nick Nation
+#     - Phillip Nguyen
+#     - Anthony Tran
+#     - Joseph Venetucci
+
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE.md in the 
+# source distribution of this software for license terms.
+
+# This software also makes use of Hyperledger Sawtooth which is
+# licensed under Apache 2.0. A copy of it's license and copyright
+# are contained in sawtooth-license.md and sawtooth-copyright.md
+
+
 ''' to use this test one must already know the private key.  on the cli
 input usr0_prv_key, usr1_prv_key, or usr2_prv_key.  This distinction would
 exist depending on who holds keys and has access to the form from which a 
