@@ -19,6 +19,7 @@ This application was created by a group of students as part of their senior caps
 - [Testing Tools](#Testing-Tools)
 - [Licensing](#Licensing)
 - [Authors](#Authors)
+- [Acknowledgments](#Acknowledgments)
 - [References](#References)
 
 ---
@@ -152,21 +153,85 @@ At this point the asset has passed through the entire supply chain. In order to 
 ---
 
 ## Testing Tools
+Included with the project are a variety of test suites and tools to help test vertain areas of lace.
 
+### `makeTransaction.js`
+This is a javascript application that will quickly populate the `lace-poet.yaml` network with randomly generated assets that have randomly generated histories. The script is located at `performanceTesting/makeTransactions.js`.
+
+In order to run it you will need to have [Node.js](http://nodejs.org) and its package manager **npm** installed.
+
+How to use
+
+First packages for the script must be installed:
+```Plain
+$ cd server
+$ npm install
+$ cd ../performanceTesting
+$ npm install
+```
+
+Once the packages are done you can run the script with
+```Plain
+$ node makeTransactions.js <Number of Assets>
+```
+For example, running `node makeTransactions.js 5` will generate five random assets and send them to the network. The script will out the RFID's of each asset so you can view them using the company web client.
+
+### `test2.py`
+This python file acts as a test suite. It sends valid and invalid transactions to the validator nodes and makes sure that the right output is given. For more information see `tests/test2.py`.
+
+In order to run this you will need to have Python3 installed.
+
+To Run
+```Plain
+python3 test2.py
+```
+
+### `test.py` & `sendit.sh`
+These two files are used for generating transactions and sending them to the validator nodes. Both files are located in `/tests/`.
+
+`test.py` has three options and will make a transaction that either (1) Creates an agent, (2) Creates an asset, or (3) Touches an asset. Run `python3 test.py` to view the available options.
+
+After successfully using `test.py` a file called `lace.batches` is created. This file contains the transaction data. In order to send it you use the shell script `sendit.sh`.
+```Plain
+$ ./sendit.sh
+```
 
 ---
 
 ## Licensing
+This project is licensed under the MIT License. A copy of this license is included in the rooth directory. See `LICENSE.md`.
 
+The copyright to this project belongs to Team B which is comprised of the individuals listed in the [Authors](#Authors) section of this document.
+
+The project uses the Hyperledger Sawtooth platform which is licensed under Apache 2.0. A copy of its license and copyright are located in the root directory as `sawtooth-license.md` and `sawtooth-copyright.md`.
 
 ---
 
 ## Authors
+This project was created by a group of college students as part of their senior capstone project. The following people were in the group:
+- Roberto Avilia <ravila@pdx.edu>
+- Andrew Burnett <burnett@pdx.edu>
+- Jeff De La Mare <dejef@pdx.edu>
+- Nick Nation <nnation@pdx.edu>
+- Phillip Nguyen <hien2@pdx.edu>
+- Anthony Tran <anthot@pdx.edu>
+- Joseph Venetucci <venetuc@pdx.edu>
+
+---
+
+## Acknowledgments
+Team B would like to thank our project sponsor for providing us the oportunity to work with them and the help that they provided during the development of this project.
+
+We would also like to thank our capstone professor who helped guide us throught the capstone process.
+
+Finally we would also like to thanks the folks who worked on the Hyperledger Sawtooth project. The community behind the project became a big resource during the entire process.
 
 ---
 
 ## References
-document sawtooth
-useful endpoints
+- [Sawtooth Documentation](https://sawtooth.hyperledger.org/docs/core/releases/latest/contents.html)
+- [Useful Validator Endpoints](https://sawtooth.hyperledger.org/docs/core/releases/latest/rest_api/endpoint_specs.html)
+- [Sawtooth-Core Github](https://github.com/hyperledger/sawtooth-core)
+- [Sawtooth Supply Chain Github](https://github.com/hyperledger/sawtooth-supply-chain)
 
 ---
