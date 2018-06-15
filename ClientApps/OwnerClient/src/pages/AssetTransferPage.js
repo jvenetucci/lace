@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import 'react-router-dom'
 import '../styles/AssetTransferPage.css'
 
 class AssetTransferPage extends Component {
@@ -17,10 +17,6 @@ class AssetTransferPage extends Component {
   }
 
   handleSubmit(event) {
-    /* alert(
-      "Touch Asset \nAsset ID: " + this.state.rfid
-    ); */
-    var wait = ms => new Promise((r, j)=>setTimeout(r, ms));
   fetch('/api/touch/Company', {
     method: 'POST',
     headers: {
@@ -43,16 +39,11 @@ class AssetTransferPage extends Component {
       var touchStatus = jsonObj.data[0].status;
       //Link to get the real status code if this status code is pending (it is).
       var statusLink = jsonObj.link;
-      //alert(touchStatus);
 
       //If we somehow got a non-pending result
       if(touchStatus !== 'PENDING') {
-        //This will never happen.
-        //alert('It went through?');
         document.getElementById('status').innerHTML = touchStatus;
       } else {
-        //This is necessary. The function executes so quickly that the status is still pending,
-        //and looping just gives my computer... problems.
         this.sleep(250);
         //Check the returned url to find out the status of our transaction
         fetch('/api/status/Company', {
@@ -73,11 +64,7 @@ class AssetTransferPage extends Component {
           //decode and parse into JSON
           var checkedStatusResponse = new TextDecoder("utf-8").decode(value);
           var jsoncheckedStatusResponse = JSON.parse(checkedStatusResponse);
-
-          //What kind of sadist has an unparsed JSON inside of a JSON?
           touchStatus = JSON.parse(jsoncheckedStatusResponse.body).data[0].status;
-
-          //alert('touchStatus:\n\n' + touchStatus.data[0].status);
 
           document.getElementById('status').innerHTML = touchStatus;
 
@@ -92,24 +79,6 @@ class AssetTransferPage extends Component {
     event.preventDefault();
   }
 
-  /* Format of JSON returned by the touch action
-  {
-    "data": [
-      {
-        "id": "c184b997160fb8c92a59eb92d0e7d598b2cc9932a90b59307b1fed1e4681addc0064475b97c39f254a19a371a593561fb0ceb36783374e02b48550df27a0957e",
-        "invalid_transactions": [],
-        "status": "PENDING"
-      }
-    ],
-    "link": "http://localhost:8008/batch_statuses?id=c184b997160fb8c92a59eb92d0e7d598b2cc9932a90b59307b1fed1e4681addc0064475b97c39f254a19a371a593561fb0ceb36783374e02b48550df27a0957e"
-  }
-  */
-
-  /*
-  * This godawful hack comes from the author of this article:
-  * https://www.sitepoint.com/delay-sleep-pause-wait/
-  * I hope he feels as dirty about writing it as I do about using it.
-  */
   sleep(milliseconds) {
   var start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {

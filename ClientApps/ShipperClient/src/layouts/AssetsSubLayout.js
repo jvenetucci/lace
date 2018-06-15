@@ -1,7 +1,6 @@
 import React from 'react'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import UserNav from '../ui/UserNav'
-// import '../styles/AssetsSubLayout.css'
 
 // Sub Layouts
 import AssetTransferPage from '../pages/AssetTransferPage'

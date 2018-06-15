@@ -1,7 +1,6 @@
 import React from 'react'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import UserNav from '../ui/UserNav'
-// import '../styles/AssetsSubLayout.css'
 
 // Sub Layouts
 import AssetTransferPage from '../pages/AssetTransferPage'
@@ -12,7 +11,7 @@ import AssetHistoryPage from '../pages/AssetHistoryPage'
 const AssetsSubLayout = ({ match }) => (
   <div className="user-sub-layout">
     <aside>
-      <UserNav />
+      <UserNav/>
     </aside>
     <div className="primary-content">
       <Switch>

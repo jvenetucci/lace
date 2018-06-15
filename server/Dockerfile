@@ -9,6 +9,6 @@ EXPOSE 5001
 
 # Update npm
 # RUN npm install npm@latest -g
-RUN npm install
+RUN npm install --silent
 
 CMD ["npm", "start"]

@@ -115,8 +115,6 @@ class AssetHistoryPage extends Component {
       }
 
       let info = jsonObj.pop();
-
-      //Display the product info.
       
 
       //clear the table.
