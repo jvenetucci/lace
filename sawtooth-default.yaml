@@ -156,3 +156,20 @@ services:
     # See ./ClientApps/FactoryClient/package.json to change proxy
     depends_on:
       - server-factory
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: lace
+      MYSQL_DATABASE: lace
+    ports:
+      - "3306:3306"
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
