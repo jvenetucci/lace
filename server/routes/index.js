@@ -112,6 +112,65 @@ router.post('/api/history/:user', async function(req, res) {
     res.send(instanceArray);
 });
 
+router.post('/api/reserve/:user', async function(req, res){
+    var agentPubPriKey = getKeys(req.params.user);
+    var response = await request.getHistory(address.makeAllHistoryAddress(req.body.RFID));
+    if(!request.errorCheckResponse(response))
+    {
+        SendErrorReponseToClient(res);
+        return;
+    }
+
+    var instanceArray = [];
+    var dataList = JSON.parse(response.body).data;
+
+    if(dataList[0] === undefined) {
+        res.statusCode = 404;
+        res.send(instanceArray);
+        return;
+    }
+
+    // Decode the history page container first
+    var buffer = new Buffer(dataList[0].data, 'base64');
+    var uInt = new Uint8Array(buffer);
+    var instance = history_pb.HistoryContainer.deserializeBinary(uInt).toObject();
+
+    // Find the correct history page in the container
+    instance.entriesList.forEach(entry => {
+        if (entry.rfid == req.body.RFID) {
+            instanceArray[instanceArray.length] = entry;
+        }
+    })
+
+    // Decode the remaining touchpoint containers
+    for (i = 1; i < dataList.length; i++) {
+        buffer = new Buffer(dataList[i].data, 'base64');
+        uInt = new Uint8Array(buffer);
+        instance = history_pb.TouchPointContainer.deserializeBinary(uInt).toObject();
+
+        // Add an entry to the touchpoint that maps the pub key to a name
+        var touchPoint = instance.entriesList[0];
+        touchPoint.name = publicKeyMap.get(instanceArray[0].reporterListList[touchPoint.reporterIndex].publicKey);
+        instanceArray[instanceArray.length] = touchPoint;
+    }
+
+    var infoResponse = await request.getAssetInfo(address.makeAssetAddress(req.body.RFID));
+    if(!request.errorCheckResponse(infoResponse))
+    {
+        SendErrorReponseToClient(res);
+        return;
+    }
+    var infoData = JSON.parse(infoResponse.body).data;
+    var infoBuffer = new Buffer(infoData[0].data, 'base64');
+    var uIntInfo = new Uint8Array(infoBuffer);
+    var infoInstance = asset_pb.AssetContainer.deserializeBinary(uIntInfo).toObject();
+    instanceArray[instanceArray.length] = infoInstance;
+
+    
+    res.statusCode = 200;
+    res.send(instanceArray);
+});
+
 
 router.post('/api/status/:user', async function(req, res){    
     var response = await request.getStatus(address.makeAssetAddress(req.body.url));
