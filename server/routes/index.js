@@ -36,6 +36,11 @@ if (process.env.SEND_KEYS) {
     addAgents(); 
 }
 
+var db = null;
+if (process.env.DB_ACCESS) {
+    db = require('./database.js');
+}
+
 
 // Create a mapping of public keys to names
 const publicKeyMap = mapPublicKeysToNames(profileKey)
@@ -57,6 +62,35 @@ router.post('/api/send/:user', async function(req, res){
     var response = await request.send(payload);
     sendResponseToClient(res, response);
 });
+
+router.get('/api/query', function(req, res) {
+    var sku = req.query.sku;
+    var size = req.query.size;
+
+    console.log('SKU:' + sku);
+    console.log('Size: ' + size);
+    if (sku && !size) {
+        db.connection.query('SELECT * FROM inventory WHERE sku = ?', [sku], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else if (!sku && size) {
+        db.connection.query('SELECT * FROM inventory WHERE size = ?', [size], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else if (sku && size) {
+        db.connection.query('SELECT * FROM inventory WHERE sku = ? AND size = ?', [sku, size], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else {
+        res.json([])
+    }
+})
 
 router.post('/api/touch/:user', async function(req, res){
     var agentPubPriKey = getKeys(req.params.user);
@@ -166,6 +200,13 @@ function mapPublicKeysToNames(profileJSON) {
         }
     }
     return map
+}
+
+function pubKeystoNamesQuery(results) {
+    for(var i = 0; i < results.length; i ++) {
+        results[i].agent_public_key = publicKeyMap.get(results[i].agent_public_key)
+    }
+    return results;
 }
 
 function sendResponseToClient(res, response){
