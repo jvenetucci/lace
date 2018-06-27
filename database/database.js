@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var connection = mysql.createConnection({
-    host: 'localhost',
+    host: 'db',
     user: 'root',
     password: 'lace',
     database: 'lace',
@@ -151,11 +151,6 @@ function agentExists(pub_key) {
         return true;
     });
 }
-
-
-// connection.end((err) => {
-//     console.log('Goodbye');
-// });
 
 module.exports={
     addAgent,

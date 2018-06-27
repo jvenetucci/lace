@@ -1,0 +1,16 @@
+{
+  "name": "database_sync",
+  "version": "1.0.0",
+  "description": "Syncs the blockchain to a database",
+  "main": "sync.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Team B",
+  "license": "MIT",
+  "dependencies": {
+    "google-protobuf": "^3.6.0",
+    "mysql": "^2.15.0",
+    "ws": "^5.2.1"
+  }
+}
