@@ -57,6 +57,17 @@ const assetProto = require('./protobufFiles/asset_pb');
 const historyProto = require('./protobufFiles/history_pb');
 const db = require('./database.js');
 
+var profileKey = undefined;
+if (process.env.EXTENDED_KEYS) {
+    profileKey = require('./agentKeysExtended.json');
+} else{
+    profileKey = require('./agentKeys.json');
+}
+
+// Create a mapping of public keys to roles
+const publicKeyMap = mapPublicKeysToRoles(profileKey)
+console.log(publicKeyMap);
+
 // Create websocket to the rest API
 const ws = new WebSocket('ws:localhost:8008/subscriptions', {
     perMessageDeflate: false
@@ -106,7 +117,7 @@ ws.on('message', function incoming(data) {
     var touchpointTimestamp = '';
     // To hold new owner pub key, rfid, and timestamp
     var touchInfo = ['', '', ''];
-    var assetInfo = ['', '', '', '', ''];
+    var assetInfo = ['', '', '', '', '', ''];
     var index;
     var HistoryCont;
 
@@ -130,6 +141,7 @@ ws.on('message', function incoming(data) {
             assetInfo[2] = data.sku;
             assetInfo[3] = data.size;
             assetInfo[4] = (new Date).getTime();
+            assetInfo[5] = "Ordered";
             //db.addAsset(owner_pub_key, data.rfid, data.sku, data.size, (new Date).getTime());
             touchHistoryAsset[2] = true;
         }
@@ -198,7 +210,9 @@ ws.on('message', function incoming(data) {
         for(i in touchInfo) {
             console.log(touchInfo[i]);
         }
-        db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2]);
+        console.log(typeof(publicKeyMap.get(touchInfo[0])))
+        console.log(typeof(touchInfo[1]))
+        db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2], publicKeyMap.get(touchInfo[0]));
     }
     else if(touchHistoryAsset[2]) {
         pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
@@ -206,7 +220,7 @@ ws.on('message', function incoming(data) {
         for(i in assetInfo) {
             console.log(assetInfo[i]);
         }
-        db.addAsset(assetInfo[0], assetInfo[1], assetInfo[2], assetInfo[3], assetInfo[4]);
+        db.addAsset(assetInfo[0], assetInfo[1], assetInfo[2], assetInfo[3], assetInfo[4], assetInfo[5]);
     }
     console.log('--------------------------------');
     console.log('--------------------------------');
@@ -215,3 +229,13 @@ ws.on('message', function incoming(data) {
     console.log('****************************************');
     console.log('\n\n');
 });
+
+function mapPublicKeysToRoles(profileJSON) {
+    var map = new Map();
+    for (var key in profileJSON) {
+       if (profileJSON.hasOwnProperty(key)) {
+           map.set(profileJSON[key].public_key, profileJSON[key].role)
+        }
+    }
+    return map
+}

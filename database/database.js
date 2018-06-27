@@ -23,7 +23,7 @@ connection.query('CREATE TABLE IF NOT EXISTS lace.agents (name VARCHAR(40) NOT N
     console.log('Agent table created');
 });
 
-connection.query('CREATE TABLE IF NOT EXISTS lace.inventory (agent_public_key VARCHAR(70) NOT NULL, rfid VARCHAR(70) NOT NULL, sku VARCHAR(70) NOT NULL, size VARCHAR(25) NOT NULL, time_stamp VARCHAR(20) NOT NULL, PRIMARY KEY (rfid), FOREIGN KEY (agent_public_key) REFERENCES agents(agent_public_key) );', function (error, results, fields) {
+connection.query('CREATE TABLE IF NOT EXISTS lace.inventory (agent_public_key VARCHAR(70) NOT NULL, rfid VARCHAR(70) NOT NULL, sku VARCHAR(70) NOT NULL, size VARCHAR(25) NOT NULL, time_stamp VARCHAR(20) NOT NULL, status VARCHAR(30) NOT NULL, PRIMARY KEY (rfid), FOREIGN KEY (agent_public_key) REFERENCES agents(agent_public_key) );', function (error, results, fields) {
     if (error) throw error;
     
     console.log('Inventory table created');
@@ -81,12 +81,12 @@ function getQuery(rfid, sku, size) {
     }
 }
 
-function touchAsset(new_owner, rfid, timestamp) {
+function touchAsset(new_owner, rfid, timestamp, newStatus) {
     if(assetExists(rfid)) {
         console.log('ASSET DOES NOT EXIST, CANNOT TOUCH.');
         return;
     }
-    connection.query('UPDATE inventory SET agent_public_key = ?, time_stamp = ? WHERE rfid = ?', [new_owner, timestamp, rfid], function (error, results, fields) {
+    connection.query('UPDATE inventory SET agent_public_key = ?, time_stamp = ?, status = ? WHERE rfid = ?', [new_owner, timestamp, newStatus, rfid], function (error, results, fields) {
         if (error) throw error;
 
         console.log('+++Touch successful. RFID: ' + rfid + ' now belongs to ' + new_owner);
@@ -108,12 +108,12 @@ function addAgent(pub_key, name) {
     });
 }
 
-function addAsset(pub_key, rfid, sku, size, time_stamp) {
+function addAsset(pub_key, rfid, sku, size, time_stamp, status) {
     if(assetExists(rfid)) {
         console.log('ASSET EXISTS, DID NOT ADD TO DB.');
         return;
     }
-    connection.query('INSERT INTO inventory (agent_public_key, rfid, sku, size, time_stamp) VALUES ( ?, ?, ?, ?, ? )', [pub_key, rfid, sku, size, time_stamp], function (error, results, fields) {
+    connection.query('INSERT INTO inventory (agent_public_key, rfid, sku, size, time_stamp, status) VALUES ( ?, ?, ?, ?, ?, ?)', [pub_key, rfid, sku, size, time_stamp, status], function (error, results, fields) {
         if (error) {
             console.log('ASSET EXISTS, DID NOT ADD'); //throw error;
         }
