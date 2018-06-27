@@ -92,11 +92,52 @@ router.get('/api/query', function(req, res) {
     }
 })
 
+router.get('/api/outsideQuery', function(req, res) {
+    var sku = req.query.sku;
+    var size = req.query.size;
+
+    console.log('SKU:' + sku);
+    console.log('Size: ' + size);
+    if (sku && !size) {
+        db.connection.query('SELECT * FROM inventory WHERE sku = ? AND (status = "Recieved" OR status = "In Store")', [sku], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else if (!sku && size) {
+        db.connection.query('SELECT * FROM inventory WHERE size = ? AND (status = "Recieved" OR status = "In Store")', [size], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else if (sku && size) {
+        db.connection.query('SELECT * FROM inventory WHERE sku = ? AND size = ? AND (status = "Recieved" OR status = "In Store")', [sku, size], function (error, results, fields) {
+            if (error) throw error;
+            results = pubKeystoNamesQuery(results)
+            res.json(results);
+        });
+    } else {
+        res.json([])
+    }
+})
+
 router.post('/api/touch/:user', async function(req, res){
     var agentPubPriKey = getKeys(req.params.user);
     var payload = {
         Action: 2,
         RFID: req.body.rfid,
+        PublicKey: agentPubPriKey["public_key"],
+        PrivateKey: agentPubPriKey["private_key"]
+    }
+    var response = await request.send(payload);
+    sendResponseToClient(res, response);
+});
+
+router.post('/api/lock', async function(req, res){
+    var agentPubPriKey = getKeys(req.body.userList[0]);
+    var payload = {
+        Action: 3,
+        RFID: req.body.rfidList[0],
         PublicKey: agentPubPriKey["public_key"],
         PrivateKey: agentPubPriKey["private_key"]
     }

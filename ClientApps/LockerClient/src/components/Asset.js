@@ -24,7 +24,7 @@ class Asset extends Component {
     }
 
     toggle() {
-        this.props.callback(this.props.asset.rfid);
+        this.props.callback(this.props.asset.rfid, this.props.asset.agent_public_key);
     }
 }
 

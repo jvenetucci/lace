@@ -49,6 +49,11 @@ function createTransactionSecp(payload) {
         var createTouch = initializeTouch(payload);
         var payloadToSend = initializeSendPayload(payload, createTouch);
     }
+    else if(payload.Action === 3) // Lock
+    {
+        var createLock = initializeLock(payload);
+        var payloadToSend = initializeSendPayload(payload, createLock);
+    }
     else{ return; }
 
     return createBatchListBytes(signer, payload.PublicKey, payloadToSend.serializeBinary());
@@ -107,6 +112,13 @@ function initializeTouch(payload){
     return createTouch;
 }
 
+function initializeLock(payload){
+    var createLock = new payload_pb.LockAssetAction();
+    console.log(payload.RFID);
+    createLock.setRfid(payload.RFID);
+    return createLock;
+}
+
 
 function initializeSendPayload(payload, create){
     var payloadToSend = new payload_pb.Payload();
@@ -120,6 +132,9 @@ function initializeSendPayload(payload, create){
     }
     else if(payload.Action === 2){
         payloadToSend.setTouchAsset(create);
+    }
+    else if(payload.Action === 3){
+        payloadToSend.setLockAsset(create);
     }
 
     return payloadToSend;

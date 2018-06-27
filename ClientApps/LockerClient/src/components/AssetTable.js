@@ -6,10 +6,12 @@ class AssetTable extends Component {
         super(props)
 
         this.state = {
-            RFIDS: []
+            RFIDS: [],
+            Users: [],
         }
 
         this.toggleRFID = this.toggleRFID.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     render() {
@@ -33,21 +35,31 @@ class AssetTable extends Component {
                     {this.props.assets.map((asset => (<Asset key={asset.rfid} asset={asset} callback={this.toggleRFID}/>)))}
                     </tbody>
                 </table>
+                <form id="LockArea" onSubmit={this.handleSubmit}>
+                    <input id="LockButton" type="submit" value="Reserve" />
+                </form>
                 </div>
             );}
     } else {
         return null;
     }}
 
-    toggleRFID(rfid) {
+    handleSubmit(event) {
+        event.preventDefault()
+        this.props.callback(this.state.RFIDS, this.state.Users);
+    }
+
+    toggleRFID(rfid, user) {
         var state = this.state;
         var index = state.RFIDS.indexOf(rfid);
         if (index > -1) {
-            state.RFIDS.splice(index, 1)
+            state.RFIDS.splice(index, 1);
+            state.Users.splice(index, 1);
         } else {
             state.RFIDS.push(rfid);
+            state.Users.push(user);
         }
-        // console.log(this.state);
+        console.log(this.state);
         this.setState(state);
     }
 }
