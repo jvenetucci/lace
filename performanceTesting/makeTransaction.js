@@ -222,8 +222,9 @@ for (var i = 0; i < assetNumber; i++) {
     payload.setCreateAsset(newAsset);
 
     var transactionBytes = txns.createTransactionBytes(signerCompany, signerCompany, payload.serializeBinary())
-    transactions[transactions.length] = transactionBytes;
-    // var batchBytes = createBatchListBytes(signerCompany, signerCompany.getPublicKey().asHex(), payload.serializeBinary());
+    // transactions[transactions.length] = transactionBytes;
+    var batchBytes = txns.createBatchListBytes(signerCompany, signerCompany.getPublicKey().asHex(), payload.serializeBinary());
+    send(batchBytes);
 
     // 95% to get created at factory
     if (getRandomIntInclusive(0,100) > 5) {
@@ -244,7 +245,8 @@ for (var i = 0; i < assetNumber; i++) {
 
         transactionBytes = txns.createTransactionBytes(factory, signerCompany, payload.serializeBinary())
         transactions[transactions.length] = transactionBytes;
-        // batchBytes = createBatchListBytes(factory, factory.getPublicKey().asHex(), payload.serializeBinary())
+        batchBytes = txns.createBatchListBytes(factory, factory.getPublicKey().asHex(), payload.serializeBinary())
+        send(batchBytes);
 
         // 90% chance to leave factory
         if (getRandomIntInclusive(0,100) > 10) {
@@ -265,7 +267,9 @@ for (var i = 0; i < assetNumber; i++) {
 
             transactionBytes = txns.createTransactionBytes(shipper1, signerCompany, payload.serializeBinary())
             transactions[transactions.length] = transactionBytes;
-            // batchBytes = createBatchListBytes(shipper1, shipper1.getPublicKey().asHex(), payload.serializeBinary());
+            batchBytes = txns.createBatchListBytes(shipper1, shipper1.getPublicKey().asHex(), payload.serializeBinary());
+            send(batchBytes);
+
 
             
             // 70% change to go to a second shipper  
@@ -287,7 +291,9 @@ for (var i = 0; i < assetNumber; i++) {
 
                 transactionBytes = txns.createTransactionBytes(shipper2, signerCompany, payload.serializeBinary())
                 transactions[transactions.length] = transactionBytes;
-                // batchBytes = createBatchListBytes(shipper2, shipper2.getPublicKey().asHex(), payload.serializeBinary());
+                batchBytes = txns.createBatchListBytes(shipper2, shipper2.getPublicKey().asHex(), payload.serializeBinary());
+                send(batchBytes);
+
 
                 // 80% chance to go to distribution center
                 if (getRandomIntInclusive(0,100) > 20) {
@@ -308,7 +314,9 @@ for (var i = 0; i < assetNumber; i++) {
                     
                     transactionBytes = txns.createTransactionBytes(distributor, signerCompany, payload.serializeBinary())
                     transactions[transactions.length] = transactionBytes;
-                    // batchBytes = createBatchListBytes(distributor, distributor.getPublicKey().asHex(), payload.serializeBinary())
+                    batchBytes = txns.createBatchListBytes(distributor, distributor.getPublicKey().asHex(), payload.serializeBinary())
+                    send(batchBytes);
+
 
 
                     // 60% chance to go to store
@@ -332,7 +340,9 @@ for (var i = 0; i < assetNumber; i++) {
                             
                             transactionBytes = txns.createTransactionBytes(store, signerCompany, payload.serializeBinary())
                             transactions[transactions.length] = transactionBytes;
-                            // batchBytes = createBatchListBytes(store, store.getPublicKey().asHex(), payload.serializeBinary());
+                            batchBytes = txns.createBatchListBytes(store, store.getPublicKey().asHex(), payload.serializeBinary());
+                            send(batchBytes);
+
 
 
                             // 70% chance to go someplace in store
@@ -354,7 +364,9 @@ for (var i = 0; i < assetNumber; i++) {
                                 
                                 transactionBytes = txns.createTransactionBytes(next, signerCompany, payload.serializeBinary())
                                 transactions[transactions.length] = transactionBytes;
-                                // batchBytes = createBatchListBytes(next, next.getPublicKey().asHex(), payload.serializeBinary())
+                                batchBytes = txns.createBatchListBytes(next, next.getPublicKey().asHex(), payload.serializeBinary())
+                                send(batchBytes);
+
 
                             }
                         } else {
@@ -362,7 +374,9 @@ for (var i = 0; i < assetNumber; i++) {
 
                             transactionBytes = txns.createTransactionBytes(store, signerCompany, payload.serializeBinary())
                             transactions[transactions.length] = transactionBytes;
-                            // batchBytes = createBatchListBytes(store, store.getPublicKey().asHex(), payload.serializeBinary())
+                            batchBytes = txns.createBatchListBytes(store, store.getPublicKey().asHex(), payload.serializeBinary())
+                            send(batchBytes);
+
 
 
                             // 60% chance to go someplace in store
@@ -384,7 +398,9 @@ for (var i = 0; i < assetNumber; i++) {
 
                                 transactionBytes = txns.createTransactionBytes(next, signerCompany, payload.serializeBinary())
                                 transactions[transactions.length] = transactionBytes;
-                                // batchBytes = createBatchListBytes(next, next.getPublicKey().asHex(), payload.serializeBinary())
+                                batchBytes = txns.createBatchListBytes(next, next.getPublicKey().asHex(), payload.serializeBinary())
+                                send(batchBytes);
+
 
                             }
                         }
@@ -394,19 +410,19 @@ for (var i = 0; i < assetNumber; i++) {
         }
     }
     console.log(path + "\n")
-    console.log(transactions);
-    var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
-    request.post({
-        url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
-        body: batchBytes,
-        headers: {'Content-Type': 'application/octet-stream'}
-    },  (err, response, responseBody) => {
-        if (err) {
-            return console.log("Problem submitting to the validator...\n" + err)
-        } else {
-            getStatus(JSON.parse(responseBody).link)
-        }
-    })
+    // console.log(transactions.length);
+    // var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
+    // request.post({
+    //     url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
+    //     body: batchBytes,
+    //     headers: {'Content-Type': 'application/octet-stream'}
+    // },  (err, response, responseBody) => {
+    //     if (err) {
+    //         return console.log("Problem submitting to the validator...\n" + err)
+    //     } else {
+    //         getStatus(JSON.parse(responseBody).link)
+    //     }
+    // })
     transactions = []
 }
 console.log("*** Randomly generated the supply chain lifecycle for " + assetNumber + " assets with a total of " + count + " transactions" )
@@ -456,6 +472,7 @@ function send(batchListAsBytes) {
         if (err) {
             // return console.log("Problem submitting to the validator...\n" + err)
         } else {
+            console.log('Done');
         }
     })
 }

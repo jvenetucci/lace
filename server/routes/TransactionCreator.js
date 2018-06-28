@@ -259,6 +259,7 @@ module.exports = {
     createTransactionSecp,
     createTransactionBytes,
     createBatchListBytesFromMany,
+    createBatchListBytes,
     signerFromPrivateKey
 }
 
