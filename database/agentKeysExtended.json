@@ -1,0 +1,107 @@
+{   
+    "Company":{
+        "public_key": "020b0132a725e8fe6a6ee74a902cfc3f0bcbb7ae7b5d2218aad18b16df422a0f5d",
+        "private_key": "a2460b6e004576ba5a6b11fcce38582eda1cc622682d765cabbb854eb49f068c",
+        "role": "Recieved"
+    }, 
+    "ShipperBoat":{
+        "public_key": "026d529e3955f7cde5f89dec9dc1defeeffe462765a183c411cafa32406eb2a990",
+        "private_key": "a36ecdfdc14aa1c9fde23c2128ef04836dc46ee084678f05713c3f4417daf57b",
+        "role": "In Transit"
+    },
+    "ShipperBoat1":{
+        "public_key": "031fdc2399eb5b2d9fa7d79bc6ac689119aeeb2732a979c22ebb61bcb8154de6b9",
+        "private_key": "d123bdcaa6986c786ad0113159bdbb04baab6e794d03bcb38a011de5fe7f7cf1",
+        "role": "In Transit"
+    },
+    "ShipperTruck3":{
+        "public_key": "0259632a5dd8be7fdf644cbc506adb38a4b4b41335a413853e264628d9462fe8ab",
+        "private_key": "c7df6cfc0700dc1de8f45e1e031c9e6a164f969ac40991d8863c5470862de70f",
+        "role": "In Transit"
+    },
+    "ShipperTruck1":{
+        "public_key": "031498a3d386e2ff9c6e6eca56f48f8d796248aa3135c9f88e5d7f871bfa12a7ca",
+        "private_key": "4546bcd235297b192b0336dce4bddcdbcd187462d9da1495d920b595f0e377e3",
+        "role": "In Transit"
+    },
+    "ShipperTruck2":{
+        "public_key": "035db7b0c2e1ffd44c7274fb0245ba4b66fb723ccf90800e60ebc08f8d3bf0cf9b",
+        "private_key": "d0595cc9784237cadf3e1d58b815927e81dcfbbd8fd071f058be4fe5dbd06801",
+        "role": "In Transit"
+    },
+    "ShipperPlane1":{
+        "public_key": "034c8630629e5f6e4877084ddcffb43d81f714e563782bec08a7ebf2455bf10b1b",
+        "private_key": "b4ac76fec24e673311939d0af603753a789b68b429582ed02d4739f97a6a5882",
+        "role": "In Transit"
+    },
+    "Factory":{
+        "public_key": "02bc83bb8d3f5e99ab4cde7bb576ecb6898683261cc044349c15b7076261555f68",
+        "private_key": "8cd7b45d543079857e3dbbf3b4cc581fe924a0633468c8c6be31d563f2fb6cbf",
+        "role": "Created"
+    },
+    "FactoryA":{
+        "public_key": "021799df43e16e9fa18a52e00365e888cc93b7f3aa68d2427d297a31ba87736605",
+        "private_key": "ce5c43618bf4470a3f9f1870e9b2fa92827b965fe82a61de07711645019547f3",
+        "role": "Created"
+    },
+    "FactoryB":{
+        "public_key": "03083317ece585e16a6ea4a52048a2e34d46c013e059b60b4f2cf65c7670a1d35b",
+        "private_key": "9aca69c78a766b40e899a7e4a19b80741f98dd12d638917f142066fc78f01263",
+        "role": "Created"
+    },
+    "DistributionCenterA":{
+        "public_key": "02980030871adfa1f7bcfaf0745d5d0c530146e6dbfa8137b73782ae8c3a4d6d5f",
+        "private_key": "b07fa89dab42b1e6b90f6bca1c1f8f5670578364e67b52fc8c8dc9f9f616e155",
+        "role": "Recieved"
+    },
+    "DistributionCenterB":{
+        "public_key": "0216cdcfe554194a3386ac74979a2ab5268836c18794087c459ce0a8be126189a5",
+        "private_key": "7fa105c4df53a4b88c65f18fc63b7f54e58cd4ca8f1d9554514d87977893356d",
+        "role": "Recieved"
+    },
+    "StoreA":{
+        "public_key": "0270c216f9c2e7c4415309569ade5505f0bd8431db559841ec232fc279c6d22669",
+        "private_key": "730cd9fef670a84652ba96645cd1513702011b0a76ea428e9fc2d6549b0326b5",
+        "role": "In Store"
+    },
+    "StoreA-Backroom":{
+        "public_key": "032091e7ea4f7019aa1b4d1ae2ba35ddabdca510bd7d3b3f6237ebdcb69a0bb618",
+        "private_key": "e7782bb57d77f536a5ed5d75fdba860f38b89e82875548becf93570de67f72fa",
+        "role": "In Store"
+    },
+    "StoreA-Register1":{
+        "public_key": "03f6cab5f90e960e4dc4f3e17f91622b91d009b4e2a79c732179ac08dbef26d569",
+        "private_key": "19948fb7a1f69e6cab825cbb382d8a6bd9df55f9d3620fac5f8fc40723e84c68",
+        "role": "Sold"
+    },
+    "StoreA-Register2":{
+        "public_key": "022b8fb877c73431afbab56b3e2ff8cf188780bbeae8f8afd6ac7e164783c7bcf4",
+        "private_key": "b9d69f719694624fbf96f0a3eb15524bde81003fc1822ee1959b8d0840734bab",
+        "role": "Sold"
+    },
+    "StoreB":{
+        "public_key": "0336039094686fa1afed61936b5a787efa428b2e55d3c7ee48d3b34c5f525197d1",
+        "private_key": "b0c1c5a6afa04e5f553cc2d8e637ea2ea77f408b7851416f8d0c88d5cbe5ebea",
+        "role": "In Store"
+    },
+    "StoreB-Backroom":{
+        "public_key": "0272b5d7b165b6781bb46c0dfb2885793bb85664939654f7e8ba6981041f124ae9",
+        "private_key": "f56172b41706250d0cc0ee40e37aee5e7fab6c2adec6588b84722690057c0e9d",
+        "role": "In Store"
+    },
+    "StoreB-Register1":{
+        "public_key": "029a987999614f3a78c12b6d0331fe5180b54ff5eca5dec26aa047dba43223158a",
+        "private_key": "42bed65eaf11818f3315962e5df11508e88b20d0abcda8c175cbbfbfca9a733d",
+        "role": "Sold"
+    },
+    "StoreB-Register2":{
+        "public_key": "03ca0394074e124452f668ee2493923251100a1443a2d7966db97be11e4fdb5819",
+        "private_key": "e8c604096567f58e94a6ecd04e6acbed2b20a60c29caa4e45f40e6d95a2f14ac",
+        "role": "Sold"
+    },
+    "ShoeLocker":{
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551",
+        "role": "Sold (3rd Party)"
+    } 
+}

@@ -133,6 +133,18 @@ router.post('/api/touch/:user', async function(req, res){
     sendResponseToClient(res, response);
 });
 
+router.post('/api/touchLock', async function(req, res){
+    var agentPubPriKey = getKeys(publicKeyMap.get(req.body.userPubKey));
+    var payload = {
+        Action: 2,
+        RFID: req.body.rfid,
+        PublicKey: agentPubPriKey["public_key"],
+        PrivateKey: agentPubPriKey["private_key"]
+    }
+    var response = await request.send(payload);
+    sendResponseToClient(res, response);
+});
+
 router.post('/api/lock', async function(req, res){
     var agentPubPriKey = getKeys(req.body.userList[0]);
     var payload = {
@@ -144,6 +156,41 @@ router.post('/api/lock', async function(req, res){
     var response = await request.send(payload);
     sendResponseToClient(res, response);
 });
+
+router.post('/api/unlock', async function(req, res){
+    db.connection.query('SELECT * FROM inventory WHERE rfid = ?', [req.body.rfid], async function (error, results, fields) {
+        if (error) throw error;
+        console.log('----------------')
+        console.log(results[0].agent_public_key);
+        console.log('----------------')
+        var agentPubPriKey = getKeys(publicKeyMap.get(results[0].agent_public_key));
+        console.log(agentPubPriKey);
+        var payload = {
+            Action: 4,
+            RFID: req.body.rfid,
+            PublicKey: agentPubPriKey["public_key"],
+            PrivateKey: agentPubPriKey["private_key"]
+        }
+        var response = await request.send(payload);
+
+        //Transfer
+        console.log(req.body.user);
+        var agentPubPriKey2 = getKeys(publicKeyMap.get(req.body.user));
+        console.log('**----------------')
+        console.log(agentPubPriKey2);
+        var payload2 = {
+            Action: 2,
+            RFID: req.body.rfid,
+            PublicKey: agentPubPriKey2["public_key"],
+            PrivateKey: agentPubPriKey2["private_key"]
+        }
+        console.log(payload2);
+        console.log('***----------------')
+        var response = await request.send(payload2);
+        sendResponseToClient(res, response);    
+    });
+});
+
 
 //A Function to get the history of an item from its RFID. 
 router.post('/api/history/:user', async function(req, res) {

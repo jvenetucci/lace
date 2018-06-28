@@ -25,6 +25,7 @@ import AssetTransferPage from '../pages/AssetTransferPage'
 import ViewAssetsPage from '../pages/ViewAssetsPage'
 import AssetCreationPage from '../pages/AssetCreationPage'
 import AssetHistoryPage from '../pages/AssetHistoryPage'
+import AssetUnlockPage from '../pages/AssetUnlockPage'
 
 const AssetsSubLayout = ({ match }) => (
   <div className="user-sub-layout">
@@ -37,6 +38,7 @@ const AssetsSubLayout = ({ match }) => (
         <Route path={`${match.path}/create`}  component={AssetCreationPage} />
         <Route path={`${match.path}/view`} exact component={ViewAssetsPage} />
         <Route path={`${match.path}/history`} exact component={AssetHistoryPage} />
+        <Route path={`${match.path}/unlock`}  exact component={AssetUnlockPage} />
       </Switch>
     </div>
   </div>

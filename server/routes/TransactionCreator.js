@@ -54,6 +54,11 @@ function createTransactionSecp(payload) {
         var createLock = initializeLock(payload);
         var payloadToSend = initializeSendPayload(payload, createLock);
     }
+    else if(payload.Action === 4) // Unlock
+    {
+        var createUnlock = initializeUnlock(payload);
+        var payloadToSend = initializeSendPayload(payload, createUnlock);
+    }
     else{ return; }
 
     return createBatchListBytes(signer, payload.PublicKey, payloadToSend.serializeBinary());
@@ -119,6 +124,13 @@ function initializeLock(payload){
     return createLock;
 }
 
+function initializeUnlock(payload){
+    var createUnlock = new payload_pb.UnlockAssetAction();
+    console.log(payload.RFID);
+    createUnlock.setRfid(payload.RFID);
+    return createUnlock;
+}
+
 
 function initializeSendPayload(payload, create){
     var payloadToSend = new payload_pb.Payload();
@@ -135,6 +147,9 @@ function initializeSendPayload(payload, create){
     }
     else if(payload.Action === 3){
         payloadToSend.setLockAsset(create);
+    }
+    else if(payload.Action === 4){
+        payloadToSend.setUnlockAsset(create);
     }
 
     return payloadToSend;

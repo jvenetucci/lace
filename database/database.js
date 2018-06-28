@@ -93,6 +93,18 @@ function touchAsset(new_owner, rfid, timestamp, newStatus) {
     });
 }
 
+function lockAsset(rfid) {
+    if(assetExists(rfid)) {
+        console.log('ASSET DOES NOT EXIST, CANNOT TOUCH.');
+        return;
+    }
+    connection.query('UPDATE inventory SET status = ? WHERE rfid = ?', ['Locked (ShoeLocker)', rfid], function (error, results, fields) {
+        if (error) throw error;
+
+        console.log('+++Lock successful. RFID: ' + rfid + ' now locked');
+    });
+}
+
 function addAgent(pub_key, name) {
     if(agentExists(pub_key)) {
         console.log('AGENT EXISTS');
@@ -156,5 +168,6 @@ module.exports={
     addAgent,
     agentExists,
     addAsset,
-    touchAsset
+    touchAsset,
+    lockAsset
 }

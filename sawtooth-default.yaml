@@ -96,7 +96,7 @@ services:
       - validator
       - rest-api
       - processor
-      - db
+      - db-sync
 
   server-shipper:
     container_name: server-shipper
@@ -178,12 +178,11 @@ services:
     ports:
       - "8080:8080"
 
-  db_sync:
-    container_name: db_sync
+  db-sync:
+    container_name: db-sync
     build: ./database/
     restart: always
     depends_on:
       - rest-api
       - processor
       - db
-      - client-owner

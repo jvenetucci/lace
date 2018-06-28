@@ -25,5 +25,10 @@
         "public_key": "035db7b0c2e1ffd44c7274fb0245ba4b66fb723ccf90800e60ebc08f8d3bf0cf9b",
         "private_key": "d0595cc9784237cadf3e1d58b815927e81dcfbbd8fd071f058be4fe5dbd06801",
         "role": "In Transit"
+    },
+    "ShoeLocker":{
+        "public_key": "02e07aefd88e819dd88464729b83b5adc02af3d49e18832778a21c8dd89dd5effa",
+        "private_key": "41b6c45f8138da9e6c3e6978a67509fd01acfec753fc4dfdc1d5cd08a59ac551",
+        "role": "Sold (3rd Party)"
     }
 }

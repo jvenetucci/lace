@@ -63,7 +63,7 @@ ws.on('message', function incoming(data) {
     var currentOwnerPublicKey = '';
     var touchpointTimestamp = '';
     // To hold new owner pub key, rfid, and timestamp
-    var touchInfo = ['', '', ''];
+    var touchInfo = ['', '', '', ''];
     var assetInfo = ['', '', '', '', '', ''];
     var index;
     var HistoryCont;
@@ -116,6 +116,15 @@ ws.on('message', function incoming(data) {
                 currentOwner = data;
                 touchHistoryAsset[1] = true;
 
+                if (HistoryCont.entriesList[0].locked) {
+                    console.log('WAS TRUE');
+                    touchInfo[3] = 'Locked (ShoeLocker)';
+                    db.lockAsset(HistoryCont.entriesList[0].rfid)
+                } else {
+                    console.log('NOT TRUE');
+                    touchInfo[3] = publicKeyMap.get(touchInfo[0]);
+                }
+
             }
             else { // When an item in the db is touched, change owner
                 data = historyProto.TouchPointContainer.deserializeBinary(new_state).toObject();
@@ -146,11 +155,14 @@ ws.on('message', function incoming(data) {
     }
     
 
-    
+    console.log('<><><><><><><><><><><><><><><><>')
+    console.log(touchHistoryAsset);
+    console.log('<><><><><><><><><><><><><><><><>')
 
     // If the transaction involved a touch and a history but not an asset
     // perform touch in db.
     if(touchHistoryAsset[0] && touchHistoryAsset[1] && !touchHistoryAsset[2]) {
+        console.log('>>>>>>>>>>>ONE<<<<<<<<<<<<')
         pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
         touchInfo[0] = pub_key;
         // console.log('Touch info: ' + touchInfo[0] + ' ' + touchInfo[1] + ' ' + touchInfo[2]);
@@ -159,9 +171,18 @@ ws.on('message', function incoming(data) {
         }
         console.log(typeof(publicKeyMap.get(touchInfo[0])))
         console.log(typeof(touchInfo[1]))
-        db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2], publicKeyMap.get(touchInfo[0]));
+        if (HistoryCont.entriesList[0].locked === 'true') {
+            touchInfo[3] = 'Locked (ShoeLocker)';
+        } else {
+            touchInfo[3] = publicKeyMap.get(touchInfo[0]);
+        }
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        console.log(touchInfo[3]);
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2], touchInfo[3]);
     }
     else if(touchHistoryAsset[2]) {
+        console.log('>>>>>>>>>>>TWO<<<<<<<<<<<<')
         pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
         touchInfo[0] = pub_key;
         for(i in assetInfo) {
@@ -169,6 +190,26 @@ ws.on('message', function incoming(data) {
         }
         db.addAsset(assetInfo[0], assetInfo[1], assetInfo[2], assetInfo[3], assetInfo[4], assetInfo[5]);
     }
+    // } else if(!touchHistoryAsset[0] && touchHistoryAsset[1] && !touchHistoryAsset[2]) {
+    //     console.log('>>>>>>>>>>>THREE<<<<<<<<<<<<')
+    //     pub_key = HistoryCont.entriesList[0].reporterListList[index].publicKey;
+    //     touchInfo[0] = pub_key;
+    //     // console.log('Touch info: ' + touchInfo[0] + ' ' + touchInfo[1] + ' ' + touchInfo[2]);
+    //     for(i in touchInfo) {
+    //         console.log(touchInfo[i]);
+    //     }
+    //     console.log(typeof(publicKeyMap.get(touchInfo[0])))
+    //     console.log(typeof(touchInfo[1]))
+    //     if (HistoryCont.entriesList[0].locked === 'true') {
+    //         touchInfo[3] = 'Locked (ShoeLocker)';
+    //     } else {
+    //         touchInfo[3] = publicKeyMap.get(touchInfo[0]);
+    //     }
+    //     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    //     console.log(touchInfo[3]);
+    //     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    //     db.touchAsset(touchInfo[0], touchInfo[1], touchInfo[2], touchInfo[3]);
+    // }
     console.log('--------------------------------');
     console.log('--------------------------------');
 

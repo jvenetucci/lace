@@ -47,7 +47,7 @@ const assetNumber = process.argv[2];
 
 
 // **** REST API ADDRESSES ***
-const ports = ['8008', '8001', '8002', '8003', '8004']
+const ports = ['8008']
 // **** SKU and Size List ****
 const SKUList = ['942838', '844687', 'AA1253', '942851']
 const sizeList = ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '12.5', '13', '14']
@@ -193,7 +193,7 @@ const signerStoreBR2 = new CryptoFactory(createContext('secp256k1')).newSigner(P
 
 const storeBAreas = [signerStoreBBackroom, signerStoreBR1, signerStoreBR2]
 
-docRFID = fs.openSync('./RFIDList.lace', 'a');
+// docRFID = fs.openSync('./RFIDList.lace', 'a');
 
 var transactions = [];
 var count = 0;
@@ -394,33 +394,33 @@ for (var i = 0; i < assetNumber; i++) {
         }
     }
     console.log(path + "\n")
-    // var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
-    // request.post({
-    //     url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
-    //     body: batchBytes,
-    //     headers: {'Content-Type': 'application/octet-stream'}
-    // },  (err, response, responseBody) => {
-    //     if (err) {
-    //         return console.log("Problem submitting to the validator...\n" + err)
-    //     } else {
-    //         getStatus(JSON.parse(responseBody).link)
-    //     }
-    // })
+    var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
+    request.post({
+        url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
+        body: batchBytes,
+        headers: {'Content-Type': 'application/octet-stream'}
+    },  (err, response, responseBody) => {
+        if (err) {
+            return console.log("Problem submitting to the validator...\n" + err)
+        } else {
+            getStatus(JSON.parse(responseBody).link)
+        }
+    })
     // transactions = []
 }
 console.log("*** Randomly generated the supply chain lifecycle for " + assetNumber + " assets with a total of " + count + " transactions" )
-var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
-request.post({
-    url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
-    body: batchBytes,
-    headers: {'Content-Type': 'application/octet-stream'}
-},  (err, response, responseBody) => {
-    if (err) {
-        return console.log("Problem submitting to the validator...\n" + err)
-    } else {
-        getStatus(JSON.parse(responseBody).link)
-    }
-})
+// var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
+// request.post({
+//     url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
+//     body: batchBytes,
+//     headers: {'Content-Type': 'application/octet-stream'}
+// },  (err, response, responseBody) => {
+//     if (err) {
+//         return console.log("Problem submitting to the validator...\n" + err)
+//     } else {
+//         getStatus(JSON.parse(responseBody).link)
+//     }
+// })
 
 
 

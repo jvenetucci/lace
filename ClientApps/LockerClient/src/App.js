@@ -93,6 +93,7 @@ class App extends Component {
 
   queryItems(sku, size) {
     var url = '/api/outsideQuery'
+    // var url = '/api/query'
     if(sku === '' && size !== '') {
       url = url + '?size=' + size;
     } else if (sku !=='' && size === '') {
