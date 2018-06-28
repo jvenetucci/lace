@@ -92,6 +92,7 @@ services:
       - REST_API_ADDRESS=http://rest-api:8008
       - SEND_KEYS=TRUE
       - DB_ACCESS=TRUE
+      - EXTENDED_KEYS=TRUE
     depends_on:
       - validator
       - rest-api
@@ -195,6 +196,8 @@ services:
     container_name: db-sync
     build: ./database/
     restart: always
+    environment:
+      - EXTENDED_KEYS=TRUE
     depends_on:
       - rest-api
       - processor

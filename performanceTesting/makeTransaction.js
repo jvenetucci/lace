@@ -394,6 +394,7 @@ for (var i = 0; i < assetNumber; i++) {
         }
     }
     console.log(path + "\n")
+    console.log(transactions);
     var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
     request.post({
         url: 'http://localhost:' + ports[getRandomIntInclusive(0, (ports.length - 1))] + '/batches',
@@ -406,7 +407,7 @@ for (var i = 0; i < assetNumber; i++) {
             getStatus(JSON.parse(responseBody).link)
         }
     })
-    // transactions = []
+    transactions = []
 }
 console.log("*** Randomly generated the supply chain lifecycle for " + assetNumber + " assets with a total of " + count + " transactions" )
 // var batchBytes = txns.createBatchListBytesFromMany(signerCompany, transactions)
