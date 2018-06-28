@@ -159,6 +159,19 @@ services:
     depends_on:
       - server-factory
 
+  client-locker:
+    container_name: client-locker
+    build: ./ClientApps/LockerClient/
+    expose:
+      - "3000"
+    ports:
+      - "3005:3000"
+    # See ./ClientApps/LockerClient/package.json to change proxy
+    depends_on:
+      - db
+      - db-sync
+      - client-owner
+
   db:
     image: mysql:5.7
     container_name: db
