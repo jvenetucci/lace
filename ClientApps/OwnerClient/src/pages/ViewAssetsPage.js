@@ -157,7 +157,7 @@ class ViewAssetsPage extends Component {
 
   render() {
       return (
-        <div className="ViewAssetsPage">
+        <div className="AssetHistoryPage">
           <form onSubmit={this.handleSubmit}>
             <legend>View Assets Form</legend>
             <div className="form-group">

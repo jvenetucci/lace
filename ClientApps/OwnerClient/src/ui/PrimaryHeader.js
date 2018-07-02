@@ -18,7 +18,7 @@ are contained in sawtooth-license.md and sawtooth-copyright.md */
 
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import logo from '../Columns.svg'
+import logo from '../nike.svg'
 import '../styles/PrimaryHeader.css'
 
 const PrimaryHeader = () => (

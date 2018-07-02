@@ -179,7 +179,7 @@ class AssetUnlockPage extends Component {
 
   render() {
       return (
-        <div className="AssetUnlockPage">
+        <div className="AssetTransferPage">
           <form onSubmit={this.handleSubmit}>
             <legend>Asset Unlock Form</legend>
             <div className="form-group">

@@ -17,10 +17,20 @@ are contained in sawtooth-license.md and sawtooth-copyright.md */
 
 
 .Columns-logo {
-    height: 140px;
+    width: 100px;
+    height: 100px;
     float: left;
   }
   
   nav {
     margin-top: 2em;
   }
+
+.user-sub-layout {
+  height: 100%;
+}
+
+.primary-layout, .unauthorized-layout {
+  margin: auto;
+  width: 70%;
+}

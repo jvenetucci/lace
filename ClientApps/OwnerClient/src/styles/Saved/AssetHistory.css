@@ -15,14 +15,6 @@ This software also makes use of Hyperledger Sawtooth which is
 licensed under Apache 2.0. A copy of it's license and copyright
 are contained in sawtooth-license.md and sawtooth-copyright.md */
 
-.AssetTransferPage {
-    margin: auto;
-    padding: 20px;
-    background-color: white;
-    overflow: hidden;
-    border-radius: 3px;
-    box-shadow: rgba(0, 0, 0, 0) 0px 1px 0px 0px, rgba(0,0,0,0.19804) 0px 1px 5px 0px;
-}
 
 form {
     width: 60%;
@@ -53,6 +45,69 @@ label {
 input {
     width: 100%;
     display: table-cell;
+}
+
+legend {
+    font-size: larger;
+    font-weight: bold;
+    margin: 10px;
+    text-align: left;
+}
+
+table {
+    display: table;
+    border-collapse: collapse;
+    border-spacing: 2px;
+    border-color: black;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+col {
+    display: table-column;
+}
+
+colgroup {
+    display: table-column-group;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
+    border: 2px solid black;
+    padding: 0.5rem;
+    width: 250px;
+}
+
+th {
+    font-weight: bold;
+    text-align: left;
+    width: 250px;
+}
+
+caption {
+    display: table-caption;
+    text-align: -webkit-center
 }
 
 .form-group {

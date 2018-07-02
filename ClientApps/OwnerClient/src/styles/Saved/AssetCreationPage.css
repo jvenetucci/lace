@@ -15,14 +15,6 @@ This software also makes use of Hyperledger Sawtooth which is
 licensed under Apache 2.0. A copy of it's license and copyright
 are contained in sawtooth-license.md and sawtooth-copyright.md */
 
-.AssetCreationPage {
-    margin: auto;
-    padding: 20px;
-    background-color: white;
-    overflow: hidden;
-    border-radius: 3px;
-    box-shadow: rgba(0, 0, 0, 0) 0px 1px 0px 0px, rgba(0,0,0,0.19804) 0px 1px 5px 0px;
-}
 
 form {
     width: 80%;
